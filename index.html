@@ -342,7 +342,7 @@
 
 /* Increase horizontal spacing between tasks */
 .timeline-container .flex.flex-wrap {
-    gap: 80px !important;     /* adjust this value for more/less spacing */
+    gap: 5px !important;     /* adjust this value for more/less spacing */
 }
 
 /* Prevent the connector line from touching task cards */
@@ -946,7 +946,6 @@
     <!-- Smaller Decorative Shape -->
     <div class="absolute right-0 top-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
 </div>
-
 
 
                 <!-- SEARCH & TABS ROW -->
@@ -1575,116 +1574,301 @@
         <!-- ========================= -->
         <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Start of Day')">
 
-            <div class="absolute left-0 top-2">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                    <i data-lucide="users" class="w-4 h-4"></i>
-                </div>
-            </div>
+    <div class="absolute left-0 top-2">
+        <div
+            class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+            <i data-lucide="users" class="w-4 h-4"></i>
+        </div>
+    </div>
 
-            <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
 
-                <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
+        <div class="flex items-center gap-4">
+            <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
 
+            <div class="flex flex-wrap gap-4">
+                <template x-for="task in getModuleTasks('Labor Management', 'Start of Day')" :key="task.id">
+                    <div x-show="!task.hidden"
+                        :class="getTaskCardClass(task, activeTaskId)" 
+                        class="task-card-compact"
+                        @click="toggleDetail(task.id)" 
+                        x-init="$nextTick(() => lucide.createIcons())">
 
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Labor Management', 'Start of Day')" :key="task.id">
-                            <div x-show="!task.hidden"
-     :class="getTaskCardClass(task, activeTaskId)" 
-     class="task-card-compact"
+                        <button @click.stop="completeTask(task.id)"
+                            class="card-action-btn text-green-600 hover:bg-green-50">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
 
-                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge"
+                            x-text="task.badge"></div>
 
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
+                        <div class="task-icon-bg shadow-inner">
+                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                        </div>
 
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
-
-                                <div class="task-icon-bg shadow-inner">
-                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                                    <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                                </div>
-
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
+                        <span class="task-name" x-text="task.name"></span>
                     </div>
-                </div>
-
-                <!-- Detail Section -->
-                <div class="detail-content" x-show="activeTaskId === 'task-sod-schedule'">
-
-
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Weekly Schedule Status</h3>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                                <tr>
-                                    <th class="p-2 border">Date</th>
-                                    <th class="p-2 border">Mgr. Forecast</th>
-                                    <th class="p-2 border">Sch Hrs</th>
-                                    <th class="p-2 border">Proj. Hrs</th>
-                                    <th class="p-2 border">Act. Hrs</th>
-                                    <th class="p-2 border">Ideal Hrs</th>
-                                    <th class="p-2 border">Status</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 border">02/17/24</td>
-                                    <td class="p-2 border">$5,559</td>
-                                    <td class="p-2 border">125:00</td>
-                                    <td class="p-2 border">128:00</td>
-                                    <td class="p-2 border">45:00</td>
-                                    <td class="p-2 border">120:00</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border flex justify-center gap-2">
-                                        <i data-lucide="edit" class="w-3 h-3"></i>
-                                        <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="p-2 border">02/24/24</td>
-                                    <td class="p-2 border">$3,562</td>
-                                    <td class="p-2 border">128:00</td>
-                                    <td class="p-2 border">130:00</td>
-                                    <td class="p-2 border">0:00</td>
-                                    <td class="p-2 border">128:00</td>
-                                    <td class="p-2 border text-gray-500">Open</td>
-                                    <td class="p-2 border flex justify-center gap-2">
-                                        <i data-lucide="edit" class="w-3 h-3"></i>
-                                        <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="p-2 border">03/02/24</td>
-                                    <td class="p-2 border">$6,100</td>
-                                    <td class="p-2 border">140:00</td>
-                                    <td class="p-2 border">135:00</td>
-                                    <td class="p-2 border">0:00</td>
-                                    <td class="p-2 border">130:00</td>
-                                    <td class="p-2 border text-gray-500">Open</td>
-                                    <td class="p-2 border flex justify-center gap-2">
-                                        <i data-lucide="edit" class="w-3 h-3"></i>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
+                </template>
             </div>
         </div>
+
+        <!-- ========================= -->
+        <!-- EXISTING: Weekly Schedule -->
+        <!-- ========================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-schedule'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-2">Weekly Schedule Status</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Date</th>
+                            <th class="p-2 border">Mgr. Forecast</th>
+                            <th class="p-2 border">Sch Hrs</th>
+                            <th class="p-2 border">Proj. Hrs</th>
+                            <th class="p-2 border">Act. Hrs</th>
+                            <th class="p-2 border">Ideal Hrs</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="p-2 border">02/17/24</td>
+                            <td class="p-2 border">$5,559</td>
+                            <td class="p-2 border">125:00</td>
+                            <td class="p-2 border">128:00</td>
+                            <td class="p-2 border">45:00</td>
+                            <td class="p-2 border">120:00</td>
+                            <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="edit" class="w-3 h-3"></i>
+                                <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border">02/24/24</td>
+                            <td class="p-2 border">$3,562</td>
+                            <td class="p-2 border">128:00</td>
+                            <td class="p-2 border">130:00</td>
+                            <td class="p-2 border">0:00</td>
+                            <td class="p-2 border">128:00</td>
+                            <td class="p-2 border text-gray-500">Open</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="edit" class="w-3 h-3"></i>
+                                <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border">03/02/24</td>
+                            <td class="p-2 border">$6,100</td>
+                            <td class="p-2 border">140:00</td>
+                            <td class="p-2 border">135:00</td>
+                            <td class="p-2 border">0:00</td>
+                            <td class="p-2 border">130:00</td>
+                            <td class="p-2 border text-gray-500">Open</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="edit" class="w-3 h-3"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- NEW: TIME LOSS SUMMARY   -->
+        <!-- ========================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-time-loss'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Loss Summary</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Metric</th>
+                            <th class="p-2 border">Value</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="p-2 border font-medium">Time Loss %</td>
+                            <td class="p-2 border">4.8%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Early Clock In ($)</td>
+                            <td class="p-2 border">$32.50</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Late Clock Out ($)</td>
+                            <td class="p-2 border">$45.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">OT Loss ($)</td>
+                            <td class="p-2 border">$120.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Break Loss ($)</td>
+                            <td class="p-2 border">$18.75</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- NEW: TIME OFF REQUEST    -->
+        <!-- ========================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-timeoff'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Off Requests</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Employee</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="p-2 border font-medium">Rohit Sharma</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Lara Benson</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- NEW: AVAILABILITY REQ.   -->
+        <!-- ========================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-availability'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Availability Requests</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Employee</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Michael Scott</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Tina Ross</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- NEW: SWAP SHIFT APPROVAL -->
+        <!-- ========================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-swapshift'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Swap Shift Approval</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Date</th>
+                            <th class="p-2 border">Time</th>
+                            <th class="p-2 border">Position</th>
+                            <th class="p-2 border">Offered By</th>
+                            <th class="p-2 border">Accepted By</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border">01/14/25</td>
+                            <td class="p-2 border">8:00a - 4:00p</td>
+                            <td class="p-2 border">Assistant Manager</td>
+                            <td class="p-2 border">Lara</td>
+                            <td class="p-2 border">1 Employee</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border">01/15/25</td>
+                            <td class="p-2 border">2:00p - 10:00p</td>
+                            <td class="p-2 border">Crew Member</td>
+                            <td class="p-2 border">Rohit</td>
+                            <td class="p-2 border">1 Employee</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
 
         
 
@@ -1694,74 +1878,174 @@
         <!-- ========================= -->
         <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Start of Day')">
 
-            <div class="absolute left-0 top-2">
-                <div
-                    class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                </div>
-            </div>
+    <div class="absolute left-0 top-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+        </div>
+    </div>
 
-            <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
 
-                <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
+        <!-- Header + Tasks -->
+        <div class="flex items-center gap-4">
+            <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
 
+            <div class="flex flex-wrap gap-4">
+                <template x-for="task in getModuleTasks('Payroll Management', 'Start of Day')" :key="task.id">
 
+                    <div x-show="!task.hidden"
+                         :class="getTaskCardClass(task, activeTaskId)"
+                         class="task-card-compact"
+                         @click="toggleDetail(task.id)"
+                         x-init="$nextTick(() => lucide.createIcons())">
 
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Payroll Management', 'Start of Day')" :key="task.id">
-<div x-show="!task.hidden"
-     :class="getTaskCardClass(task, activeTaskId)" 
-     class="task-card-compact"
-                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
+                        <button @click.stop="completeTask(task.id)"
+                            class="card-action-btn text-green-600 hover:bg-green-50">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
 
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
+                        <div x-show="!task.complete && task.badge > 0"
+                             class="notification-badge"
+                             x-text="task.badge"></div>
 
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
-
-                                <div class="task-icon-bg">
-                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                                    <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                                </div>
-
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Detail -->
-                <div class="detail-content" x-show="activeTaskId === 'task-sod-punches-ex'">
-
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Punch Exceptions</h3>
-
-                    <div class="space-y-2 text-xs">
-                        <div
-                            class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
-                            <span><strong>Akash G</strong> - Missing Clock Out (12:00 In)</span>
-                            <button class="text-blue-600 underline">Fix</button>
+                        <div class="task-icon-bg">
+                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
                         </div>
 
-                        <div
-                            class="p-2 bg-gray-50 border border-gray-200 rounded flex justify-between items-center">
-                            <span><strong>Annie V</strong> - Long Shift (11 Hrs)</span>
-                            <button class="text-blue-600 underline">Review</button>
-                        </div>
-
-                        <div
-                            class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
-                            <span><strong>Robert P</strong> - Early Clock In (08:30 In)</span>
-                            <button class="text-blue-600 underline">Fix</button>
-                        </div>
+                        <span class="task-name" x-text="task.name"></span>
                     </div>
 
+                </template>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: Punch Exceptions -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-punches-ex'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-2">Punch Exceptions</h3>
+
+            <div class="space-y-2 text-xs">
+
+                <div class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
+                    <span><strong>Akash G</strong> - Missing Clock Out (12:00 In)</span>
+                    <button class="text-blue-600 underline">Fix</button>
+                </div>
+
+                <div class="p-2 bg-gray-50 border border-gray-200 rounded flex justify-between items-center">
+                    <span><strong>Annie V</strong> - Long Shift (11 Hrs)</span>
+                    <button class="text-blue-600 underline">Review</button>
+                </div>
+
+                <div class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
+                    <span><strong>Robert P</strong> - Early Clock In (08:30 In)</span>
+                    <button class="text-blue-600 underline">Fix</button>
                 </div>
 
             </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: UNBALANCED PUNCHES -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-unbalanced'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Unbalanced Punches</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Clock In</th>
+                            <th class="p-2 border">Clock Out</th>
+                            <th class="p-2 border">Comment</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 07, 02:00 PM</td>
+                            <td class="p-2 border">—</td>
+                            <td class="p-2 border">Forgot to punch out</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 07, 10:00 AM</td>
+                            <td class="p-2 border">—</td>
+                            <td class="p-2 border">Clock-out missing</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: MISMATCH PUNCH -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-sod-mismatch'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Mismatch Punch</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Clock In</th>
+                            <th class="p-2 border">Clock Out</th>
+                            <th class="p-2 border">Comment</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 07, 09:00 AM</td>
+                            <td class="p-2 border">Sun, Dec 07, 03:00 PM</td>
+                            <td class="p-2 border">Punch mismatch detected</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sat, Dec 06, 11:30 AM</td>
+                            <td class="p-2 border">Sat, Dec 06, 04:30 PM</td>
+                            <td class="p-2 border">Out punch incorrect</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
         </div>
 
     </div>
@@ -2122,45 +2406,220 @@
         <!-- ========================================================= -->
         <!-- COD: Labor Management -->
         <!-- ========================================================= -->
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Close of Day')">
+<div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Close of Day')">
 
-            <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center ring-4 ring-white">
-                    <i data-lucide="users" class="w-4 h-4"></i>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-4">
-
-                <!-- Header + Tasks -->
-                <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
-
-
-
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Labor Management', 'Close of Day')" :key="task.id">
-<div x-show="!task.hidden"
-     :class="getTaskCardClass(task, activeTaskId)" 
-     class="task-card-compact"
-                                @click="toggleDetail(task.id)">
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
-                                <div class="task-icon-bg"><i :data-lucide="task.icon" class="w-5 h-5"></i></div>
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-            </div>
-                    
-
+    <div class="absolute left-0 top-2">
+        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center ring-4 ring-white">
+            <i data-lucide="users" class="w-4 h-4"></i>
         </div>
+    </div>
+
+    <div class="flex flex-col gap-4">
+
+        <!-- Header + Tasks -->
+        <div class="flex items-center gap-4">
+            <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
+
+            <div class="flex flex-wrap gap-4">
+                <template x-for="task in getModuleTasks('Labor Management', 'Close of Day')" :key="task.id">
+                    <div x-show="!task.hidden"
+                        :class="getTaskCardClass(task, activeTaskId)" 
+                        class="task-card-compact"
+                        @click="toggleDetail(task.id)"
+                        x-init="$nextTick(() => lucide.createIcons())">
+
+                        <button @click.stop="completeTask(task.id)"
+                            class="card-action-btn text-green-600 hover:bg-green-50">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
+
+                        <div x-show="!task.complete && task.badge > 0"
+                             class="notification-badge"
+                             x-text="task.badge"></div>
+
+                        <div class="task-icon-bg">
+                            <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                        </div>
+
+                        <span class="task-name" x-text="task.name"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- =============================== -->
+        <!-- COD DETAIL: TIME LOSS SUMMARY  -->
+        <!-- =============================== -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-time-loss'">
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Loss Summary</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Metric</th>
+                            <th class="p-2 border">Value</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="p-2 border font-medium">Time Loss %</td>
+                            <td class="p-2 border">5.2%</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Early Clock In ($)</td>
+                            <td class="p-2 border">$40.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Late Clock Out ($)</td>
+                            <td class="p-2 border">$52.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">OT Loss ($)</td>
+                            <td class="p-2 border">$98.00</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2 border font-medium">Break Loss ($)</td>
+                            <td class="p-2 border">$22.50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================= -->
+        <!-- COD DETAIL: TIME OFF REQUEST -->
+        <!-- ============================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-timeoff'">
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Off Requests</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Employee</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Alicia Keys</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Daniel Scott</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- =================================== -->
+        <!-- COD DETAIL: AVAILABILITY REQUEST   -->
+        <!-- =================================== -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-availability'">
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Availability Requests</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Employee</th>
+                            <th class="p-2 border">Status</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+                        <tr>
+                            <td class="p-2 border font-medium">Nina Patel</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Chris Walker</td>
+                            <td class="p-2 border text-yellow-600">Pending</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ======================================= -->
+        <!-- COD DETAIL: SWAP SHIFT APPROVAL        -->
+        <!-- ======================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-swapshift'">
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Swap Shift Approval</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Date</th>
+                            <th class="p-2 border">Time</th>
+                            <th class="p-2 border">Position</th>
+                            <th class="p-2 border">Offered By</th>
+                            <th class="p-2 border">Accepted By</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border">01/18/25</td>
+                            <td class="p-2 border">10:00a - 6:00p</td>
+                            <td class="p-2 border">Shift Lead</td>
+                            <td class="p-2 border">Alicia</td>
+                            <td class="p-2 border">1 Employee</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border">01/19/25</td>
+                            <td class="p-2 border">3:00p - 11:00p</td>
+                            <td class="p-2 border">Crew Member</td>
+                            <td class="p-2 border">Daniel</td>
+                            <td class="p-2 border">1 Employee</td>
+                            <td class="p-2 border flex justify-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 
                 
 
@@ -2170,79 +2629,188 @@
         <!-- ========================================================= -->
         <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Close of Day')">
 
-            <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
-                    <i data-lucide="clock" class="w-4 h-4"></i>
-                </div>
-            </div>
+    <div class="absolute left-0 top-2">
+        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+        </div>
+    </div>
 
-            <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4">
 
-                <!-- Header + Tasks -->
-                <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
+        <!-- Header + Tasks -->
+        <div class="flex items-center gap-4">
+            <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
 
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Payroll Management', 'Close of Day')" :key="task.id">
-<div x-show="!task.hidden"
-     :class="getTaskCardClass(task, activeTaskId)" 
-     class="task-card-compact"
-                                     @click="toggleDetail(task.id)">
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
-                                <div class="task-icon-bg">
-                                    <i :data-lucide="task.icon" class="w-5 h-5"></i>
-                                </div>
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
+            <div class="flex flex-wrap gap-4">
+                <template x-for="task in getModuleTasks('Payroll Management', 'Close of Day')" :key="task.id">
+
+                    <div x-show="!task.hidden"
+                         :class="getTaskCardClass(task, activeTaskId)"
+                         class="task-card-compact"
+                         @click="toggleDetail(task.id)"
+                         x-init="$nextTick(() => lucide.createIcons())">
+
+                        <button @click.stop="completeTask(task.id)"
+                            class="card-action-btn text-green-600 hover:bg-green-50">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
+
+                        <div x-show="!task.complete && task.badge > 0"
+                             class="notification-badge"
+                             x-text="task.badge"></div>
+
+                        <div class="task-icon-bg">
+                            <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                        </div>
+
+                        <span class="task-name" x-text="task.name"></span>
+
                     </div>
-                </div>
 
-                <!-- Detail for Payroll Summary -->
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-payroll-sum'">
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Daily Payroll Summary</h3>
-
-                    <table class="w-full text-xs text-left text-gray-600 border">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="p-2">Store</th>
-                                <th class="p-2">Total Hrs</th>
-                                <th class="p-2">Pay</th>
-                            </tr>
-                        </thead>
-
-                        <tbody class="divide-y">
-                            <tr>
-                                <td class="p-2">Altametrics Store</td>
-                                <td class="p-2">154.5</td>
-                                <td class="p-2">$2,450.00</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2">Store #102</td>
-                                <td class="p-2">140.0</td>
-                                <td class="p-2">$2,100.00</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2">Store #103</td>
-                                <td class="p-2">160.0</td>
-                                <td class="p-2">$2,600.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-
+                </template>
             </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: Payroll Summary -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-payroll-sum'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-2">Daily Payroll Summary</h3>
+
+            <table class="w-full text-xs text-left text-gray-600 border">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="p-2">Store</th>
+                        <th class="p-2">Total Hrs</th>
+                        <th class="p-2">Pay</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y">
+                    <tr>
+                        <td class="p-2">Altametrics Store</td>
+                        <td class="p-2">154.5</td>
+                        <td class="p-2">$2,450.00</td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">Store #102</td>
+                        <td class="p-2">140.0</td>
+                        <td class="p-2">$2,100.00</td>
+                    </tr>
+                    <tr>
+                        <td class="p-2">Store #103</td>
+                        <td class="p-2">160.0</td>
+                        <td class="p-2">$2,600.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: UNBALANCED PUNCHES (COD) -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-unbalanced'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Unbalanced Punches</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Clock In</th>
+                            <th class="p-2 border">Clock Out</th>
+                            <th class="p-2 border">Comment</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 08, 01:00 PM</td>
+                            <td class="p-2 border">—</td>
+                            <td class="p-2 border">Missed punch</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 08, 07:00 AM</td>
+                            <td class="p-2 border">—</td>
+                            <td class="p-2 border">No clock-out found</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- DETAIL: MISMATCH PUNCH (COD) -->
+        <!-- ========================================================= -->
+        <div class="detail-content" x-show="activeTaskId === 'task-cod-mismatch'">
+
+            <h3 class="text-sm font-bold text-gray-900 mb-4">Mismatch Punch</h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-xs text-center text-gray-600 border">
+
+                    <thead class="bg-gray-50 text-gray-700 font-semibold">
+                        <tr>
+                            <th class="p-2 border">Clock In</th>
+                            <th class="p-2 border">Clock Out</th>
+                            <th class="p-2 border">Comment</th>
+                            <th class="p-2 border">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody class="divide-y">
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sun, Dec 08, 09:45 AM</td>
+                            <td class="p-2 border">Sun, Dec 08, 01:30 PM</td>
+                            <td class="p-2 border">In/Out mismatch</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="p-2 border font-medium">Sat, Dec 07, 11:00 AM</td>
+                            <td class="p-2 border">Sat, Dec 07, 05:00 PM</td>
+                            <td class="p-2 border">Punch mismatch detected</td>
+                            <td class="p-2 border flex justify-center gap-3">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
+                                   title="Authorize Punch"></i>
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+            </div>
+
         </div>
 
     </div>
 </div>
 
-                </div>
 
                 <!-- DUMMY TABS -->
                 <div x-show="currentTab === 'apps'" class="p-8 text-center bg-white rounded-lg shadow-sm">
@@ -2689,9 +3257,16 @@ renderChart() {
                     { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
                     { id: 'task-sod-adherence', name: 'Adherence', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'clipboard-check', badge: 0 },
 
+                    { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
+                    { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
+                    { id: 'task-sod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
+                    { id: 'task-sod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
+
                     { id: 'task-sod-punches-ex', name: 'Punch Exceptions', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 8 },
                     { id: 'task-sod-punches-rev', name: 'Punch Review', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
                     { id: 'task-sod-punches-app', name: 'Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22 },
+                    { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2 },
+                    { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 },
 
                     { id: 'task-sod-ordering',   name: 'Ordering',   app: 'Food Management', category: 'Start of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2 },
                     { id: 'task-sod-receiving',  name: 'Receiving',  app: 'Food Management', category: 'Start of Day', enabled: true, complete: true,  icon: 'truck', badge: 0 },
@@ -2707,12 +3282,18 @@ renderChart() {
                     { id: 'task-cod-inventory', name: 'Inventory', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'clipboard-list', badge: 0 },
 
                     { id: 'task-cod-violation', name: 'Labor Violations', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
+                    { id: 'task-cod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
+                    { id: 'task-cod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
+                    { id: 'task-cod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
+                    { id: 'task-cod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
 
                     { id: 'task-cod-punches-ex', name: 'Punch Exception', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 15 },
                     { id: 'task-cod-punches-rev', name: 'Review Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
                     { id: 'task-cod-misc-pay', name: 'Misc Pay', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'gift', badge: 0 },
                     { id: 'task-cod-ot', name: 'Approaching OT', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clock-3', badge: 0 },
                     { id: 'task-cod-payroll-sum', name: 'Payroll Summary', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'file-check', badge: 1 },
+                    { id: 'task-cod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 3 },
+                    { id: 'task-cod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 },
                 ],
 
                 init() {
