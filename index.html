@@ -1359,93 +1359,106 @@
             </div>
 
             <!-- KPI POPUP -->
-<div x-show="popupOpen" class="fixed inset-0 bg-black/50 flex items-center justify-center z-[200]" x-transition>
-    <div class="bg-white w-[700px] rounded-xl shadow-xl p-6 relative">
+<!-- KPI SUPER-MODERN POPUP -->
+<div x-show="popupOpen"
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
+     x-transition>
 
-        <!-- Close -->
-        <!-- CLOSE BUTTON (Red Circle) -->
-<button 
-    class="absolute top-1 right-2 w-6 h-6 rounded-full border border-red-500 bg-white 
-           flex items-center justify-center shadow-sm hover:bg-red-50 transition"
-    @click="popupOpen = false"
->
-    <i data-lucide='x' class='w-5 h-5 text-red-500'></i>
-</button>
+    <div class="relative w-[760px] rounded-2xl bg-white shadow-2xl border border-gray-200
+                transform transition-all scale-100">
 
-        <div class="flex items-center justify-between mb-4">
-    <!-- Popup Header -->
-<!-- Popup Header -->
-<!-- FULL-WIDTH HEADER BAR -->
-<div class="w-full flex items-center justify-between bg-gray-100 px-4 py-4 mt-4 mb-4 rounded-t-lg">
+        <!-- HEADER -->
+        <!-- ULTRA EXECUTIVE HEADER — COMPACT VERSION -->
+<div class="w-full flex items-center justify-between 
+            px-5 py-3 rounded-t-2xl
+            bg-gradient-to-br from-white to-gray-50
+            border-b border-gray-200
+            shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
 
-    <!-- KPI Title -->
-    <h2 class="text-xl font-semibold" x-text="popupTitle"></h2>
+    <!-- TITLE -->
+    <h2 class="text-[17px] font-semibold text-gray-900 tracking-tight select-none">
+        <span x-text="popupTitle"></span>
+    </h2>
 
-    <!-- Right Side Buttons (Toggle and Close) -->
-    <div class="flex items-center space-x-3">
+    <!-- CONTROLS -->
+    <div class="flex items-center gap-2.5">
 
-        <!-- Toggle Graph/Table Button -->
+        <!-- Toggle Button -->
         <button 
-            class="p-2 bg-white border rounded hover:bg-gray-200"
+            class="w-8 h-8 rounded-lg bg-white border border-gray-300 
+                   shadow-sm flex items-center justify-center
+                   hover:bg-gray-100 active:scale-95 transition-all
+                   hover:shadow-md"
             @click="
                 popupMode = popupMode === 'graph' ? 'table' : 'graph';
                 $nextTick(() => lucide.createIcons());
             "
         >
-            <i data-lucide="table" x-show="popupMode === 'graph'" class="w-5 h-5"></i>
-            <i data-lucide="bar-chart-3" x-show="popupMode === 'table'" class="w-5 h-5"></i>
+            <i data-lucide="table" 
+               x-show="popupMode === 'graph'" 
+               class="w-4 h-4 text-gray-700"></i>
+
+            <i data-lucide="bar-chart-3" 
+               x-show="popupMode === 'table'" 
+               class="w-4 h-4 text-gray-700"></i>
         </button>
 
         <!-- Close Button -->
+        <button 
+            class="w-8 h-8 rounded-full bg-white border border-gray-300 
+                   shadow-sm flex items-center justify-center
+                   hover:bg-red-50 active:scale-95 transition-all
+                   hover:shadow-md"
+            @click="popupOpen = false"
+        >
+            <i data-lucide="x" class="w-4 h-4 text-red-500"></i>
+        </button>
+    </div>
+</div>
+
+
+        <!-- BODY AREA -->
+        <div class="p-6">
+
+            <!-- GRAPH VIEW -->
+            <div x-show="popupMode === 'graph'" class="rounded-xl border bg-white shadow-inner p-4" 
+                 style="height: 360px;">
+                <canvas id="kpiChart"></canvas>
+            </div>
+
+            <!-- TABLE VIEW -->
+            <div x-show="popupMode === 'table'" class="rounded-xl border bg-white shadow-inner p-4">
+
+                <table class="w-full text-sm rounded-xl overflow-hidden">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="p-3 border-b">Date</th>
+                            <th class="p-3 border-b">Current Week</th>
+                            <th class="p-3 border-b">Last Week</th>
+                            <th class="p-3 border-b">Last Year</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <template x-for="row in popupTableData">
+                            <tr class="hover:bg-gray-50 transition">
+                                <td class="p-3 border-b" x-text="row.date"></td>
+                                <td class="p-3 border-b font-semibold" x-text="row.current"></td>
+                                <td class="p-3 border-b font-semibold text-blue-600" x-text="row.lastWeek"></td>
+                                <td class="p-3 border-b font-semibold text-pink-600" x-text="row.lastYear"></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
 
     </div>
 </div>
 
 
-
-
-
-
-
-
-</div>
-
-
-        <!-- GRAPH VIEW -->
-                <div x-show="popupMode === 'graph'">
-    <div class="chart-container">
-        <canvas id="kpiChart"></canvas>
-    </div>
-</div>
-
-
-        <!-- TABLE VIEW -->
-        <div x-show="popupMode === 'table'">
-    <table class="w-full text-sm border">
-        <thead class="bg-gray-100">
-            <tr>
-                <th class="p-2 border">Date</th>
-                <th class="p-2 border">Current Week</th>
-                <th class="p-2 border">Last Week</th>
-                <th class="p-2 border">Last Year</th>
-            </tr>
-        </thead>
-        <tbody>
-            <template x-for="row in popupTableData">
-                <tr>
-                    <td class="p-2 border" x-text="row.date"></td>
-                    <td class="p-2 border" x-text="row.current"></td>
-                    <td class="p-2 border" x-text="row.lastWeek"></td>
-                    <td class="p-2 border" x-text="row.lastYear"></td>
-                </tr>
-            </template>
-        </tbody>
-    </table>
-</div>
-
-
-    </div>
-</div>
 
 
             <!-- MAIN SCROLLABLE CONTENT -->
@@ -3286,6 +3299,13 @@ renderChart() {
         window.kpiChartInstance.destroy();
     }
 
+    // Elegant enterprise colors
+    const colors = {
+        blue: "rgba(59, 130, 246, 0.85)",
+        green: "rgba(16, 185, 129, 0.85)",
+        pink: "rgba(236, 72, 153, 0.85)"
+    };
+
     window.kpiChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
@@ -3294,37 +3314,97 @@ renderChart() {
                 {
                     label: "Current Week",
                     data: this.currentWeekData,
-                    backgroundColor: "rgba(37,99,235,0.9)"  // blue
+                    backgroundColor: colors.blue,
+                    borderColor: "rgba(59,130,246,1)",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 28
                 },
                 {
                     label: "Last Week",
                     data: this.lastWeekData,
-                    backgroundColor: "rgba(34,197,94,0.9)"  // green
+                    backgroundColor: colors.green,
+                    borderColor: "rgba(16,185,129,1)",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 28
                 },
                 {
                     label: "Last Year",
                     data: this.lastYearData,
-                    backgroundColor: "rgba(244,114,182,0.9)" // pink
+                    backgroundColor: colors.pink,
+                    borderColor: "rgba(236,72,153,1)",
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 28
                 }
             ]
         },
-        options: {
-    responsive: true,
-    maintainAspectRatio: false,
 
-    plugins: {
-        legend: {
-            position: "bottom",
-            labels: {
-                align: "center"   // ⭐ Centers the legend
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+
+            animation: {
+                duration: 650,
+                easing: "easeOutCubic"
+            },
+
+            layout: {
+                padding: { top: 10, right: 20, bottom: 0, left: 10 }
+            },
+
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        color: "#475569",
+                        font: { size: 12, weight: 600 },
+                        padding: 8
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: "rgba(0,0,0,0.04)",
+                        lineWidth: 1,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        color: "#64748b",
+                        font: { size: 12 },
+                        callback: (v) => v.toLocaleString(),
+                        padding: 6
+                    }
+                }
+            },
+
+            plugins: {
+                legend: {
+                    position: "bottom",
+                    labels: {
+                        font: { size: 13, weight: 600 },
+                        color: "#1e293b",
+                        usePointStyle: true,
+                        pointStyle: "round",
+                        padding: 16
+                    }
+                },
+
+                tooltip: {
+                    backgroundColor: "rgba(30,41,59,0.95)", // slate-800
+                    titleFont: { size: 13, weight: 700 },
+                    bodyFont: { size: 12 },
+                    padding: 10,
+                    cornerRadius: 6,
+                    displayColors: false,
+                    callbacks: {
+                        label: (ctx) =>
+                            `${ctx.dataset.label}: ${ctx.raw.toLocaleString()}`
+                    }
+                }
             }
         }
-    },
-
-    scales: {
-        y: { beginAtZero: true }
-    }
-}
     });
 },
                 
@@ -3653,3 +3733,4 @@ renderChart() {
     </script>
 </body>
 </html>
+
