@@ -61,18 +61,109 @@
 }
 
 
+/* % Chip Wrapper */
+/* ============================================================
+   PROFESSIONAL KPI % CHANGE CHIP (Modern UI)
+============================================================ */
+
+    .percent-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border-radius: 10px;
+        margin-top: 8px;
+        width: 60%;
+        justify-content: flex-start;
+
+        /* smooth modern shadow */
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+
+        /* glass effect */
+        backdrop-filter: blur(6px);
+    }
+
+    /* --------------------------------------
+    Arrow Circle (more premium)
+    -------------------------------------- */
+    .percent-chip .arrow-circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        font-size: 0.65rem;
+        font-weight: 900;
+    }
+
+    /* --------------------------------------
+    GREEN — Positive
+    -------------------------------------- */
+    .chip-up {
+        background: #dffbe8;
+        color: #0e9f4a;
+        border: 1px solid #b4efcc;
+    }
+
+    .chip-up .arrow-circle {
+        background: #0e9f4a;
+        color: white;
+    }
+
+    /* --------------------------------------
+    RED — Negative
+    -------------------------------------- */
+    .chip-down {
+        background: #fde4e6;
+        color: #e11d48;
+        border: 1px solid #f8b8c0;
+    }
+
+    .chip-down .arrow-circle {
+        background: #e11d48;
+        color: white;
+    }
+
 
 
 .store-rank-badge {
     font-size: 0.80rem;
     font-weight: 600;
-    color: #234ea5;
+    color: #8a6d0a; /* deep gold brown */
     display: inline-flex;
     align-items: center;
+
     border-radius: 8px;
-    background: #eef4ff;
-    border: 1px solid #d4e2ff;
+    padding: 6px 10px;
+
+    /* soft gold-white background */
+    background: linear-gradient(135deg, #fff9db, #fff3b0);
+    border: 1px solid #f2d98d;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
+
+/* GOLD CIRCLE MEDAL ICON */
+.rank-medal-icon {
+    width: 20px !important;
+    height: 20px !important;
+
+    /* Gold circular background */
+    background: radial-gradient(circle at 30% 30%, #fff7c2, #f6d878, #d4a017);
+    border-radius: 50%;
+
+    /* Icon stroke color */
+    color: #8c6a00 !important;
+    stroke-width: 2.2;
+
+    padding: 3px;
+    box-shadow:
+        inset 0 1px 2px rgba(255,255,255,0.6),
+        0 2px 4px rgba(0,0,0,0.15);
+}
+
 
 /* Rank Icon */
 .store-rank-badge::before {
@@ -600,7 +691,7 @@
 
         /* KPI Header (Darker Modern Look) */
         .kpi-header {
-            background: linear-gradient(to bottom, #3b70bc, #494cc2); /* Slate gradient */
+            background: linear-gradient(to bottom, #3b70bc, #4a1157);
             color: white;
             padding: 10px 12px;
             text-align: center;
@@ -629,7 +720,6 @@
             align-items: center;
             justify-content: center;
             padding: 10px 8px;
-            border-bottom: 1px solid #180957;
             background: #f5f5f7;
             min-height: 60px; /* Ensure height alignment with Day tile */
         }
@@ -806,6 +896,32 @@
             visibility: visible;
             transform: translateX(-50%) translateY(0); /* Slide into place */
         }
+
+        /* ===========================================================
+   DRAG & DROP VISUAL EFFECTS
+=========================================================== */
+
+/* Tile that is being dragged */
+.kpi-dragging {
+    opacity: 0.45 !important;
+    transform: scale(1.06) !important;
+    z-index: 999 !important;
+    box-shadow: 0 14px 28px rgba(0,0,0,0.18) !important;
+    cursor: grabbing !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Placeholder (empty tile spot) */
+.kpi-placeholder {
+    width: 120px;
+    height: 105px;
+    border-radius: 12px;
+    background: #e8ecf8;
+    border: 2px dashed #9aa3b6;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
         
     </style>
 </head>
@@ -1006,10 +1122,10 @@
     </div>
 
     <!-- Store Rank Badge -->
-    <div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm bg-[#edf3fb]">
-        <i data-lucide="award" class="w-4 h-4 text-blue-600"></i>
-        <span x-text="'Rank: #' + storeRank"></span>
-    </div>
+<div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm">
+    <i data-lucide="medal" class="rank-medal-icon w-4 h-4"></i>
+    <span x-text="'Rank: #' + storeRank"></span>
+</div>
 
 </div>
 
@@ -1307,8 +1423,17 @@
                         <!-- COMPACT KPI TILE -->
 
 <!-- REPEAT FOR OTHER KPI TILES -->
-<template x-for="kpi in kpis" :key="kpi.id">
-    <div class="kpi-container kpi-small relative" x-show="kpi.enabled">
+<template x-for="(kpi, index) in kpis" :key="kpi.id">
+    <div class="kpi-container kpi-small relative"
+     :class="dragIndex === index ? 'kpi-dragging' : ''"
+     draggable="true"
+     @dragstart="dragStart(index, $event)"
+     @dragover.prevent="dragOver(index)"
+     @drop="dropTile(index)"
+     @dragend="dragEnd">
+
+
+        <!-- HEADER -->
         <div class="kpi-header flex justify-between items-center px-2">
             <span x-text="kpi.name"></span>
 
@@ -1317,13 +1442,37 @@
             </button>
         </div>
 
+        <!-- BODY -->
         <div class="kpi-body">
+
             <div class="kpi-data-row">
                 <span class="kpi-value-main" x-html="kpi.value"></span>
             </div>
+
+            <!-- % CHANGE CHIP (NEW) -->
+            <template x-if="kpi.percent !== null">
+    <div class="percent-chip" 
+         :class="kpi.percent >= 0 ? 'chip-up' : 'chip-down'">
+        
+        <div class="arrow-circle">
+            <i data-lucide="arrow-up-right"
+               x-show="kpi.percent >= 0"
+               class="w-3 h-3"></i>
+
+            <i data-lucide="arrow-down-left"
+               x-show="kpi.percent < 0"
+               class="w-3 h-3"></i>
+        </div>
+
+        <span x-text="Math.abs(kpi.percent) + '%'"></span>
+    </div>
+</template>
+
+
         </div>
     </div>
 </template>
+
 
 </div>
 
@@ -2827,6 +2976,21 @@ currentKpiData: [],
 currentWeekData: [],
 lastWeekData: [],
 lastYearData: [],
+dragIndex: null,
+
+dragStart(i) {
+    this.dragIndex = i;
+},
+
+dropTile(i) {
+    if (this.dragIndex === null) return;
+
+    const temp = this.kpis[this.dragIndex];
+    this.kpis.splice(this.dragIndex, 1);
+    this.kpis.splice(i, 0, temp);
+
+    this.dragIndex = null;
+},
 
 aiInsightsOpen: false,
 
@@ -2994,7 +3158,8 @@ renderChart() {
         mtd: "$142,890.00",
         yesterdayValue: '$4,980.50',
         trend: 'up',
-        trendVal: '1.5%'
+        trendVal: '1.5%',
+        percent: +2.1         // NEW
     },
 
     {
@@ -3007,20 +3172,22 @@ renderChart() {
         mtd: "$152,340.00",
         yesterdayValue: '$5,100.25',
         trend: 'up',
-        trendVal: '2.1%'
+        trendVal: '2.1%',
+        percent: +3.4         // NEW
     },
 
     {
         id: 'kpi-variance',
         name: 'Var (Act vs Ideal)',
         enabled: true,
-        value: '<span class="text-green-600">+155.33</span>',
-        daily: '<span class="text-green-600">+22.10</span>',
-        wtd: '<span class="text-green-600">+143.89</span>',
-        mtd: '<span class="text-green-600">+612.45</span>',
-        yesterdayValue: '<span class="text-green-600">+50.10</span>',
+        value: '+155.33',
+        daily: "+22.10",
+        wtd: "+143.89",
+        mtd: "+612.45",
+        yesterdayValue: '+50.10',
         trend: 'neutral',
-        trendVal: '-'
+        trendVal: '-',
+        percent: +1.8         // NEW
     },
 
     {
@@ -3033,7 +3200,8 @@ renderChart() {
         mtd: "22.7%",
         yesterdayValue: '21.8%',
         trend: 'up',
-        trendVal: '0.6%'
+        trendVal: '0.6%',
+        percent: +0.6         // NEW (example)
     },
 
     {
@@ -3047,7 +3215,8 @@ renderChart() {
         yesterdayValue: '2.0',
         trend: 'up',
         trendVal: '1.5',
-        trendClass: 'trend-up-bad'   // stays red (your previous logic)
+        trendClass: 'trend-up-bad',  // stays red
+        percent: -12.5        // NEW (negative -> red)
     },
 
     {
@@ -3060,12 +3229,13 @@ renderChart() {
         mtd: "27.9%",
         yesterdayValue: '28.0%',
         trend: 'up',
-        trendVal: '0.5%'
+        trendVal: '0.5%',
+        percent: +0.5         // NEW
     },
 
-    /* =============================
+    /* ======================================================
        KPI: Labor Dollars ($)
-       ============================= */
+       ====================================================== */
     {
         id: 'labor_dollars',
         name: 'Labor $',
@@ -3075,6 +3245,8 @@ renderChart() {
         daily: "$1,245.60",
         wtd: "$7,820.00",
         mtd: "$32,540.00",
+
+        percent: -1.2,        // NEW
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3088,9 +3260,9 @@ renderChart() {
         ]
     },
 
-    /* =============================
+    /* ======================================================
        KPI: Ideal Hours
-       ============================= */
+       ====================================================== */
     {
         id: 'ideal_hours',
         name: 'Ideal Hours',
@@ -3100,6 +3272,8 @@ renderChart() {
         daily: "128 hrs",
         wtd: "760 hrs",
         mtd: "3,220 hrs",
+
+        percent: +2.4,        // NEW
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3113,9 +3287,9 @@ renderChart() {
         ]
     },
 
-    /* =============================
+    /* ======================================================
        KPI: Misc Pay
-       ============================= */
+       ====================================================== */
     {
         id: 'misc_pay',
         name: 'Misc Pay $',
@@ -3125,6 +3299,8 @@ renderChart() {
         daily: "$245.00",
         wtd: "$1,120.00",
         mtd: "$4,380.00",
+
+        percent: +3.9,        // NEW
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3138,9 +3314,9 @@ renderChart() {
         ]
     },
 
-    /* =============================
+    /* ======================================================
        KPI: Time Loss
-       ============================= */
+       ====================================================== */
     {
         id: 'time_loss',
         name: 'Time Loss $',
@@ -3150,6 +3326,8 @@ renderChart() {
         daily: "$87.30",
         wtd: "$420.00",
         mtd: "$1,650.00",
+
+        percent: -3.3,        // NEW
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3169,7 +3347,7 @@ renderChart() {
                     { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1 },
 
                     { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0 },
-                    { id: 'task-sod-hr', name: 'HR Notif.', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4 },
+                    { id: 'task-sod-hr', name: 'Pending Employees', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4 },
                     { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
 
                     { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
