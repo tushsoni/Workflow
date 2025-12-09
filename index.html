@@ -1544,148 +1544,241 @@
         <!-- ========================= -->
         <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Forecast', 'Start of Day')">
 
-    <!-- Icon -->
-    <div class="absolute left-0 top-2">
-        <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-            <i data-lucide="trending-up" class="w-5 h-5"></i>
-        </div>
+            <!-- Icon -->
+            <div class="absolute left-0 top-2">
+                <div
+                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+                </div>
+            </div>
+
+            <!-- Header + Tasks row -->
+            <div class="flex flex-col gap-4">
+
+                <div class="flex items-center gap-4">
+                    <h4 class="text-sm font-bold text-gray-900">Forecast</h4>
+
+                    <!-- Tasks inline -->
+                    <div class="flex flex-wrap gap-4">
+                        <template x-for="task in getModuleTasks('Forecast', 'Start of Day')" :key="task.id">
+                            <div x-show="!task.hidden" :class="getTaskCardClass(task, activeTaskId)" class="task-card-compact"
+                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
+
+                                <button @click.stop="completeTask(task.id)"
+                                    class="card-action-btn text-green-600 hover:bg-green-50">
+                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                </button>
+
+                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
+                                    x-text="task.badge"></div>
+
+                                <div class="task-icon-bg shadow-inner">
+                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
+                                    <i x-show="task.complete" data-lucide="check" class="w-6 h-6"></i>
+                                </div>
+
+                                <span class="task-name" x-text="task.name"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Task Detail (NOW WORKING) -->
+                <div class="detail-content"
+     x-show="activeTaskId === 'task-forecast'"
+     x-data="{
+        editing:false,
+        ai:['4200','3800','4100','5200','6500','6800','4500'],
+        mgr:['4500','4000','4200','5500','6800','7000','4800']
+     }">
+
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-bold text-gray-900">Weekly Forecast</h3>
+        <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
+            Export CSV
+        </button>
     </div>
 
-    <div class="flex flex-col gap-4">
+    <div class="overflow-x-auto">
+        <table class="w-full text-xs text-center text-gray-600 border">
 
-        <!-- Header + Tasks Row -->
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Forecast</h4>
+            <thead class="bg-gray-50 text-gray-700 font-semibold">
+                <tr>
+                    <th class="p-2 border">Days</th>
+                    <th class="p-2 border">11/25</th>
+                    <th class="p-2 border">11/26</th>
+                    <th class="p-2 border">11/27</th>
+                    <th class="p-2 border">11/28</th>
+                    <th class="p-2 border">11/29</th>
+                    <th class="p-2 border">11/30</th>
+                    <th class="p-2 border">12/01</th>
+                    <th class="p-2 border">Action</th>
+                </tr>
+            </thead>
 
-            <!-- Tasks inline -->
-            <div class="flex flex-wrap gap-4">
-                <template x-for="task in getModuleTasks('Forecast', 'Start of Day')" :key="task.id">
-                    <div x-show="!task.hidden"
-                        :class="getTaskCardClass(task, activeTaskId)"
-                        class="task-card-compact"
-                        @click="toggleDetail(task.id)"
-                        x-init="$nextTick(() => lucide.createIcons())">
+            <tbody class="divide-y">
 
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
+                <!-- AI FORECAST -->
+                <tr>
+                    <td class="p-2 border font-medium">AI Forecast</td>
 
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                            x-text="task.badge"></div>
+                    <template x-for="(val,i) in ai" :key="'ai'+i">
+                        <td class="p-2 border">
+                            <span x-show="!editing" x-text="'$' + val"></span>
 
-                        <div class="task-icon-bg shadow-inner">
-                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
-                            <i x-show="task.complete" data-lucide="check" class="w-6 h-6"></i>
+                            <input x-show="editing"
+                                   x-model="ai[i]"
+                                   class="w-20 text-center border rounded p-1 text-xs" />
+                        </td>
+                    </template>
+
+                    <!-- ACTION -->
+                    <td class="p-2 border">
+                        <div class="flex justify-center items-center gap-4">
+
+                            <!-- EDIT -->
+                            <div x-show="!editing"
+                                 @click="editing = true"
+                                 class="cursor-pointer hover:scale-110 transition">
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+
+                            <!-- SAVE -->
+                            <div x-show="editing"
+                                 @click="editing = false"
+                                 class="cursor-pointer hover:scale-110 transition">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                            </div>
+
                         </div>
+                    </td>
+                </tr>
 
-                        <span class="task-name" x-text="task.name"></span>
-                    </div>
-                </template>
-            </div>
-        </div>
+                <!-- MGR FORECAST -->
+                <tr>
+                    <td class="p-2 border font-medium">Mgr. Forecast</td>
 
-        <!-- =============================
-             DETAIL: REVIEW FORECAST
-        ============================== -->
-        <div class="detail-content" x-show="activeTaskId === 'task-forecast'">
+                    <template x-for="(val,i) in mgr" :key="'mgr'+i">
+                        <td class="p-2 border">
+                            <span x-show="!editing" x-text="'$' + val"></span>
 
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-bold text-gray-900">Weekly Forecast</h3>
-                <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
-                    Export CSV
-                </button>
-            </div>
+                            <input x-show="editing"
+                                   x-model="mgr[i]"
+                                   class="w-20 text-center border rounded p-1 text-xs" />
+                        </td>
+                    </template>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Days</th>
-                            <th class="p-2 border">11/25</th>
-                            <th class="p-2 border">11/26</th>
-                            <th class="p-2 border">11/27</th>
-                            <th class="p-2 border">11/28</th>
-                            <th class="p-2 border">11/29</th>
-                            <th class="p-2 border">11/30</th>
-                            <th class="p-2 border">12/01</th>
-                            <th class="p-2 border">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border font-medium">AI Forecast</td>
-                            <td class="p-2 border">$4,200</td>
-                            <td class="p-2 border">$3,800</td>
-                            <td class="p-2 border">$4,100</td>
-                            <td class="p-2 border">$5,200</td>
-                            <td class="p-2 border">$6,500</td>
-                            <td class="p-2 border">$6,800</td>
-                            <td class="p-2 border">$4,500</td>
-                            <td class="p-2 border"><i data-lucide="check-square" class="w-3 h-3 mx-auto"></i></td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Mgr. Forecast</td>
-                            <td class="p-2 border">$4,500</td>
-                            <td class="p-2 border">$4,000</td>
-                            <td class="p-2 border">$4,200</td>
-                            <td class="p-2 border">$5,500</td>
-                            <td class="p-2 border">$6,800</td>
-                            <td class="p-2 border">$7,000</td>
-                            <td class="p-2 border">$4,800</td>
-                            <td class="p-2 border"><i data-lucide="edit-2" class="w-3 h-3 mx-auto"></i></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+                    <!-- ACTION -->
+                    <td class="p-2 border">
+                        <div class="flex justify-center items-center gap-4">
+
+                            <!-- EDIT -->
+                            <div x-show="!editing"
+                                 @click="editing = true"
+                                 class="cursor-pointer hover:scale-110 transition">
+                                <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+
+                            <!-- SAVE -->
+                            <div x-show="editing"
+                                 @click="editing = false"
+                                 class="cursor-pointer hover:scale-110 transition">
+                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                            </div>
+
+                        </div>
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
 
 
         <!-- =============================
-             DETAIL: ACTUAL SALES (NEW)
-        ============================== -->
-        <div class="detail-content" x-show="activeTaskId === 'task-actual-sales'">
+     DETAIL: ACTUAL SALES (FINAL FIXED)
+============================= -->
+<div class="detail-content"
+     x-show="activeTaskId === 'task-actual-sales'"
+     x-data="{
+        editing: false,
+        sales: ['$5210','$4980','$5340','$6120','$7450','$6980','$5760']
+     }">
 
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-sm font-bold text-gray-900">Actual Sales</h3>
-                <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
-                    Export CSV
-                </button>
-            </div>
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-sm font-bold text-gray-900">Actual Sales</h3>
+        <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
+            Export CSV
+        </button>
+    </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Actual Sales</th>
-                            <th class="p-2 border">11/25</th>
-                            <th class="p-2 border">11/26</th>
-                            <th class="p-2 border">11/27</th>
-                            <th class="p-2 border">11/28</th>
-                            <th class="p-2 border">11/29</th>
-                            <th class="p-2 border">11/30</th>
-                            <th class="p-2 border">12/01</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
+    <div class="overflow-x-auto">
+        <table class="w-full text-xs text-center text-gray-600 border">
 
-                        <tr>
-                            <td class="p-2 border font-medium">Sales ($)</td>
-                            <td class="p-2 border">$5,210</td>
-                            <td class="p-2 border">$4,980</td>
-                            <td class="p-2 border">$5,340</td>
-                            <td class="p-2 border">$6,120</td>
-                            <td class="p-2 border">$7,450</td>
-                            <td class="p-2 border">$6,980</td>
-                            <td class="p-2 border">$5,760</td>
-                        </tr>
+            <thead class="bg-gray-50 text-gray-700 font-semibold">
+                <tr>
+                    <th class="p-2 border">Actual Sales</th>
+                    <th class="p-2 border">11/25</th>
+                    <th class="p-2 border">11/26</th>
+                    <th class="p-2 border">11/27</th>
+                    <th class="p-2 border">11/28</th>
+                    <th class="p-2 border">11/29</th>
+                    <th class="p-2 border">11/30</th>
+                    <th class="p-2 border">12/01</th>
+                    <th class="p-2 border">Action</th>
+                </tr>
+            </thead>
 
+            <tbody>
+                <tr>
+                    <td class="p-2 border font-medium">Sales ($)</td>
 
-                    </tbody>
-                </table>
-            </div>
+                    <!-- Loop for 7 editable cells -->
+                    <template x-for="(val,i) in sales" :key="i">
+                        <td class="p-2 border">
+                            <!-- VIEW MODE -->
+                            <span x-show="!editing" x-text="val"></span>
+
+                            <!-- EDIT MODE -->
+                            <input x-show="editing"
+                                   x-model="sales[i]"
+                                   class="w-20 text-center border rounded p-1 text-xs" />
+                        </td>
+                    </template>
+
+                    <!-- ACTION BUTTONS -->
+                    <td class="p-2 border">
+    <div class="flex justify-center items-center gap-4">
+
+        <!-- EDIT ICON (visible when not editing) -->
+        <div x-show="!editing" @click="editing = true"
+             class="cursor-pointer hover:scale-110 transition">
+            <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
         </div>
+
+        <!-- SAVE ICON (visible when editing) -->
+        <div x-show="editing" @click="editing = false"
+             class="cursor-pointer hover:scale-110 transition">
+            <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"
+               title="Save"></i>
+        </div>
+
+    </div>
+</td>
+
+
+
+
+                </tr>
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
 
     </div>
 </div>
@@ -1748,8 +1841,13 @@
         <!-- ============================
              DYNAMIC ADD BUTTON AREA
         ============================= -->
-        <div x-show="activeTaskId !== null"
-             class="add-task-container">
+        <div x-show="[
+        'task-sod-ordering',
+        'task-sod-receiving',
+        'task-sod-transfer',
+        'task-sod-waste'
+    ].includes(activeTaskId)"
+    class="add-task-container">
 
             <button 
                 class="add-task-button"
@@ -1760,9 +1858,6 @@
                     activeTaskId === 'task-sod-waste'      ? addWaste() :
                     null
                 ">
-
-                <i data-lucide='plus-circle' class='w-5 h-5'></i>
-
                 <!-- Dynamic Label -->
                 <span x-text="
                     activeTaskId === 'task-sod-ordering'   ? 'Add Ordering'   :
