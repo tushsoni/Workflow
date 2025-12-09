@@ -998,7 +998,7 @@
     <!-- AI Insights Button -->
     <div @click="openAiInsights()" 
         class="ai-button flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm bg-[#eef2ff] cursor-pointer hover:bg-[#e0e7ff] transition">
-        <i data-lucide="bot" class="w-4 h-4 text-indigo-600"></i>
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
         <span class="text-indigo-700 font-medium text-sm">AI Insights</span>
     </div>
 
@@ -1047,7 +1047,7 @@
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shadow-inner">
-                                    <i data-lucide="bot" class="w-6 h-6"></i>
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
                                 </div>
                                 <h2 class="text-xl font-semibold text-white">AI Insights</h2>
                             </div>
@@ -1057,54 +1057,27 @@
                                 <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
                         </div>
+
                         <p class="text-sm text-white/70 mt-1">Store-level predictive intelligence & operational guidance.</p>
                     </div>
 
-                    <!-- BODY -->
+                    <!-- BODY (FLAT LIST, NO MODULES) -->
                     <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
 
-                        <!-- Expand / Collapse Controls -->
-                        <div class="flex justify-end gap-3 mb-5">
-                            <button @click="expandAllInsights()"
-                                class="px-4 py-1.5 bg-indigo-600 text-white rounded-md text-sm shadow hover:bg-indigo-700">
-                                Expand All
-                            </button>
-                            <button @click="collapseAllInsights()"
-                                class="px-4 py-1.5 bg-gray-200 text-gray-700 rounded-md text-sm shadow hover:bg-gray-300">
-                                Collapse All
-                            </button>
+                        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+                            <ul class="list-disc pl-5 space-y-3 text-gray-700 text-[14px] leading-relaxed">
+
+                                <li>AI forecasts a +9.2% increase in lunch-hour traffic today; recommend adjusting prep levels.</li>
+                                <li>Waste trending up for 3 key SKUs — projected loss of $48.20 if not corrected today.</li>
+                                <li>Two employees are projected to exceed 40 weekly hours; shift redistribution suggested.</li>
+                                <li>Break compliance dipped to 92% yesterday — 3 missed-break alerts require review.</li>
+                                <li>Evening staffing is 12% higher than required; AI recommends reallocating 1–2 team members.</li>
+                                <li>Receiving delays detected in today’s Frozen Products delivery — potential impact on prep schedule.</li>
+
+                            </ul>
                         </div>
 
-                        <!-- INSIGHT MODULES -->
-                        <template x-for="module in aiInsightModules" :key="module.title">
-                            <div class="mb-4 bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-
-                                <!-- MODULE HEADER -->
-                                <div @click="module.open = !module.open"
-                                     class="flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 cursor-pointer transition">
-                                    
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="chevron-right"
-                                           :class="module.open ? 'rotate-90' : ''"
-                                           class="w-5 h-5 text-gray-600 transition-transform"></i>
-
-                                        <h3 class="text-lg font-semibold text-gray-900" x-text="module.title"></h3>
-                                    </div>
-                                </div>
-
-                                <!-- MODULE CONTENT -->
-                                <div x-show="module.open" x-collapse class="px-6 py-4 bg-white">
-                                    <ul class="list-disc pl-5 space-y-2 text-gray-700 text-[14px] leading-relaxed">
-                                        <template x-for="point in module.points">
-                                            <li x-text="point"></li>
-                                        </template>
-                                    </ul>
-                                </div>
-
-                            </div>
-                        </template>
-
-                    </div>
+                    </div> <!-- END BODY -->
 
                 </div>
             </div>
@@ -1112,6 +1085,8 @@
         </div>
     </div>
 </div>
+
+
 
 
 
@@ -2051,9 +2026,11 @@
     </div>
 </div>
 
+</div> <!-- END x-show sodExpanded inner -->
+</div> <!-- END .sod-wrapper -->
 
                     <!-- CLOSE OF DAY SECTION -->
-                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
 
     <!-- Close of Day Header -->
     <div class="section-header !py-2 !px-4" @click="codExpanded = !codExpanded">
@@ -2081,8 +2058,6 @@
         <div class="timeline-line"></div>
 
         
-
-
         <!-- ========================================================= -->
         <!-- MODULE: Food Management (FIXED LAYOUT)                      -->
         <!-- ========================================================= -->
@@ -2247,7 +2222,7 @@
 
                     <div class="flex flex-wrap gap-4">
                         <template x-for="task in getModuleTasks('Zip Inventory', 'Close of Day')" :key="task.id">
-<div x-show="!task.hidden"
+    <div x-show="!task.hidden"
      :class="getTaskCardClass(task, activeTaskId)" 
      class="task-card-compact"
                                 @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
@@ -2398,7 +2373,6 @@
                 </div>
             </div>
                     
-
         </div>
 
 
@@ -2812,6 +2786,7 @@
 </div>
 
 
+
                 <!-- DUMMY TABS -->
                 <div x-show="currentTab === 'apps'" class="p-8 text-center bg-white rounded-lg shadow-sm">
                     <h3 class="text-lg font-medium text-gray-900">My Apps</h3>
@@ -2824,6 +2799,7 @@
 
             </div>
         </div>
+    </div>
     </div>
 
     <!-- Scripts -->
@@ -2854,69 +2830,6 @@ aiInsightsOpen: false,
 openAiInsights() {
     this.aiInsightsOpen = true;
     this.$nextTick(() => lucide.createIcons());
-},
-
-aiInsightsOpen: false,
-
-aiInsightModules: [
-    {
-        title: "Forecast Insights",
-        open: true,
-        points: [
-            "Sales forecast accuracy improved by 7.4% driven by regional weather models.",
-            "AI detects a 14% rise in lunch-hour traffic, recommending +9% prep increase.",
-            "Weekend sales expected to outperform by 11.2% due to local event surge.",
-            "Traffic variance decreased 4%, indicating more predictable guest behavior."
-        ]
-    },
-
-    {
-        title: "Food Management Insights",
-        open: false,
-        points: [
-            "High waste detected in 4 SKUs — AI suggests reducing prep quantities by 12–18%.",
-            "Receiving efficiency is 94%; delays found in Frozen Products & Bakery deliveries.",
-            "Transfer activity up 22%, indicating overstock at 3 low-traffic stores.",
-            "AI recommends adjusting order quantities for 6 items based on declining trend."
-        ]
-    },
-
-    {
-        title: "Labor Management Insights",
-        open: false,
-        points: [
-            "AI predicts 9% understaffing risk between 6–8 PM today.",
-            "Overtime forecast reduced by 13% after schedule optimization.",
-            "Attendance exceptions up 5% this week compared to last.",
-            "AI suggests reallocating 2 staff from morning to late evening rush."
-        ]
-    },
-
-{
-    title: "Payroll Management Insights",
-    open: false,
-    points: [
-        "Overtime hours increased by 14% this week—AI recommends optimized shift distribution to reduce premium costs.",
-        "Predictive model flags 3 employees at risk of hitting the 40-hour threshold by Friday; suggests shift adjustments.",
-        "Break compliance improved to 96%, but 4 missed-break exceptions still require manager review.",
-        "Labor cost percentage trending upward (24.8% → 26.1%) due to higher weekend staffing and extended closing shifts.",
-        "AI detects scheduling imbalance—Morning shifts consistently understaffed while Evening shifts are overstaffed by 12%.",
-        "Two employees are exceeding minor working hour limits; automatic alerts triggered for corrective scheduling."
-    ]
-}
-],
-
-openAiInsights() {
-    this.aiInsightsOpen = true;
-    this.collapseAllInsights();
-},
-
-expandAllInsights() {
-    this.aiInsightModules.forEach(m => m.open = true);
-},
-
-collapseAllInsights() {
-    this.aiInsightModules.forEach(m => m.open = false);
 },
 
 
@@ -3255,7 +3168,6 @@ renderChart() {
                     { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0 },
                     { id: 'task-sod-hr', name: 'HR Notif.', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4 },
                     { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
-                    { id: 'task-sod-adherence', name: 'Adherence', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'clipboard-check', badge: 0 },
 
                     { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
                     { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
