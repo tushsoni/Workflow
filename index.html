@@ -4,20 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unified Workflow Dashboard</title>
-    <!-- 1. Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 
     
-    <!-- 2. Use Inter font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" />
+
     
     
-    <!-- 3. Custom Styles -->
     <style>
         :root{
             --brand-navy: #071a36;
@@ -52,6 +52,14 @@
     margin: 24px 0;
 }
 
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.animate-scale {
+  animation: scaleIn 0.22s ease-out;
+}
+
 .ai-button {
     border: 1px solid #dfe3ff;
 }
@@ -60,44 +68,150 @@
     border-color: #c7d0ff;
 }
 
+/* Scrollable table container */
+.table-scroll-container {
+    overflow-y: auto;
+    max-height: 450px;     /* Control height of table area */
+    padding-right: 4px;    /* Avoid scrollbar overlapping */
+}
+
+/* Freeze header row */
+.table-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    background: white;    /* Must have background or sticky will be transparent */
+    z-index: 10;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.05); /* subtle shadow */
+}
+
+
+/* Drop-target highlight (module area) */
+.module-drop-target {
+  outline: 3px dashed rgba(59,130,246,0.5); /* Strong blue outline */
+  border-radius: 10px;
+  transition: outline-color 0.12s ease;
+  background-color: rgba(59,130,246,0.05); /* Light blue tint */
+}
+
+/* Hover highlight for a single task when a task is dragged over it */
+.task-drop-hover { 
+    outline: 2px solid #3b82f6 !important; /* Blue ring */
+    box-shadow: 0 0 0 4px rgba(59,130,246,0.3) !important; 
+    transform: translateY(-2px); 
+}
+
+
+/* TASK POPUP: let table size naturally, allow horizontal scroll if needed */
+/*************************************************
+ GLOBAL POPUP TABLE BEHAVIOR (applies to all tasks)
+**************************************************/
+
+/* All popup tables should behave normally unless overridden */
+.task-popup table {
+    table-layout: fixed;        /* Prevent weird expansion */
+    width: 100%;                /* Fit inside popup width */
+}
+
+.task-popup td,
+.task-popup th {
+    white-space: normal;        /* TEXT WRAPS normally for all non-forecast tasks */
+    padding: 6px 8px;
+}
+
+/* Lock last column for action icons */
+.task-popup table td:last-child,
+.task-popup table th:last-child {
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+    text-align: center !important;
+    white-space: nowrap !important;   /* Prevent wrapping of icon */
+}
+
+/* Inputs (when editing) should show full values */
+.task-popup input {
+    min-width: 70px;
+    max-width: 200px;
+    width: auto;
+    box-sizing: border-box;
+}
+
+
+/*************************************************
+ FORECAST POPUP ONLY (special table layout)
+**************************************************/
+
+/* Forecast table should scroll and not wrap values */
+[data-task-detail="task-forecast"] table {
+    table-layout: auto !important;     /* Allow natural column width */
+    width: auto !important;
+}
+
+[data-task-detail="task-forecast"] td,
+[data-task-detail="task-forecast"] th {
+    white-space: nowrap !important;    /* Keep numbers in single line */
+}
+
+/* Enable scroll ONLY for forecast table */
+[data-task-detail="task-forecast"] .overflow-x-auto {
+    overflow-x: auto !important;
+}
+
+
+
 
 /* % Chip Wrapper */
 /* ============================================================
    PROFESSIONAL KPI % CHANGE CHIP (Modern UI)
 ============================================================ */
 
-    .percent-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 6px 10px;
-        font-size: 0.72rem;
-        font-weight: 700;
-        border-radius: 10px;
-        margin-top: 8px;
-        width: 60%;
-        justify-content: flex-start;
+/* ============================================================
+   PROFESSIONAL KPI % CHANGE CHIP (Reduced Size)
+============================================================ */
 
-        /* smooth modern shadow */
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+/* ============================================================
+   PROFESSIONAL KPI % CHANGE CHIP (Extra Small Size)
+============================================================ */
 
-        /* glass effect */
-        backdrop-filter: blur(6px);
-    }
+.percent-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px; /* Minimal gap */
+    
+    /* --- EXTRA SMALL SIZE HERE --- */
+    padding: 2px 5px; /* Minimal padding */
+    font-size: 0.65rem; /* Reduced font size (was 0.7rem) */
+    /* -------------------------- */
+    
+    font-weight: 700;
+    border-radius: 6px; /* Slightly tighter curve for small size */
+    margin-top: 4px; 
+    width: auto; 
+    justify-content: flex-start;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Lighter shadow */
+    backdrop-filter: none;
+}
 
     /* --------------------------------------
-    Arrow Circle (more premium)
+    Arrow Circle (Extra Small Size)
     -------------------------------------- */
-    .percent-chip .arrow-circle {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        font-size: 0.65rem;
-        font-weight: 900;
-    }
+.percent-chip .arrow-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    /* --- MINIMAL CIRCLE SIZE HERE --- */
+    width: 10px; /* Reduced width (was 12px) */
+    height: 10px; /* Reduced height (was 12px) */
+    font-size: 0.5rem; /* Reduced inner arrow size */
+    /* -------------------------------- */
+    
+    border-radius: 50%;
+    font-weight: 900;
+}
+
+/* Note: .w-3 .h-3 inside the HTML template for the arrow icon is already small (12px), 
+   but the outer arrow-circle container needed shrinking. */
 
     /* --------------------------------------
     GREEN — Positive
@@ -185,7 +299,7 @@
 
 /* Compact space between module rows */
 .timeline-container > div {
-    margin-bottom: 8px !important;
+    position: relative;
 }
 
 /* Reduce left padding of entire workflow area */
@@ -205,11 +319,27 @@
 
 /* This targets ONLY the module-name row */
 .timeline-container > div > .flex.items-center {
-    padding-left: 0 !important;      /* remove original over-padding */
-    margin-left: -8px !important;    /* pull row left to fix alignment */
-    gap: 10px !important;
-    white-space: nowrap !important;  /* prevent cut-off */
-    overflow: visible !important;
+    padding-left: 40px !important;   /* pushes text right so it aligns beside icon */
+    margin-left: 0 !important;
+    gap: 12px !important;
+}
+
+.timeline-container > div > .absolute {
+    position: absolute;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%);   /* vertically align icon */
+}
+
+.timeline-container > div > .absolute div {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 10px !important;
+}
+
+.timeline-container > div > .absolute i {
+    width: 16px !important;
+    height: 16px !important;
 }
 
 /* Module icon wrapper */
@@ -234,6 +364,7 @@
     font-size: 0.85rem !important;
     font-weight: 600 !important;
 }
+
 
 
 /* ===========================================
@@ -280,6 +411,8 @@
 /* Compact spacing in row of tasks */
 .timeline-container .flex.flex-wrap {
     gap: 8px !important;
+    position: relative;
+    padding-top: 10px;  /* space so line does not touch icons */
 }
 
 
@@ -328,20 +461,27 @@
 /* Every module wrapper inside the timeline container */
 .timeline-container > div {
     position: relative;
+    margin-top: 0px !important;
+    margin-bottom: 0px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 /* Add separator AFTER each module using a pseudo-element */
 .timeline-container > div::after {
     content: "";
     display: block;
-    height: 1px;                           /* thin line */
-    margin: 6px 0 4px 0 !important;         /* compact spacing */
+    margin: 0px 0 !important; /* super compact */
+    height: 0.1px !important;
     background: linear-gradient(
         to right,
         #e6e6e9,
         #f4f4f6,
         #e6e6e9
     );
+        margin-top: 1px !important;
+    margin-bottom: 1px !important;
+    height: 1px !important;
 }
 
 /* Remove separator after the LAST module (looks cleaner) */
@@ -386,13 +526,18 @@
 .timeline-container .flex.flex-wrap::before {
     content: "";
     position: absolute;
+    top: 28px;                      /* adjusts height under icons */
     left: 0;
     right: 0;
-    top: 50%;                           /* vertically centered */
-    height: 2px;                         /* thickness */
-    background-color: #5c20dcff;           /* dark line */
-    z-index: 0;                          /* behind task cards */
-    opacity: 0.25;                       /* subtle */
+    height: 2px;
+    background: rgba(0,0,0,0.20);   /* subtle connector line */
+    z-index: 0;
+}
+
+.timeline-container .task-tile {
+    position: relative;
+    z-index: 5;
+    background: white;
 }
 
 /* Make task cards appear above the line */
@@ -411,23 +556,24 @@
    ===================================================== */
 
 .timeline-connector {
-    height: 2px !important;               /* thin line */
-    background-color: rgba(41, 10, 179, 0.1) !important;  /* soft light gray line */
+    height: 2px !important;
+    background-color: rgba(0, 0, 0, 0.35) !important;   /* stronger black line */
     border: none !important;
 }
 
-/* Sometimes Alpine-generated pseudo elements override styles */
+/* Handle Alpine-generated pseudo-elements and custom lines */
 .timeline-container .flex.flex-wrap::before,
 .timeline-container .task-connector-line,
 .connector-line {
     content: "" !important;
     height: 2px !important;
-    background-color: rgba(41, 12, 103, 0.1) !important;
+    background-color: rgba(0, 0, 0, 0.35) !important;   /* heavier black line */
     position: absolute;
     left: 0;
     right: 0;
     top: 50%;
 }
+
 
 /* ==========================================
    CLEANER SPACING BETWEEN TASK CARDS
@@ -435,7 +581,7 @@
 
 /* Increase horizontal spacing between tasks */
 .timeline-container .flex.flex-wrap {
-    gap: 5px !important;     /* adjust this value for more/less spacing */
+    gap: 38px !important;     /* adjust this value for more/less spacing */
 }
 
 /* Prevent the connector line from touching task cards */
@@ -448,6 +594,7 @@
     margin-top: 2px !important;
     margin-bottom: 2px !important;
 }
+
 
 
 /* -------------------------------------------------
@@ -477,7 +624,15 @@
     margin-bottom: 8px !important;   /* Previously ~40px */
 }
 
-
+.sod-inner,
+.cod-inner,
+.sod-wrapper,
+.timeline-container.bg-white {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
 
      /* Make KPI tiles small enough to fit 10 per row */
 .kpi-small {
@@ -485,24 +640,23 @@
     min-height: 105px !important;
 }
 
-/* Reduce padding */
-
-/* FORCE shadow for KPI tiles */
 .kpi-container.kpi-small {
-    box-shadow: 
-        0 4px 10px rgba(0,0,0,0.08),
-        0 1px 4px rgba(0,0,0,0.06) !important;
-
+    box-shadow:
+        /* 1. STRONG BLUE LIFT (for the "blue shadow" effect) */
+        0 14px 30px rgba(59, 130, 246, 0.25) !important, /* Blue Shadow layer */
+        
+        /* 2. MEDIUM DARK SHADOW (for general depth and card definition) */
+        0 6px 15px rgba(10, 20, 50, 0.15) !important,   /* Dark shadow layer */
+        
+        /* 3. SUBTLE EDGE BORDER (to define the white card edge) */
+        0 0 0 1px rgba(0,0,0,0.08) !important; 
+        
     background: #ffffff !important;
     border: none !important;
 }
 
 
 /* Smaller KPI header text */
-.kpi-header {
-    font-size: 0.55rem !important;
-    padding: 6px 6px !important;
-}
 
 /* Reduce Today text size */
 .kpi-label-sub {
@@ -541,10 +695,15 @@
 }
 
 /* Reduce space between KPI tiles and Start of Day block */
-.kpi-section { margin-bottom: 6px !important; }
+/* Restore the standard gap between KPI Tiles and Start of Day section */
+/* Reduce space between KPI tiles and Start of Day block */
+.kpi-section { 
+    margin-bottom: 0 !important; 
+}
 
-/* Reduce default spacing inside Start of Day container */
-.sod-wrapper { margin-top: 4px !important; }
+.sod-wrapper { 
+    margin-top: 0 !important; 
+}
 
 /* Reduce big padding inside SOD timeline container */
 .sod-inner { padding-top: 12px !important; }
@@ -657,23 +816,38 @@
         }
 
         /* --- ADVANCED 3D KPI CARDS (UPDATED) --- */
-       .kpi-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05),
-                0 10px 15px rgba(0,0,0,0.1);
-    border: 1px solid rgba(255,255,255,0.6);
+/* FINAL OVERRIDE FOR KPI SHADOW - RESTORED DEPTH AND BLUE LIFT */
+.kpi-shadow, .kpi-container {
+    /* We restore the initial shadow layers for proper depth and definition,
+       and add the strong blue shadow as the top layer.
+    */
+    box-shadow:
+        /* 1. STRONG BLUE LIFT (for the "blue shadow" effect) */
+        0 14px 30px rgba(140, 178, 239, 0.25), 
+        
+        /* 2. MEDIUM DARK SHADOW (for general depth and card definition) */
+        0 6px 15px rgba(10, 20, 50, 0.15), 
+        
+        /* 3. SUBTLE EDGE BORDER (to define the white card edge) */
+        0 0 0 1px rgba(0,0,0,0.08); 
+        
+    outline: none !important;
+    
+    border-radius: 12px !important; 
+    transition: box-shadow 0.3s ease;
 }
 
-/* FINAL OVERRIDE FOR KPI SHADOW */
-.kpi-shadow {
-    box-shadow:
-        0 6px 16px rgba(0,0,0,0.15),
-        0 3px 8px rgba(0,0,0,0.10) !important;
+.kpi-container:hover {
+    transform: translateY(-4px) !important; 
+    box-shadow: 
+        /* Stronger Blue Lift on Hover */
+        0 24px 50px rgba(59, 130, 246, 0.45) !important, 
+        
+        /* Darker Depth Shadow on Hover */
+        0 8px 16px rgba(10, 20, 50, 0.25) !important, 
+        
+        /* Visible Blue Ring on Edge */
+        0 0 0 2px rgba(59, 130, 246, 0.5) !important; 
 }
 
         /* Subtle 3D Bevel Effect */
@@ -684,32 +858,35 @@
             background: rgba(255,255,255,0.8);
             z-index: 10;
         }
-        .kpi-container:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-        }
 
         /* KPI Header (Darker Modern Look) */
-        .kpi-header {
-            background: linear-gradient(to bottom, #3b70bc, #4a1157);
-            color: white;
-            padding: 10px 12px;
-            text-align: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid #3b70bc;
-            box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
-        }
-
+/* KPI Header (Clean Look) */
+.kpi-header {
+    background: transparent;
+    color: #374151; /* Darker text for maximum visibility */
+    padding: 12px 14px 4px; /* Maintain vertical spacing */
+    text-align: left;
+    
+    /* --- BOLDNESS AND SIZE ADJUSTMENTS --- */
+    font-size: 0.6rem; /* Increased size for prominence (was 0.72rem) */
+    font-weight: 900; /* Set to Extra Bold/Heavy (was 700/1000) */
+    /* -------------------------------------- */
+    
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: none;
+    box-shadow: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
         /* KPI Body Layout */
-        .kpi-body {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            background-color: #f8fafc;
-        }
+.kpi-body {
+    background-color: white; /* Force white background */
+    padding: 0 14px 14px;    /* Padding for the content */
+    flex: 1;
+    display: block;
+}
         
         /* Data Rows with alternating background */
         .kpi-data-row {
@@ -730,13 +907,27 @@
         }
 
         /* Value Typography */
-        .kpi-value-main {
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.03em;
-            line-height: 1;
-        }
+.kpi-value-main {
+    font-size: 2.2rem;     /* Larger font size to match screenshot */
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.05em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.kpi-label-sub, .kpi-value-sub, .kpi-data-row {
+    display: none !important;
+}
+
+.percent-chip-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between the green chip and the comparison text */
+    margin-top: 4px;
+}
+
         .kpi-label-sub {
             font-size: 0.65rem;
             font-weight: 600;
@@ -770,7 +961,7 @@
             height: 60px;
             border: 1px solid #e5e7eb;
             transition: all 0.2s ease;
-            cursor: pointer;
+            cursor: grab; /* Set cursor to grab for drag-and-drop */
             position: relative;
         }
         .task-card-compact:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
@@ -901,24 +1092,24 @@
    DRAG & DROP VISUAL EFFECTS
 =========================================================== */
 
-/* Tile that is being dragged */
-.kpi-dragging {
+/* Task Tile that is being dragged */
+.task-dragging {
     opacity: 0.45 !important;
-    transform: scale(1.06) !important;
+    transform: scale(1.02) !important;
     z-index: 999 !important;
-    box-shadow: 0 14px 28px rgba(0,0,0,0.18) !important;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
     cursor: grabbing !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-/* Placeholder (empty tile spot) */
-.kpi-placeholder {
-    width: 120px;
-    height: 105px;
-    border-radius: 12px;
-    background: #e8ecf8;
-    border: 2px dashed #9aa3b6;
-    opacity: 0.7;
+/* Placeholder for the task being moved within a module row */
+.task-placeholder {
+    min-width: 130px !important;
+    height: 40px !important;
+    border-radius: 6px !important;
+    background: #e0f2fe; /* Light Blue */
+    border: 2px dashed #38bdf8; /* Sky Blue Dashed */
+    opacity: 0.8;
     transition: all 0.2s ease;
 }
 
@@ -957,17 +1148,157 @@
     height: 18px;
 }
 
+/* --------------------------------------------------
+   NEW ICON-ONLY TASK TILE (replace all old task-card styles)
+-------------------------------------------------- */
+.task-tile {
+    width: 70px;
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    cursor: pointer;
+    padding: 4px 0;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: transform .15s ease, opacity .2s ease;
+}
 
+/* When dragging */
+.task-dragging {
+    opacity: 0.4 !important;
+    transform: scale(1.05) !important;
+}
+
+/* Circle icon container */
+.task-tile .task-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* RED (Pending) */
+.task-tile.pending .task-icon {
+    background: #fee2e2 !important;
+    color: #ef4444 !important;
+}
+
+/* GREEN (Completed) */
+.task-tile.complete .task-icon {
+    background: #d1fae5 !important;
+    color: #059669 !important;
+}
+
+/* Label under icon */
+.task-tile .task-label {
+    margin-top: 4px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #374151;
+    text-align: center;
+    line-height: 1.1;
+    max-width: 70px;
+    white-space: normal;
+}
+
+/* Small badge on icon (top-right corner) */
+.task-tile .task-badge {
+    position: absolute;
+    top: -3px;
+    right: -2px;
+    background: #ef4444;
+    color: white;
+    width: 16px;
+    height: 16px;
+    font-size: 0.55rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+}
+
+/* Remove old connectors */
+.timeline-container .flex.flex-wrap::before {
+    display: none !important;
+}
+
+/* Optional when clicking a task */
+.active-card {
+    transform: scale(1.03);
+}
+
+
+/* ======================================================
+   AWESOME CHART ICON EFFECT (Metallic + Blue Glow)
+   ====================================================== */
+
+.awesome-chart-icon {
+    /* Base Background Block Styling */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 8px !important; /* Added padding to create the background block */
+    background: #eff6ff !important; /* Very light blue background */
+    border: 1px solid #dbeafe !important; /* Subtle light blue border */
+    border-radius: 8px !important; /* Match tile curve or use 9999px for a full pill */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+}
+
+.awesome-chart-icon:hover {
+    background: #dbeafe !important; /* Slightly darker blue on hover */
+    box-shadow: 0 2px 5px rgba(59, 130, 246, 0.2); /* Subtle blue glow shadow */
+}
+
+/* Target the Lucide icon element (i) with the specific class */
+.awesome-chart-icon-target {
+    /* Base style for the icon */
+    color: #3b82f6 !important; /* Forces the strong blue base color */
+    stroke-width: 2.5;         /* Make the icon slightly thicker */
+    width: 16px !important;    
+    height: 16px !important;   
+    
+    /* Metallic Effect (via filter and shadow) */
+    filter: 
+        drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) 
+        brightness(1.1); 
+    
+    text-shadow: 0 0 1px rgba(10, 20, 50, 0.4); 
+    transition: all 0.2s ease;
+}
+
+/* Apply the ENHANCED glow/scale on hover of the parent button */
+.awesome-chart-icon:hover .awesome-chart-icon-target {
+    color: #1d4ed8 !important; /* Darker blue base on hover */
+    
+    text-shadow: 
+        0 0 4px #60a5fa,  /* Light blue inner glow */
+        0 0 8px #3b82f6,  /* Medium blue glow */
+        0 0 12px rgba(59, 130, 246, 0.6); /* Stronger outer blue haze */
+    
+    /* Subtle Lift and Shine */
+    transform: scale(1.1); /* Slightly lift the icon within the button */
+    
+    filter: 
+        drop-shadow(0 0 2px #ffffff)
+        brightness(1.3); 
+}
 
         
     </style>
 </head>
 <body class="bg-gray-50">
 
-    <!-- GLOBAL DATA WRAPPER -->
     <div x-data="appState()" x-init="init()" class="min-h-screen">
 
-        <!-- FIXED HEADER (Matching Screenshot) -->
         <header class="fixed-header flex items-center justify-between px-4">
             <div class="flex items-center gap-3">
                 <div class="flex items-center gap-2">
@@ -995,22 +1326,18 @@
             </div>
         </header>
 
-        <!-- FIXED SIDEBAR -->
         <aside class="fixed-sidebar">
             <div class="flex flex-col gap-4 w-full items-center pt-4">
                 <button class="p-2 bg-white/10 text-white rounded-xl shadow-lg border border-white/10 hover:bg-white/20 transition-all">
                     <i data-lucide="chevron-right" class="w-5 h-5"></i>
                 </button>
-                <!-- Dummy Icons for modern feel -->
                 <div class="w-8 h-0.5 bg-white/10 rounded-full my-2"></div>
                 <button class="p-2 text-white/60 hover:text-white transition-colors"><i data-lucide="layout-grid" class="w-5 h-5"></i></button>
                 <button class="p-2 text-white/60 hover:text-white transition-colors"><i data-lucide="calendar" class="w-5 h-5"></i></button>
             </div>
         </aside>
 
-        <!-- SETTINGS SLIDE-OVER -->
         <div x-show="settingsOpen" @keydown.escape.window="settingsOpen = false" class="relative z-[60]" style="display: none;">
-            <!-- ... Settings content same as before ... -->
             <div x-show="settingsOpen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
             <div class="fixed inset-0 overflow-hidden">
                 <div class="absolute inset-0 overflow-hidden">
@@ -1075,17 +1402,13 @@
             </div>
         </div>
 
-        <!-- MAIN LAYOUT -->
         <div class="main-layout">
             
-            <!-- CONTROLS & BANNER AREA -->
             <div class="px-8 pt-6">
                 
-                <!-- Blue Gradient Banner -->
                 <div class="banner mb-2 relative py-2">
     <div class="px-4 flex items-center gap-3 z-10 w-full">
         <div class="relative">
-            <!-- Smaller 3D Icon -->
             <div class="w-9 h-9 bg-white rounded-xl shadow-md flex items-center justify-center transform -rotate-3">
                 <i data-lucide="megaphone" class="w-5 h-5 text-blue-600 fill-blue-100"></i>
             </div>
@@ -1096,21 +1419,16 @@
         </div>
     </div>
 
-    <!-- Soft Gradient Overlay -->
     <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent pointer-events-none"></div>
 
-    <!-- Smaller Decorative Shape -->
     <div class="absolute right-0 top-0 w-40 h-40 bg-white/5 rounded-full blur-2xl -mr-10 -mt-10"></div>
 </div>
 
 
-                <!-- SEARCH & TABS ROW -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 px-2 py-1 flex items-center justify-between mb-4 text-[12px]">
     
-    <!-- LEFT TABS -->
     <div class="flex items-center gap-2 pl-1">
         <div class="tab-pill bg-gray-50/50 p-1 rounded-lg flex items-center">
-            <!-- Workflow -->
             <button @click="currentTab='workflow'" 
                 :class="currentTab==='workflow' ? 'tab-active' : 'tab-inactive'" 
                 class="tab-btn px-2 py-1 flex items-center gap-1 text-[11px]">
@@ -1119,7 +1437,6 @@
 
             <div class="tab-divider h-4"></div>
 
-            <!-- My Apps -->
             <button @click="currentTab='apps'" 
                 :class="currentTab==='apps' ? 'tab-active' : 'tab-inactive'" 
                 class="tab-btn px-2 py-1 flex items-center gap-1 text-[11px]">
@@ -1128,7 +1445,6 @@
 
             <div class="tab-divider h-4"></div>
 
-            <!-- Integrations -->
             <button @click="currentTab='integrations'" 
                 :class="currentTab==='integrations' ? 'tab-active' : 'tab-inactive'" 
                 class="tab-btn px-2 py-1 flex items-center gap-1 text-[11px]">
@@ -1137,7 +1453,6 @@
         </div>
     </div>
 
-    <!-- SEARCH BAR -->
     <div class="flex-1 px-4">
         <div class="relative max-w-md mx-auto group">
             <i data-lucide="search" class="absolute left-3 top-2.5 w-3.5 h-3.5 text-gray-400"></i>
@@ -1151,15 +1466,13 @@
 
 <div class="flex items-center gap-2">
     
-    <!-- AI Insights Button -->
     <div @click="openAiInsights()" 
         class="ai-button flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm bg-[#eef2ff] cursor-pointer hover:bg-[#e0e7ff] transition">
         <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
         <span class="text-indigo-700 font-medium text-sm">AI Insights</span>
     </div>
 
-    <!-- Store Rank Badge -->
-<div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm">
+    <div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm">
     <i data-lucide="medal" class="rank-medal-icon w-4 h-4"></i>
     <span x-text="'Rank: #' + storeRank"></span>
 </div>
@@ -1169,26 +1482,18 @@
 
 
 
-<!-- AI INSIGHTS MODAL -->
-<!-- AI INSIGHTS MODERN MODAL -->
-<!-- BACKDROP -->
-<!-- AI INSIGHTS SLIDE-OVER (RIGHT SIDEBAR) -->
 <div x-show="aiInsightsOpen" @keydown.escape.window="aiInsightsOpen = false" class="relative z-[70]" style="display: none;">
 
-    <!-- BACKDROP -->
     <div x-show="aiInsightsOpen"
          x-transition.opacity
          class="fixed inset-0 bg-black/40 backdrop-blur-sm">
     </div>
 
-    <!-- PANEL WRAPPER -->
     <div class="fixed inset-0 overflow-hidden">
         <div class="absolute inset-0 overflow-hidden">
 
-            <!-- PANEL POSITIONING -->
             <div class="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
 
-                <!-- SLIDE-OVER PANEL -->
                 <div x-show="aiInsightsOpen"
                      x-transition:enter="transform transition ease-in-out duration-500"
                      x-transition:enter-start="translate-x-full"
@@ -1198,7 +1503,6 @@
                      x-transition:leave-end="translate-x-full"
                      class="pointer-events-auto w-screen max-w-xl bg-white shadow-2xl border-l border-gray-200 flex flex-col">
 
-                    <!-- HEADER -->
                     <div class="bg-indigo-600 px-6 py-5">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-3">
@@ -1217,7 +1521,6 @@
                         <p class="text-sm text-white/70 mt-1">Store-level predictive intelligence & operational guidance.</p>
                     </div>
 
-                    <!-- BODY (FLAT LIST, NO MODULES) -->
                     <div class="flex-1 overflow-y-auto p-6 bg-gray-50">
 
                         <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
@@ -1233,9 +1536,7 @@
                             </ul>
                         </div>
 
-                    </div> <!-- END BODY -->
-
-                </div>
+                    </div> </div>
             </div>
 
         </div>
@@ -1248,8 +1549,7 @@
 
 
 
-    <!-- DATE FILTERS: DAILY | WTD | MTD -->
-<div class="flex items-center gap-2 ml-4 text-[12px]" x-data>
+    <div class="flex items-center gap-2 ml-4 text-[12px]" x-data>
     <div class="flex bg-gray-100 px-1 py-1 rounded-lg shadow-inner">
 
         <button 
@@ -1280,8 +1580,7 @@
 </div>
 
 
-    <!-- FILTER DROPDOWN -->
-<div class="relative ml-4" x-data="{ openFilter:false }">
+    <div class="relative ml-4" x-data="{ openFilter:false }">
     <button 
         @click="openFilter = !openFilter" 
         class="flex items-center gap-2 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm
@@ -1291,7 +1590,6 @@
         <i data-lucide='chevron-down' class="w-3 h-3 text-gray-400"></i>
     </button>
 
-    <!-- Filter Dropdown Menu -->
     <div 
         x-show="openFilter"
         @click.outside="openFilter=false"
@@ -1312,10 +1610,8 @@
 </div>
 
 
-    <!-- RIGHT SECTION (DATE + SETTINGS) -->
     <div class="flex items-center gap-2 pr-1">
         
-        <!-- DATE DROPDOWN -->
         <div class="relative" x-data="{ open: false, selected: 'Today' }">
             <button @click="open = !open" @click.outside="open = false"
                 class="flex items-center gap-2 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm
@@ -1330,7 +1626,6 @@
                 <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-gray-400"></i>
             </button>
 
-            <!-- Dropdown -->
             <div x-show="open" 
                 class="absolute right-0 mt-1 w-56 bg-white border border-gray-100 rounded-lg shadow-xl z-20 py-1 text-[12px]"
                 x-transition:enter="transition ease-out duration-100"
@@ -1347,43 +1642,235 @@
             </div>
         </div>
 
-        <!-- SETTINGS BUTTON -->
+        <button @click="editMode = !editMode"
+            :class="editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'"
+            class="p-1.5 text-white rounded-lg hover:shadow-md transition-all active:scale-95">
+            <i data-lucide="thumbs-up" x-show="editMode" class="w-4 h-4"></i>
+            <i data-lucide="edit-3" x-show="!editMode" class="w-4 h-4"></i>
+        </button>
+
         <button @click="settingsOpen = true"
             class="p-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 hover:shadow-md hover:shadow-blue-200 transition-all active:scale-95">
             <i data-lucide="settings" class="w-4 h-4"></i>
         </button>
+<button 
+    @click="sidebarOpen = true"
+    class="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg ml-2 hover:shadow-md transition-all active:scale-95">
+    <i data-lucide="list-checks" class="w-4 h-4"></i>
+</button>
+
+    </div>
+</div>
+ </div>
+
+<div 
+    x-show="sidebarOpen"
+    x-transition:enter="transform transition ease-in-out duration-300 sm:duration-700"
+    x-transition:enter-start="translate-x-full"
+    x-transition:enter-end="translate-x-0"
+    x-transition:leave="transform transition ease-in-out duration-300 sm:duration-700"
+    x-transition:leave-start="translate-x-0"
+    x-transition:leave-end="translate-x-full"
+    @click.away="sidebarOpen = false"
+    class="fixed top-0 right-0 h-full w-80 bg-gray-50 shadow-2xl z-50 overflow-y-auto border-l border-gray-200">
+
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Task Library</h2>
+            <button @click="sidebarOpen = false" class="text-gray-400 hover:text-gray-600 p-1 rounded-full hover:bg-gray-100 transition">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="p-3 mb-4 border border-blue-200 bg-blue-50 rounded-xl text-sm text-blue-800">
+            <div class="flex items-start gap-2">
+                <i data-lucide="info" class="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                <p class="font-medium">Drag any task below into a module (Start/Close of Day) to build your customized workflow.</p>
+            </div>
+        </div>
+
+        <div class="relative mb-6">
+            <i data-lucide="search" class="absolute left-3 top-3 w-4 h-4 text-gray-400"></i>
+            <input type="text" x-model.debounce.250ms="taskSearchTerm" 
+                   class="block w-full rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm pl-10 p-2.5 bg-white" 
+                   placeholder="Search tasks...">
+        </div>
+        <div x-show="!sidebarTasks.length" class="text-center text-gray-500 text-sm py-8">
+            <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto mb-2"></i>
+            Loading tasks...
+        </div>
+
+        <div class="space-y-6">
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Food Management</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <template x-for="task in sidebarTasks.filter(t => ['ordering', 'receiving'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                        <div 
+                            class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                            :draggable="editMode"
+                            @dragstart="dragStart($event, task.id, 'sidebarTask')"
+                            @dragend="dragEnd($event)"
+                            x-init="$nextTick(() => lucide.createIcons())"
+                        >
+                            <div class="task-icon-bg bg-purple-100 text-purple-600 !w-8 !h-8 !shadow-inner">
+                                <i :data-lucide="task.icon" class="!w-4 !h-4"></i> 
+                            </div>
+                            <span class="task-label !text-[0.6rem] font-semibold text-gray-700 mt-1" x-text="task.name"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pt-4">Inventory Management</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <template x-for="task in sidebarTasks.filter(t => ['transfer', 'waste', 'inventory'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                        <div 
+                            class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                            :draggable="editMode"
+                            @dragstart="dragStart($event, task.id, 'sidebarTask')"
+                            @dragend="dragEnd($event)"
+                            x-init="$nextTick(() => lucide.createIcons())"
+                        >
+                            <div class="task-icon-bg bg-green-100 text-green-600 !w-8 !h-8 !shadow-inner">
+                                <i :data-lucide="task.icon" class="!w-4 !h-4"></i> 
+                            </div>
+                            <span class="task-label !text-[0.6rem] font-semibold text-gray-700 mt-1" x-text="task.name"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pt-4">Labor Management</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <template x-for="task in sidebarTasks.filter(t => ['schedule', 'pending-employees', 'violation', 'time-loss', 'tor', 'availability-request', 'ssa'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                        <div 
+                            class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                            :draggable="editMode"
+                            @dragstart="dragStart($event, task.id, 'sidebarTask')"
+                            @dragend="dragEnd($event)"
+                            x-init="$nextTick(() => lucide.createIcons())"
+                        >
+                            <div class="task-icon-bg bg-amber-100 text-amber-600 !w-8 !h-8 !shadow-inner">
+                                <i :data-lucide="task.icon" class="!w-4 !h-4"></i> 
+                            </div>
+                            <span class="task-label !text-[0.6rem] font-semibold text-gray-700 mt-1" x-text="task.name"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pt-4">Payroll Management</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    <template x-for="task in sidebarTasks.filter(t => ['punch-exception', 'review-punches', 'misc-pay', 'approaching-ot', 'payroll-summary', 'unbalanced-punches', 'mismatch-punch'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                        <div 
+                            class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
+                            :draggable="editMode"
+                            @dragstart="dragStart($event, task.id, 'sidebarTask')"
+                            @dragend="dragEnd($event)"
+                            x-init="$nextTick(() => lucide.createIcons())"
+                        >
+                            <div class="task-icon-bg bg-indigo-100 text-indigo-600 !w-8 !h-8 !shadow-inner">
+                                <i :data-lucide="task.icon" class="!w-4 !h-4"></i> 
+                            </div>
+                            <span class="task-label !text-[0.6rem] font-semibold text-gray-700 mt-1" x-text="task.name"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div 
+    x-show="taskPickerOpen"
+    x-transition
+    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+
+    <div class="bg-white rounded-lg shadow-xl w-96 p-5">
+
+        <h3 class="text-lg font-semibold mb-3">Select Tasks</h3>
+
+        <div class="mb-3 border-b pb-2">
+            <label class="flex items-center gap-2 font-bold text-gray-800 cursor-pointer">
+                <input type="checkbox" 
+                       x-model="allTasksSelected"
+                       @change="toggleSelectAll()"
+                       class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                <span>Select All</span>
+            </label>
+        </div>
+        <div class="h-64 overflow-y-auto border rounded p-3">
+            <template x-for="task in predefinedTasks" :key="task.id">
+                <label class="flex items-center gap-2 mb-2 hover:bg-gray-50 p-1 rounded cursor-pointer">
+                    <input type="checkbox" 
+                           :value="task.id" 
+                           x-model="selectedTaskIds"
+                           @change="allTasksSelected = false"
+                           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <i :data-lucide="task.icon" class="w-5 h-5 text-gray-600"></i>
+                    <span x-text="task.name" class="text-sm text-gray-700"></span>
+                </label>
+            </template>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-4">
+            <button @click="taskPickerOpen = false" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 font-medium hover:bg-gray-300">Cancel</button>
+            <button @click="addSelectedTasks()" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Add</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<div x-show="taskPopupOpen"
+     x-transition
+     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[300]">
+
+    <div class="relative w-[750px] rounded-2xl bg-white shadow-2xl border border-gray-200 p-6">
+
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold text-gray-900" x-text="taskPopupTitle"></h2>
+
+            <button @click="taskPopupOpen = false"
+                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center">
+                <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
+            </button>
+        </div>
+
+        <div class="max-h-[450px] overflow-y-auto">
+            <div x-ref="taskPopupContainer" class="task-popup"></div>
+        </div>
+
     </div>
 </div>
 
 
-            </div>
-
-            <!-- KPI POPUP -->
-<!-- KPI SUPER-MODERN POPUP -->
-<div x-show="popupOpen"
+            <div x-show="popupOpen"
      class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
      x-transition>
 
-    <div class="relative w-[760px] rounded-2xl bg-white shadow-2xl border border-gray-200
-                transform transition-all scale-100">
+    <div class="relative w-[900px] h-[530px] rounded-2xl bg-white shadow-2xl border border-gray-200
+            transform transition-all scale-100">
 
-        <!-- HEADER -->
-        <!-- ULTRA EXECUTIVE HEADER — COMPACT VERSION -->
-<div class="w-full flex items-center justify-between 
+        <div class="w-full flex items-center justify-between 
             px-5 py-3 rounded-t-2xl
             bg-gradient-to-br from-white to-gray-50
             border-b border-gray-200
             shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
 
-    <!-- TITLE -->
     <h2 class="text-[17px] font-semibold text-gray-900 tracking-tight select-none">
         <span x-text="popupTitle"></span>
     </h2>
 
-    <!-- CONTROLS -->
     <div class="flex items-center gap-2.5">
 
-        <!-- Toggle Button -->
         <button 
             class="w-8 h-8 rounded-lg bg-white border border-gray-300 
                    shadow-sm flex items-center justify-center
@@ -1403,7 +1890,6 @@
                class="w-4 h-4 text-gray-700"></i>
         </button>
 
-        <!-- Close Button -->
         <button 
             class="w-8 h-8 rounded-full bg-white border border-gray-300 
                    shadow-sm flex items-center justify-center
@@ -1417,41 +1903,113 @@
 </div>
 
 
-        <!-- BODY AREA -->
         <div class="p-6">
 
-            <!-- GRAPH VIEW -->
-            <div x-show="popupMode === 'graph'" class="rounded-xl border bg-white shadow-inner p-4" 
-                 style="height: 360px;">
-                <canvas id="kpiChart"></canvas>
-            </div>
+<div class="flex items-center gap-3 flex-wrap">
 
-            <!-- TABLE VIEW -->
-            <div x-show="popupMode === 'table'" class="rounded-xl border bg-white shadow-inner p-4">
+    <div
+        x-show="selectedRange === 'Custom' && selectedRangeLabel"
+        @click="$nextTick(() => datePicker.show())"
+        class="cursor-pointer px-3 py-1.5 rounded-full border border-gray-300 bg-white shadow-sm flex items-center gap-2 text-sm font-semibold hover:bg-gray-100 transition"
+    >
+        <i data-lucide="calendar" class="w-4 h-4 text-gray-600"></i>
+        <span x-text="selectedRangeLabel"></span>
+    </div>
 
-                <table class="w-full text-sm rounded-xl overflow-hidden">
-                    <thead class="bg-gray-100 text-gray-700">
-                        <tr>
-                            <th class="p-3 border-b">Date</th>
-                            <th class="p-3 border-b">Current Week</th>
-                            <th class="p-3 border-b">Last Week</th>
-                            <th class="p-3 border-b">Last Year</th>
-                        </tr>
-                    </thead>
+    <button
+        x-show="selectedRange !== 'Custom'"
+        @click="
+            selectedRange = 'Custom';
+            selectedRangeLabel = '';
+            $nextTick(() => datePicker.show());
+        "
+        class="px-4 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white shadow hover:bg-blue-700"
+    >
+        Custom
+    </button>
+    <input type="text" id="kpiDatePicker" class="hidden" />
+    <div id="kpiCalendarContainer" class="absolute z-[9999]"></div>
 
-                    <tbody>
-                        <template x-for="row in popupTableData">
-                            <tr class="hover:bg-gray-50 transition">
-                                <td class="p-3 border-b" x-text="row.date"></td>
-                                <td class="p-3 border-b font-semibold" x-text="row.current"></td>
-                                <td class="p-3 border-b font-semibold text-blue-600" x-text="row.lastWeek"></td>
-                                <td class="p-3 border-b font-semibold text-pink-600" x-text="row.lastYear"></td>
-                            </tr>
-                        </template>
-                    </tbody>
-                </table>
 
-            </div>
+
+    <div class="flex items-center gap-2">
+        <template x-for="opt in ['Default','7D','1M','3M','6M','1Y']">
+    <button
+        @click="selectRange(opt)"
+        class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all border"
+        :class="selectedRange === opt 
+            ? 'bg-purple-600 text-white border-purple-700' 
+            : 'bg-gray-200 text-gray-700 border-gray-300 hover:bg-gray-300'"
+    >
+        <span x-text="opt"></span>
+    </button>
+</template>
+    </div>
+
+</div>
+
+
+        <br> <br>
+            <div x-show="popupMode === 'graph'" 
+     class="rounded-xl border bg-white shadow-inner p-4"
+     style="height: 360px;">
+
+     <br>
+
+    <canvas id="kpiChart"></canvas>
+
+    <div class="mt-4 flex items-center justify-center flex-wrap gap-3">
+
+        </div>
+</div>
+
+
+
+<div 
+    x-show="selectedRange === 'Custom'"
+    class="mt-3"
+>
+    <div id="kpiDatePicker" class="rounded-lg shadow-md border bg-white"></div>
+</div>
+
+
+
+
+
+
+
+            <div x-show="popupMode === 'table'" 
+     class="mt-4 h-[280px] overflow-y-auto rounded-xl border shadow-sm">
+
+    <div class="min-w-full">
+
+
+        <table class="min-w-full border-collapse">
+            <thead class="sticky top-0 bg-white z-20 shadow">
+                <tr>
+                    <th class="px-4 py-2 border-b">Date</th>
+                    <th class="px-4 py-2 border-b">Current Week</th>
+                    <th class="px-4 py-2 border-b">Last Week</th>
+                    <th class="px-4 py-2 border-b">Last Year</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template x-for="row in popupTableData" :key="row.date">
+                    <tr>
+                        <td class="px-4 py-2 border-b" x-text="row.date"></td>
+                        <td class="px-4 py-2 border-b" x-text="row.current"></td>
+                        <td class="px-4 py-2 border-b text-blue-600" x-text="row.lastWeek"></td>
+                        <td class="px-4 py-2 border-b text-rose-600" x-text="row.lastYear"></td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+
 
         </div>
 
@@ -1461,63 +2019,50 @@
 
 
 
-            <!-- MAIN SCROLLABLE CONTENT -->
             <div class="flex-1 px-8 pb-16 w-full max-w-[1600px] mx-auto">
                 
-                <!-- TAB: WORKFLOW DASHBOARD -->
                 <div x-show="currentTab === 'workflow'" class="space-y-10">
 
-                    <!-- NEW ADVANCED 3D KPI GRID -->
-                        <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-10 gap-4 kpi-section">                        
-                        <!-- DAY TILE (Purple) - Standardized Theme -->
-                        <!-- COMPACT KPI TILE -->
-
-<!-- REPEAT FOR OTHER KPI TILES -->
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-10 gap-4 kpi-section">                        
 <template x-for="(kpi, index) in kpis" :key="kpi.id">
     <div class="kpi-container kpi-small relative"
      :class="dragIndex === index ? 'kpi-dragging' : ''"
      draggable="true"
-     @dragstart="dragStart(index, $event)"
+     @dragstart="dragStart($event, index, 'kpi')"
      @dragover.prevent="dragOver(index)"
      @drop="dropTile(index)"
      @dragend="dragEnd">
 
 
-        <!-- HEADER -->
-        <div class="kpi-header flex justify-between items-center px-2">
+        <div class="kpi-header">
             <span x-text="kpi.name"></span>
 
-            <button class="chart-btn" @click="openKpiPopup(kpi.id)">
-                <i data-lucide="bar-chart-3" class="w-4 h-4 text-white"></i>
+            <button class="chart-btn !bg-transparent !p-0 awesome-chart-icon" @click="openKpiPopup(kpi.id)">
+                <i data-lucide="bar-chart-3" class="w-4 h-4 awesome-chart-icon-target hover:text-gray-600 transition-colors"></i>
             </button>
         </div>
 
-        <!-- BODY -->
         <div class="kpi-body">
 
-            <div class="kpi-data-row">
-                <span class="kpi-value-main" x-html="kpi.value"></span>
-            </div>
-
-            <!-- % CHANGE CHIP (NEW) -->
+            <span class="kpi-value-main" x-html="kpi.value"></span>
+            
             <template x-if="kpi.percent !== null">
-    <div class="percent-chip" 
-         :class="kpi.percent >= 0 ? 'chip-up' : 'chip-down'">
-        
-        <div class="arrow-circle">
-            <i data-lucide="arrow-up-right"
-               x-show="kpi.percent >= 0"
-               class="w-3 h-3"></i>
+                <div class="percent-chip" 
+                     :class="kpi.percent >= 0 ? 'chip-up' : 'chip-down'">
+                    
+                    <div class="arrow-circle">
+                        <i data-lucide="arrow-up-right"
+                           x-show="kpi.percent >= 0"
+                           class="w-3 h-3"></i>
 
-            <i data-lucide="arrow-down-left"
-               x-show="kpi.percent < 0"
-               class="w-3 h-3"></i>
-        </div>
+                        <i data-lucide="arrow-down-left"
+                           x-show="kpi.percent < 0"
+                           class="w-3 h-3"></i>
+                    </div>
 
-        <span x-text="Math.abs(kpi.percent) + '%'"></span>
-    </div>
-</template>
-
+                    <span x-text="Math.abs(kpi.percent) + '%'"></span>
+                </div>
+            </template>
 
         </div>
     </div>
@@ -1528,81 +2073,94 @@
 
 <br>
 
-                    <!-- START OF DAY SECTION -->
-<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sod-wrapper">
-    <div class="section-header !py-2 !px-4" @click="sodExpanded = !sodExpanded">
-        <div class="flex items-center gap-3">
-            <div class="bg-white/10 p-1 rounded-md">
-                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"
-                    :class="sodExpanded ? 'rotate-180' : 'rotate-0'"></i>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sod-wrapper">
+          <div class="section-header !py-2 !px-4" @click="sodExpanded = !sodExpanded">
+            <div class="flex items-center gap-3">
+              <div class="bg-white/10 p-1 rounded-md">
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="sodExpanded ? 'rotate-180' : 'rotate-0'"></i>
+              </div>
+              <h3 class="text-sm font-semibold">Start of Day</h3>
             </div>
-            <h3 class="text-sm font-semibold">Start of Day</h3>
-        </div>
 
-        <div class="flex items-center gap-3">
-            <div class="text-right">
+            <div class="flex items-center gap-3">
+              <div class="text-right">
                 <span id="sod-count" class="text-xs font-bold text-white">0/0</span>
-            </div>
-            <div class="header-progress-track h-2 w-32 bg-gray-700/50">
+              </div>
+              <div class="header-progress-track h-2 w-32 bg-gray-700/50">
                 <div id="sod-progress" class="header-progress-fill"></div>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-<div x-show="sodExpanded" x-collapse class="p-8 sod-inner timeline-container bg-white">
-        <div class="timeline-line"></div>
+          <div x-show="sodExpanded" x-collapse class="p-8 sod-inner timeline-container bg-white">
+            <div class="timeline-line"></div>
 
-        <!-- ========================= -->
-        <!-- Forecast (FIXED) -->
-        <!-- ========================= -->
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Forecast', 'Start of Day')">
-
-            <!-- Icon -->
-            <div class="absolute left-0 top-2">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                    <i data-lucide="trending-up" class="w-5 h-5"></i>
+            <div class="relative mb-10 pl-11" x-show="hasVisibleTasks('Forecast', 'Start of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+                  <i data-lucide="trending-up" class="w-5 h-5"></i>
                 </div>
-            </div>
+              </div>
 
-            <!-- Header + Tasks row -->
-            <div class="flex flex-col gap-4">
-
+              <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Forecast</h4>
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Forecast'"></h4>
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Forecast', 'Start of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Forecast', 'Start of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Forecast', 'Start of Day')"
+     @drop.prevent="dropToModule($event, 'Forecast', 'Start of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Forecast', 'Start of Day') }">
 
-                    <!-- Tasks inline -->
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Forecast', 'Start of Day')" :key="task.id">
-                            <div x-show="!task.hidden" :class="getTaskCardClass(task, activeTaskId)" class="task-card-compact"
-                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
 
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
+                    <template x-for="task in getModuleTasks('Forecast', 'Start of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
+                           @click="openTaskPopup(task)"
+                           x-init="$nextTick(() => lucide.createIcons())">
+                           
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
 
-                                <div class="task-icon-bg shadow-inner">
-                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
-                                    <i x-show="task.complete" data-lucide="check" class="w-6 h-6"></i>
-                                </div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
-                    </div>
+                        <div class="task-icon-bg shadow-inner">
+                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
+                          <i x-show="task.complete" data-lucide="check" class="w-6 h-6"></i>
+                        </div>
+
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
 
-                <!-- Task Detail (NOW WORKING) -->
                 <div class="detail-content"
-     x-show="activeTaskId === 'task-forecast'"
+     data-task-detail="task-forecast"
+     x-show="false"
+     style="display:none!important"
      x-data="{
-        editing:false,
+        editingRow: null,   // null | 'ai' | 'mgr'
         ai:['4200','3800','4100','5200','6500','6800','4500'],
-        mgr:['4500','4000','4200','5500','6800','7000','4800']
+        mgr:['4500','4000','4200','5500','6800','7000','4800'],
+        startEditing(row){ this.editingRow = row; this.$nextTick(()=>{ /* focus first input */ const el = this.$el.querySelector('input'); if(el) el.focus(); }) },
+        stopEditing(){ this.editingRow = null; }
      }">
 
     <div class="flex justify-between items-center mb-4">
@@ -1613,11 +2171,10 @@
     </div>
 
     <div class="overflow-x-auto">
-        <table class="w-full text-xs text-center text-gray-600 border">
-
-            <thead class="bg-gray-50 text-gray-700 font-semibold">
+        <table class="w-full text-sm text-center text-gray-700 border">
+            <thead class="bg-gray-50 font-semibold">
                 <tr>
-                    <th class="p-2 border">Days</th>
+                    <th class="p-2 border text-left">Days</th>
                     <th class="p-2 border">11/25</th>
                     <th class="p-2 border">11/26</th>
                     <th class="p-2 border">11/27</th>
@@ -1631,91 +2188,84 @@
 
             <tbody class="divide-y">
 
-                <!-- AI FORECAST -->
                 <tr>
-                    <td class="p-2 border font-medium">AI Forecast</td>
+                    <td class="p-2 border font-medium text-left">AI Forecast</td>
 
                     <template x-for="(val,i) in ai" :key="'ai'+i">
                         <td class="p-2 border">
-                            <span x-show="!editing" x-text="'$' + val"></span>
+                            <span x-show="editingRow !== 'ai'" x-text="'$' + val"></span>
 
-                            <input x-show="editing"
+                            <input x-show="editingRow === 'ai'"
                                    x-model="ai[i]"
-                                   class="w-20 text-center border rounded p-1 text-xs" />
+                                   class="inline-block min-w-[70px] max-w-[180px] px-2 py-1 rounded border text-sm text-center"
+                                   />
                         </td>
                     </template>
 
-                    <!-- ACTION -->
-                    <td class="p-2 border">
-                        <div class="flex justify-center items-center gap-4">
-
-                            <!-- EDIT -->
-                            <div x-show="!editing"
-                                 @click="editing = true"
-                                 class="cursor-pointer hover:scale-110 transition">
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
+                    <td class="p-2 border w-[80px]">
+                        <div class="flex flex-col items-center justify-center gap-2">
+                            <div x-show="editingRow !== 'ai'">
+                                <button @click.stop="startEditing('ai')"
+                                        class="p-1 rounded hover:bg-gray-100">
+                                    <i data-lucide="edit" class="w-4 h-4 text-blue-500"></i>
+                                </button>
                             </div>
 
-                            <!-- SAVE -->
-                            <div x-show="editing"
-                                 @click="editing = false"
-                                 class="cursor-pointer hover:scale-110 transition">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                            <div x-show="editingRow === 'ai'">
+                                <button @click.stop="stopEditing()"
+                                        class="p-1 rounded hover:bg-gray-100">
+                                    <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                                </button>
                             </div>
-
                         </div>
                     </td>
                 </tr>
 
-                <!-- MGR FORECAST -->
                 <tr>
-                    <td class="p-2 border font-medium">Mgr. Forecast</td>
+                    <td class="p-2 border font-medium text-left">Mgr. Forecast</td>
 
                     <template x-for="(val,i) in mgr" :key="'mgr'+i">
                         <td class="p-2 border">
-                            <span x-show="!editing" x-text="'$' + val"></span>
+                            <span x-show="editingRow !== 'mgr'" x-text="'$' + val"></span>
 
-                            <input x-show="editing"
+                            <input x-show="editingRow === 'mgr'"
                                    x-model="mgr[i]"
-                                   class="w-20 text-center border rounded p-1 text-xs" />
+                                   class="inline-block min-w-[70px] max-w-[180px] px-2 py-1 rounded border text-sm text-center"
+                                   />
                         </td>
                     </template>
 
-                    <!-- ACTION -->
-                    <td class="p-2 border">
-                        <div class="flex justify-center items-center gap-4">
-
-                            <!-- EDIT -->
-                            <div x-show="!editing"
-                                 @click="editing = true"
-                                 class="cursor-pointer hover:scale-110 transition">
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
+                    <td class="p-2 border w-[80px]">
+                        <div class="flex flex-col items-center justify-center gap-2">
+                            <div x-show="editingRow !== 'mgr'">
+                                <button @click.stop="startEditing('mgr')"
+                                        class="p-1 rounded hover:bg-gray-100">
+                                    <i data-lucide="edit" class="w-4 h-4 text-blue-500"></i>
+                                </button>
                             </div>
 
-                            <!-- SAVE -->
-                            <div x-show="editing"
-                                 @click="editing = false"
-                                 class="cursor-pointer hover:scale-110 transition">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                            <div x-show="editingRow === 'mgr'">
+                                <button @click.stop="stopEditing()"
+                                        class="p-1 rounded hover:bg-gray-100">
+                                    <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
+                                </button>
                             </div>
-
                         </div>
                     </td>
                 </tr>
 
             </tbody>
-
         </table>
     </div>
 </div>
 
 
 
-        <!-- =============================
-     DETAIL: ACTUAL SALES (FINAL FIXED)
-============================= -->
-<div class="detail-content"
-     x-show="activeTaskId === 'task-actual-sales'"
+
+        <div class="detail-content"
+     data-task-detail="task-actual-sales"
+     x-show="false" 
+     style="display:none!important"
      x-data="{
         editing: false,
         sales: ['$5210','$4980','$5340','$6120','$7450','$6980','$5760']
@@ -1749,30 +2299,24 @@
                 <tr>
                     <td class="p-2 border font-medium">Sales ($)</td>
 
-                    <!-- Loop for 7 editable cells -->
                     <template x-for="(val,i) in sales" :key="i">
                         <td class="p-2 border">
-                            <!-- VIEW MODE -->
                             <span x-show="!editing" x-text="val"></span>
 
-                            <!-- EDIT MODE -->
                             <input x-show="editing"
                                    x-model="sales[i]"
                                    class="w-20 text-center border rounded p-1 text-xs" />
                         </td>
                     </template>
 
-                    <!-- ACTION BUTTONS -->
                     <td class="p-2 border">
     <div class="flex justify-center items-center gap-4">
 
-        <!-- EDIT ICON (visible when not editing) -->
         <div x-show="!editing" @click="editing = true"
              class="cursor-pointer hover:scale-110 transition">
             <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
         </div>
 
-        <!-- SAVE ICON (visible when editing) -->
         <div x-show="editing" @click="editing = false"
              class="cursor-pointer hover:scale-110 transition">
             <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"
@@ -1800,60 +2344,63 @@
         
 
 
-                <!-- ========================================================= -->
-        <!-- MODULE: Food Management (FIXED LAYOUT)                      -->
-        <!-- ========================================================= -->
-<!-- ======================================= -->
-<!-- FOOD MANAGEMENT — START OF DAY VERSION -->
-<!-- (Ordering, Receiving, Transfer, Waste) -->
-<!-- ======================================= -->
-<div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Start of Day')">
+                <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Start of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+                  <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                </div>
+              </div>
 
-    <!-- Module Icon -->
-    <div class="absolute left-0 top-2">
-        <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-            <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-        </div>
-    </div>
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-4">
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Food Management'"></h4>
 
-    <div class="flex flex-col gap-4">
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Food Management', 'Start of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Food Management', 'Start of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Food Management', 'Start of Day')"
+     @drop.prevent="dropToModule($event, 'Food Management', 'Start of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Food Management', 'Start of Day') }">
 
-        <!-- Module Header + Task Row -->
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Food Management</h4>
 
-            <div class="flex flex-wrap gap-4">
-                <template x-for="task in getModuleTasks('Food Management', 'Start of Day')" :key="task.id">
-                    <div x-show="!task.hidden"
-                        :class="getTaskCardClass(task, activeTaskId)"
-                        class="task-card-compact"
-                        @click="toggleDetail(task.id)"
-                        x-init="$nextTick(() => lucide.createIcons())">
 
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                    <template x-for="task in getModuleTasks('Food Management', 'Start of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
+
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </button>
 
-                        <div x-show="!task.complete && task.badge > 0"
-                            class="notification-badge"
-                            x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
                         <div class="task-icon-bg shadow-inner">
-                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
                         </div>
 
-                        <span class="task-name" x-text="task.name"></span>
-                    </div>
-                </template>
-            </div>
-        </div>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
 
-        <!-- ============================
-             DYNAMIC ADD BUTTON AREA
-        ============================= -->
         <div x-show="[
         'task-sod-ordering',
         'task-sod-receiving',
@@ -1871,7 +2418,6 @@
                     activeTaskId === 'task-sod-waste'      ? addWaste() :
                     null
                 ">
-                <!-- Dynamic Label -->
                 <span x-text="
                     activeTaskId === 'task-sod-ordering'   ? 'Add Ordering'   :
                     activeTaskId === 'task-sod-receiving'  ? 'Add Receiving'  :
@@ -1891,56 +2437,66 @@
 
         
 
-        <!-- ========================= -->
-        <!-- Labor Management (FIXED) -->
-        <!-- ========================= -->
         <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Start of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                </div>
+              </div>
 
-    <div class="absolute left-0 top-2">
-        <div
-            class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-            <i data-lucide="users" class="w-4 h-4"></i>
-        </div>
-    </div>
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-4">
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Labor Management'"></h4>
 
-    <div class="flex flex-col gap-4">
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Labor Management', 'Start of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Labor Management', 'Start of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Labor Management', 'Start of Day')"
+     @drop.prevent="dropToModule($event, 'Labor Management', 'Start of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Labor Management', 'Start of Day') }">
 
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
 
-            <div class="flex flex-wrap gap-4">
-                <template x-for="task in getModuleTasks('Labor Management', 'Start of Day')" :key="task.id">
-                    <div x-show="!task.hidden"
-                        :class="getTaskCardClass(task, activeTaskId)" 
-                        class="task-card-compact"
-                        @click="toggleDetail(task.id)" 
-                        x-init="$nextTick(() => lucide.createIcons())">
+                    <template x-for="task in getModuleTasks('Labor Management', 'Start of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
+
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </button>
 
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                            x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
                         <div class="task-icon-bg shadow-inner">
-                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
                         </div>
 
-                        <span class="task-name" x-text="task.name"></span>
-                    </div>
-                </template>
-            </div>
-        </div>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
 
-        <!-- ========================= -->
-        <!-- EXISTING: Weekly Schedule -->
-        <!-- ========================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-schedule'">
-
-            <h3 class="text-sm font-bold text-gray-900 mb-2">Weekly Schedule Status</h3>
+        <div class="detail-content"
+     data-task-detail="task-sod-schedule"
+     x-show="false"
+     style="display:none!important">
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2004,12 +2560,11 @@
 
         </div>
 
-        <!-- ========================= -->
-        <!-- NEW: TIME LOSS SUMMARY   -->
-        <!-- ========================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-time-loss'">
+        <div class="detail-content"
+     data-task-detail="task-sod-time-loss"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Loss Summary</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2047,12 +2602,11 @@
 
         </div>
 
-        <!-- ========================= -->
-        <!-- NEW: TIME OFF REQUEST    -->
-        <!-- ========================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-timeoff'">
+        <div class="detail-content"
+     data-task-detail="task-sod-timeoff"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Off Requests</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2089,12 +2643,11 @@
 
         </div>
 
-        <!-- ========================= -->
-        <!-- NEW: AVAILABILITY REQ.   -->
-        <!-- ========================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-availability'">
+        <div class="detail-content"
+     data-task-detail="task-sod-availability"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Availability Requests</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2134,12 +2687,11 @@
 
         </div>
 
-        <!-- ========================= -->
-        <!-- NEW: SWAP SHIFT APPROVAL -->
-        <!-- ========================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-swapshift'">
+        <div class="detail-content"
+     data-task-detail="task-sod-swapshift"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Swap Shift Approval</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2195,9 +2747,6 @@
         
 
 
-        <!-- ========================= -->
-        <!-- Payroll Management (FIXED) -->
-        <!-- ========================= -->
         <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Start of Day')">
 
     <div class="absolute left-0 top-2">
@@ -2208,17 +2757,32 @@
 
     <div class="flex flex-col gap-4">
 
-        <!-- Header + Tasks -->
         <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
+            <h4 class="text-sm font-bold text-gray-900" 
+                :contenteditable="editMode"
+                @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                x-text="'Payroll Management'"></h4>
 
-            <div class="flex flex-wrap gap-4">
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Payroll Management', 'Start of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Payroll Management', 'Start of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Payroll Management', 'Start of Day')"
+     @drop.prevent="dropToModule($event, 'Payroll Management', 'Start of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Payroll Management', 'Start of Day') }">
+
+
                 <template x-for="task in getModuleTasks('Payroll Management', 'Start of Day')" :key="task.id">
-
                     <div x-show="!task.hidden"
-                         :class="getTaskCardClass(task, activeTaskId)"
-                         class="task-card-compact"
-                         @click="toggleDetail(task.id)"
+                         :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                         class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+
+                         @click="openTaskPopup(task)"
                          x-init="$nextTick(() => lucide.createIcons())">
 
                         <button @click.stop="completeTask(task.id)"
@@ -2235,19 +2799,22 @@
                             <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
                         </div>
 
-                        <span class="task-name" x-text="task.name"></span>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
                     </div>
 
                 </template>
             </div>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- DETAIL: Punch Exceptions -->
-        <!-- ========================================================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-punches-ex'">
+        <div class="detail-content"
+     data-task-detail="task-sod-punches-ex"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-2">Punch Exceptions</h3>
 
             <div class="space-y-2 text-xs">
 
@@ -2269,12 +2836,11 @@
             </div>
         </div>
 
-        <!-- ========================================================= -->
-        <!-- DETAIL: UNBALANCED PUNCHES -->
-        <!-- ========================================================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-unbalanced'">
+        <div class="detail-content"
+     data-task-detail="task-sod-unbalanced"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Unbalanced Punches</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2319,12 +2885,11 @@
 
         </div>
 
-        <!-- ========================================================= -->
-        <!-- DETAIL: MISMATCH PUNCH -->
-        <!-- ========================================================= -->
-        <div class="detail-content" x-show="activeTaskId === 'task-sod-mismatch'">
+        <div class="detail-content"
+     data-task-detail="task-sod-mismatch"
+     x-show="false"
+     style="display:none!important">
 
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Mismatch Punch</h3>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-xs text-center text-gray-600 border">
@@ -2348,7 +2913,6 @@
                                 <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
                                    title="Authorize Punch"></i>
                                 <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
-
                             </td>
                         </tr>
 
@@ -2373,86 +2937,84 @@
     </div>
 </div>
 
-</div> <!-- END x-show sodExpanded inner -->
-</div> <!-- END .sod-wrapper -->
-
-                    <!-- CLOSE OF DAY SECTION -->
-<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-
-    <!-- Close of Day Header -->
-    <div class="section-header !py-2 !px-4" @click="codExpanded = !codExpanded">
-        <div class="flex items-center gap-3">
-            <div class="bg-white/10 p-1 rounded-md">
-                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300"
-                    :class="codExpanded ? 'rotate-180' : 'rotate-0'"></i>
+</div> </div> <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="section-header !py-2 !px-4" @click="codExpanded = !codExpanded">
+            <div class="flex items-center gap-3">
+              <div class="bg-white/10 p-1 rounded-md">
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="codExpanded ? 'rotate-180' : 'rotate-0'"></i>
+              </div>
+              <h3 class="text-sm font-semibold">Close of Day</h3>
             </div>
-            <h3 class="text-sm font-semibold">Close of Day</h3>
-        </div>
 
-        <div class="flex items-center gap-3">
-            <div class="text-right">
+            <div class="flex items-center gap-3">
+              <div class="text-right">
                 <span id="cod-count" class="text-xs font-bold text-white">0/0</span>
-            </div>
-            <div class="header-progress-track h-2 w-32 bg-gray-700/50">
+              </div>
+              <div class="header-progress-track h-2 w-32 bg-gray-700/50">
                 <div id="cod-progress" class="header-progress-fill"></div>
+              </div>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- COD Content -->
-    <div x-show="codExpanded" x-collapse class="p-8 timeline-container bg-white">
+          <div x-show="codExpanded" x-collapse class="p-8 timeline-container bg-white">
+            <div class="timeline-line"></div>
 
-        <div class="timeline-line"></div>
-
-        
-        <!-- ========================================================= -->
-        <!-- MODULE: Food Management (FIXED LAYOUT)                      -->
-        <!-- ========================================================= -->
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Close of Day')">
-
-            <!-- Module Icon -->
-            <div class="absolute left-0 top-2">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+            <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Close of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
+                  <i data-lucide="shopping-cart" class="w-5 h-5"></i>
                 </div>
-            </div>
+              </div>
 
-            <div class="flex flex-col gap-4">
-
-                <!-- Module Header + Tasks in same row -->
+              <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Food Management</h4>
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Food Management'"></h4>
+
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Food Management', 'Close of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Food Management', 'Close of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Food Management', 'Close of Day')"
+     @drop.prevent="dropToModule($event, 'Food Management', 'Close of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Food Management', 'Close of Day') }">
 
 
+                    <template x-for="task in getModuleTasks('Food Management', 'Close of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Food Management', 'Close of Day')" :key="task.id">
-                            <div x-show="!task.hidden"
-                                :class="getTaskCardClass(task, activeTaskId)" 
-                                class="task-card-compact"
-                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
 
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
 
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
-                                <div class="task-icon-bg shadow-inner">
-                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                                    <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                                </div>
+                        <div class="task-icon-bg shadow-inner">
+                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                        </div>
 
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
-                    </div>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
 
-                <!-- === DETAILS: ORDERING TABLE === -->
                 <div class="detail-content" x-show="activeTaskId === 'task-cod-ordering'">
                     <h3 class="text-sm font-bold text-gray-900 mb-2">Pending Orders</h3>
                     <div class="overflow-x-auto">
@@ -2497,7 +3059,6 @@
                     </div>
                 </div>
 
-                <!-- === DETAILS: RECEIVING TABLE === -->
                 <div class="detail-content" x-show="activeTaskId === 'task-cod-receiving'">
                     <h3 class="text-sm font-bold text-gray-900 mb-2">Receiving Log</h3>
                     <div class="overflow-x-auto">
@@ -2547,53 +3108,62 @@
                 
 
 
-        <!-- ========================================================= -->
-        <!-- MODULE: ZIP INVENTORY (FIXED LAYOUT)                      -->
-        <!-- ========================================================= -->
         <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Zip Inventory', 'Close of Day')">
-
-            <!-- Icon -->
-            <div class="absolute left-0 top-2">
+              <div class="absolute left-0 top-2">
                 <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center ring-4 ring-white">
-                    <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
                 </div>
-            </div>
+              </div>
 
-            <div class="flex flex-col gap-4">
-
-                <!-- Header + Tasks -->
+              <div class="flex flex-col gap-4">
                 <div class="flex items-center gap-4">
-                    <h4 class="text-sm font-bold text-gray-900">Inventory</h4>
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Inventory'"></h4>
+
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Zip Inventory', 'Close of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Zip Inventory', 'Close of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Zip Inventory', 'Close of Day')"
+     @drop.prevent="dropToModule($event, 'Zip Inventory', 'Close of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Zip Inventory', 'Close of Day') }">
 
 
+                    <template x-for="task in getModuleTasks('Zip Inventory', 'Close of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                    <div class="flex flex-wrap gap-4">
-                        <template x-for="task in getModuleTasks('Zip Inventory', 'Close of Day')" :key="task.id">
-    <div x-show="!task.hidden"
-     :class="getTaskCardClass(task, activeTaskId)" 
-     class="task-card-compact"
-                                @click="toggleDetail(task.id)" x-init="$nextTick(() => lucide.createIcons())">
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
 
-                                <button @click.stop="completeTask(task.id)"
-                                    class="card-action-btn text-green-600 hover:bg-green-50">
-                                    <i data-lucide="check-circle" class="w-5 h-5"></i>
-                                </button>
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </button>
 
-                                <div x-show="!task.complete && task.badge > 0" class="notification-badge"
-                                    x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
-                                <div class="task-icon-bg">
-                                    <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                                    <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                                </div>
+                        <div class="task-icon-bg">
+                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                        </div>
 
-                                <span class="task-name" x-text="task.name"></span>
-                            </div>
-                        </template>
-                    </div>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
                 </div>
 
-                <!-- Transfer Detail -->
                 <div class="detail-content" x-show="activeTaskId === 'task-cod-transfer'">
                     <h3 class="text-sm font-bold text-gray-900 mb-2">Transfers In/Out</h3>
 
@@ -2639,7 +3209,6 @@
                     </div>
                 </div>
 
-                <!-- Waste Detail -->
                 <div class="detail-content" x-show="activeTaskId === 'task-cod-waste'">
                     <h3 class="text-sm font-bold text-gray-900 mb-2">Waste Log</h3>
 
@@ -2677,7 +3246,6 @@
                     </div>
                 </div>
 
-                <!-- Inventory Detail -->
                 <div class="detail-content" x-show="activeTaskId === 'task-cod-inventory'">
 
 
@@ -2724,53 +3292,61 @@
 
 
 
-        <!-- ========================================================= -->
-        <!-- COD: Labor Management -->
-        <!-- ========================================================= -->
-<div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Close of Day')">
+        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Close of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center ring-4 ring-white">
+                  <i data-lucide="users" class="w-4 h-4"></i>
+                </div>
+              </div>
 
-    <div class="absolute left-0 top-2">
-        <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center ring-4 ring-white">
-            <i data-lucide="users" class="w-4 h-4"></i>
-        </div>
-    </div>
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-4">
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Labor Management'"></h4>
 
-    <div class="flex flex-col gap-4">
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Labor Management', 'Close of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Labor Management', 'Close of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Labor Management', 'Close of Day')"
+     @drop.prevent="dropToModule($event, 'Labor Management', 'Close of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Labor Management', 'Close of Day') }">
 
-        <!-- Header + Tasks -->
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Labor Management</h4>
 
-            <div class="flex flex-wrap gap-4">
-                <template x-for="task in getModuleTasks('Labor Management', 'Close of Day')" :key="task.id">
-                    <div x-show="!task.hidden"
-                        :class="getTaskCardClass(task, activeTaskId)" 
-                        class="task-card-compact"
-                        @click="toggleDetail(task.id)"
-                        x-init="$nextTick(() => lucide.createIcons())">
+                    <template x-for="task in getModuleTasks('Labor Management', 'Close of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
+
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </button>
 
-                        <div x-show="!task.complete && task.badge > 0"
-                             class="notification-badge"
-                             x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
                         <div class="task-icon-bg">
-                            <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i :data-lucide="task.icon" class="w-5 h-5"></i>
                         </div>
 
-                        <span class="task-name" x-text="task.name"></span>
-                    </div>
-                </template>
-            </div>
-        </div>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
 
-        <!-- =============================== -->
-        <!-- COD DETAIL: TIME LOSS SUMMARY  -->
-        <!-- =============================== -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-time-loss'">
             <h3 class="text-sm font-bold text-gray-900 mb-4">Time Loss Summary</h3>
 
@@ -2809,9 +3385,6 @@
             </div>
         </div>
 
-        <!-- ============================= -->
-        <!-- COD DETAIL: TIME OFF REQUEST -->
-        <!-- ============================= -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-timeoff'">
             <h3 class="text-sm font-bold text-gray-900 mb-4">Time Off Requests</h3>
 
@@ -2849,9 +3422,6 @@
             </div>
         </div>
 
-        <!-- =================================== -->
-        <!-- COD DETAIL: AVAILABILITY REQUEST   -->
-        <!-- =================================== -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-availability'">
             <h3 class="text-sm font-bold text-gray-900 mb-4">Availability Requests</h3>
 
@@ -2888,9 +3458,6 @@
             </div>
         </div>
 
-        <!-- ======================================= -->
-        <!-- COD DETAIL: SWAP SHIFT APPROVAL        -->
-        <!-- ======================================= -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-swapshift'">
             <h3 class="text-sm font-bold text-gray-900 mb-4">Swap Shift Approval</h3>
 
@@ -2945,56 +3512,61 @@
                 
 
 
-        <!-- ========================================================= -->
-        <!-- COD: Payroll Management -->
-        <!-- ========================================================= -->
         <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Close of Day')">
+              <div class="absolute left-0 top-2">
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
+                  <i data-lucide="clock" class="w-4 h-4"></i>
+                </div>
+              </div>
 
-    <div class="absolute left-0 top-2">
-        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
-            <i data-lucide="clock" class="w-4 h-4"></i>
-        </div>
-    </div>
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center gap-4">
+                  <h4 class="text-sm font-bold text-gray-900" 
+                      :contenteditable="editMode"
+                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
+                      x-text="'Payroll Management'"></h4>
 
-    <div class="flex flex-col gap-4">
+<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+     @dragover.prevent="dragOverModule($event, 'Payroll Management', 'Close of Day')"
+     @dragenter.prevent="dragEnterModule($event, 'Payroll Management', 'Close of Day')"
+     @dragleave.prevent="dragLeaveModule($event, 'Payroll Management', 'Close of Day')"
+     @drop.prevent="dropToModule($event, 'Payroll Management', 'Close of Day')"
+     :class="{ 'module-drop-target': isDropTarget('Payroll Management', 'Close of Day') }">
 
-        <!-- Header + Tasks -->
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900">Payroll Management</h4>
 
-            <div class="flex flex-wrap gap-4">
-                <template x-for="task in getModuleTasks('Payroll Management', 'Close of Day')" :key="task.id">
+                    <template x-for="task in getModuleTasks('Payroll Management', 'Close of Day')" :key="task.id">
+                      <div x-show="!task.hidden"
+                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                           class="task-tile"
+    :draggable="editMode"
+    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+    @dragend="if (editMode) dragEnd($event)"
+    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
 
-                    <div x-show="!task.hidden"
-                         :class="getTaskCardClass(task, activeTaskId)"
-                         class="task-card-compact"
-                         @click="toggleDetail(task.id)"
-                         x-init="$nextTick(() => lucide.createIcons())">
+                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
 
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                          <i data-lucide="check-circle" class="w-5 h-5"></i>
                         </button>
 
-                        <div x-show="!task.complete && task.badge > 0"
-                             class="notification-badge"
-                             x-text="task.badge"></div>
+                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
                         <div class="task-icon-bg">
-                            <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                          <i :data-lucide="task.icon" class="w-5 h-5"></i>
                         </div>
 
-                        <span class="task-name" x-text="task.name"></span>
+                        <span class="task-name"
+                              :contenteditable="editMode"
+                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                              x-text="task.name"></span>
+                      </div>
+                    </template>
+                  </div>
+                </div>
 
-                    </div>
-
-                </template>
-            </div>
-        </div>
-
-        <!-- ========================================================= -->
-        <!-- DETAIL: Payroll Summary -->
-        <!-- ========================================================= -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-payroll-sum'">
 
             <h3 class="text-sm font-bold text-gray-900 mb-2">Daily Payroll Summary</h3>
@@ -3029,9 +3601,6 @@
 
         </div>
 
-        <!-- ========================================================= -->
-        <!-- DETAIL: UNBALANCED PUNCHES (COD) -->
-        <!-- ========================================================= -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-unbalanced'">
 
             <h3 class="text-sm font-bold text-gray-900 mb-4">Unbalanced Punches</h3>
@@ -3079,9 +3648,6 @@
 
         </div>
 
-        <!-- ========================================================= -->
-        <!-- DETAIL: MISMATCH PUNCH (COD) -->
-        <!-- ========================================================= -->
         <div class="detail-content" x-show="activeTaskId === 'task-cod-mismatch'">
 
             <h3 class="text-sm font-bold text-gray-900 mb-4">Mismatch Punch</h3>
@@ -3134,7 +3700,6 @@
 
 
 
-                <!-- DUMMY TABS -->
                 <div x-show="currentTab === 'apps'" class="p-8 text-center bg-white rounded-lg shadow-sm">
                     <h3 class="text-lg font-medium text-gray-900">My Apps</h3>
                     <p class="text-gray-500">App grid would appear here.</p>
@@ -3149,7 +3714,6 @@
     </div>
     </div>
 
-    <!-- Scripts -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
@@ -3164,122 +3728,738 @@
                 codExpanded: true,
                 popupOpen: false,
                 storeRank: 3, // you can update dynamically later
-popupTitle: "",
-popupMode: "graph",
-popupTableData: [],
-currentKpiData: [],
-currentWeekData: [],
-lastWeekData: [],
-lastYearData: [],
-dragIndex: null,
+                popupTitle: "",
+                popupMode: "graph",
+                popupTableData: [],
+                currentKpiData: [],
+                currentWeekData: [],
+                lastWeekData: [],
+                lastYearData: [],
+                dragIndex: null, // Used for KPI drag and drop
+                selectedRange: 'Default',
+                showCustomPicker: false,
+                customStart: "",
+                customEnd: "",
+                taskPopupOpen: false,
+                taskPopupTitle: "",
+                taskPopupContent: "",
+                showCustomPicker: false,
+                customStart: null,
+                customEnd: null,
+                selectedRangeLabel: "",
+                picker: null,
+                selectedRange: "Default",
+                sidebarOpen: false,
+allTasksSelected: false,
+taskSearchTerm: '',
 
-dragStart(i) {
-    this.dragIndex = i;
+sidebarTasks: [],
+
+
+predefinedTasks: [
+    { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up' },
+    { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart' },
+    { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet' }, 
+    { id: 'ordering', name: 'Ordering', icon: 'shopping-cart' },
+    { id: 'receiving', name: 'Receiving', icon: 'truck' },
+    { id: 'transfer', name: 'Transfer', icon: 'refresh-cw' },
+    { id: 'waste', name: 'Waste', icon: 'trash-2' },
+    { id: 'schedule', name: 'Schedule', icon: 'calendar' },
+    { id: 'pending-employees', name: 'Pending Employees', icon: 'users' },
+    { id: 'violation', name: 'Violation', icon: 'alert-triangle' },
+    { id: 'time-loss', name: 'Time Loss Summary', icon: 'clock' },
+    { id: 'tor', name: 'Time Off Request', icon: 'user-x' },
+    { id: 'availability-request', name: 'Availability Request', icon: 'user-check' },
+    { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat' },
+    { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint' },
+    { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check' },
+    { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet' },
+    { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon' },
+    { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text' },
+    { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide' },
+    { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle' }
+],
+
+
+
+// Called when pointer first enters a module area
+dragEnterModule(evt, app, category) {
+    // Only act when a drag is active
+    if (!this.draggedTaskId) return;
+
+    // Set this module as the current drop target (no hover task)
+    this.dropTarget = { app, category, hoverTaskId: null };
+
+    // Prevent default so drop will be allowed
+    evt.preventDefault();
 },
 
-dropTile(i) {
-    if (this.dragIndex === null) return;
-
-    const temp = this.kpis[this.dragIndex];
-    this.kpis.splice(this.dragIndex, 1);
-    this.kpis.splice(i, 0, temp);
-
-    this.dragIndex = null;
+                allowDrag() {
+    return this.editMode === true;
 },
+                // ⭐ NEW: EDIT MODE STATE
+                editMode: false,
 
-aiInsightsOpen: false,
+                // TASK DRAG & DROP STATE
+                draggedTaskId: null,
+                dropTarget: { app: null, category: null, hoverTaskId: null },
 
-openAiInsights() {
-    this.aiInsightsOpen = true;
-    this.$nextTick(() => lucide.createIcons());
-},
+                // --- CORE TASK LOGIC ---
+                getModuleTasks(app, category) {
+                    return this.tasks.filter(
+                        t => t.app === app && t.category === category && t.enabled
+                    );
+                },
 
+                // --- TASK DRAG & DROP ENGINE ---
+dragStart(evt, id, type) {
+    // 1. Set the source type and ID
+    this.dragSourceType = type;
+    this.draggedTaskId = id;
 
-
-period: 'Daily',
-
-setPeriod(p) {
-    this.period = p;
-    this.updateByPeriod();
-},
-
-updateByPeriod() {
-    // Simple example logic — replace with your actual backend values
-    if (this.period === 'Daily') {
-        this.kpis.forEach(k => k.value = k.daily);
+    if (type === 'task') {
+        evt.dataTransfer.setData("text/task-id", id);
     }
-    if (this.period === 'WTD') {
-        this.kpis.forEach(k => k.value = k.wtd);
+    // ⭐ NEW: Identify a sidebar task
+    if (type === 'sidebarTask') {
+        // We use a different key to signal this is a new task creation event
+        evt.dataTransfer.setData("text/sidebar-task-id", id);
     }
-    if (this.period === 'MTD') {
-        this.kpis.forEach(k => k.value = k.mtd);
-    }
 
-    // Re-render icons
-    setTimeout(() => lucide.createIcons(), 10);
-},
-
-updateTaskDisplay() {
-    // Re-render lucide icons
-    this.$nextTick(() => lucide.createIcons());
-
-    // Force Alpine refresh
-    console.log("Task visibility updated");
+    evt.dataTransfer.effectAllowed = "move";
+    evt.currentTarget.classList.add('task-dragging');
 },
 
 
-taskFilter: 'All',
+dragEnd(evt) {
+    this.draggedTaskId = null;
+    this.dragSourceType = null; // ⭐ Reset drag source type
+    this.dropTarget = { app: null, category: null, hoverTaskId: null };
 
-filterTasks() {
-    // Loop through every task in the groupedTasks structure
-    for (const group in this.groupedTasks) {
-        for (const moduleName in this.groupedTasks[group]) {
-            this.groupedTasks[group][moduleName].forEach(task => {
-                if (this.taskFilter === 'All') {
-                    task.hidden = false;
+    // Cleanup dragging classes
+    document.querySelectorAll('.task-dragging').forEach(el => el.classList.remove('task-dragging'));
+    document.querySelectorAll('.kpi-dragging').forEach(el => el.classList.remove('kpi-dragging'));
+    document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
+},
+
+// -------------------------------------------------------------------
+// MODULE DRAG / DROP HANDLERS  (MISSING IN YOUR FILE, NOW ADDED)
+// ------------------------------------------------------------------
+
+
+                // Dragging over the entire module container (e.g., "Food Management")
+                dragOverModule(evt, app, category) {
+    // Only active while dragging a task
+    if (!this.draggedTaskId) return;
+
+    evt.preventDefault();
+
+    // When dragging over the module container (not a task),
+    // hoverTaskId MUST be null to signal "drop on module"
+    this.dropTarget = { 
+        app: app, 
+        category: category, 
+        hoverTaskId: null 
+    };
+},
+
+                dragLeaveModule(evt) {
+    // Leave ONLY if cursor actually leaves this container
+    if (!evt.currentTarget.contains(evt.relatedTarget)) {
+        // Clear ONLY if it is pointing to this module
+        if (this.dropTarget && 
+            this.dropTarget.app === null || 
+            this.dropTarget.category === null) return;
+
+        this.dropTarget = { app: null, category: null, hoverTaskId: null };
+    }
+},
+
+                // Dragging over a specific task card within a module
+                dragOverTask(evt, taskId) {
+                    if (!this.draggedTaskId) return;
+
+                    const task = this.tasks.find(t => t.id === taskId);
+                    if (!task) return;
+
+                    // Identify the target module and category
+                    const app = task.app;
+                    const category = task.category;
+
+                    // Only update the hoverTaskId if it's different from the current one
+                    if (this.dropTarget.hoverTaskId !== taskId) {
+                        this.dropTarget = { app, category, hoverTaskId: taskId };
+                        
+                        // Add visual feedback to the task being hovered over
+                        document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
+                        evt.currentTarget.classList.add('task-drop-hover');
+                    }
+                    
+                    evt.preventDefault();
+                    evt.dataTransfer.dropEffect = "move";
+                },
+                
+                // Leaving a specific task card
+                dragLeaveTask(evt, taskId) {
+                    // If the mouse is moving to another task, the dragOverTask function handles the swap/cleanup.
+                    // If it's moving out of the task and into the empty space of the module, we don't want to clear dropTarget entirely, 
+                    // only clear the hoverTaskId if the new target is not inside another task card.
+                    if (this.dropTarget.hoverTaskId === taskId) {
+                        evt.currentTarget.classList.remove('task-drop-hover');
+                        
+                        // Check if leaving to the module wrapper (still a valid drop target)
+                        const isLeavingToModule = evt.relatedTarget && evt.relatedTarget.closest('.module-drop-target');
+                        
+                        if (isLeavingToModule) {
+                            // If leaving the task but staying in the module, clear only hoverTaskId
+                            const task = this.tasks.find(t => t.id === taskId);
+                            if (task) {
+                                this.dropTarget = { app: task.app, category: task.category, hoverTaskId: null };
+                            }
+                        } else {
+                            // If leaving the entire module area
+                            this.dropTarget = { app: null, category: null, hoverTaskId: null };
+                        }
+                    }
+                },
+
+                // Drop onto an empty module container → append
+dropToModule(evt, app, category) {
+    evt.preventDefault();
+
+    const draggedId = this.draggedTaskId;
+    if (!draggedId) return;
+
+    /* --------------------------------------
+       CASE 1: SIDEBAR → WORKFLOW (Creation)
+    ---------------------------------------*/
+    if (this.dragSourceType === 'sidebarTask') {
+        const sidebarTask = this.sidebarTasks.find(t => t.id === draggedId);
+        if (!sidebarTask) return;
+
+        const newTask = {
+            id: sidebarTask.id + '-' + Date.now(), // Generate unique ID for the new task
+            name: sidebarTask.name,
+            icon: sidebarTask.icon,
+            app: app,
+            category: category,
+            enabled: true,
+            hidden: false,
+            complete: false,
+            badge: 0,
+        };
+
+        this.tasks.push(newTask);
+
+        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
+
+        this.dragEnd();
+        this.$nextTick(() => this.updateTaskProgress());
+        return;
+    }
+
+    /* --------------------------------------
+       CASE 2: TASK → MOVE TO ANOTHER MODULE (Relocation)
+    ---------------------------------------*/
+    const index = this.tasks.findIndex(t => t.id === draggedId);
+    if (index === -1) return;
+
+    const [moved] = this.tasks.splice(index, 1);
+
+    moved.app = app;
+    moved.category = category;
+
+    this.tasks.push(moved);
+
+    this.dragEnd();
+    this.$nextTick(() => this.updateTaskProgress());
+},
+
+dropOnTask(evt, targetTaskId) {
+    evt.preventDefault();
+
+    const draggedId = this.draggedTaskId;
+    if (!draggedId || draggedId === targetTaskId) return;
+
+    // find indexes in the main tasks array
+    const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
+    const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
+
+    // Get target task for module info
+    const targetTask = this.tasks[targetIndex];
+    if (!targetTask) return;
+
+    // -----------------------
+    // CASE A: dragged FROM SIDEBAR (Creation before a task)
+    // -----------------------
+    if (this.dragSourceType === 'sidebarTask') {
+        const sidebarTask = this.sidebarTasks.find(t => t.id === draggedId);
+        if (!sidebarTask) return;
+
+        const newTask = {
+            id: sidebarTask.id + '-' + Date.now(),
+            name: sidebarTask.name,
+            icon: sidebarTask.icon,
+            app: targetTask.app,
+            category: targetTask.category,
+            enabled: true,
+            hidden: false,
+            complete: false,
+            badge: 0
+        };
+
+        // insert before the found targetIndex
+        this.tasks.splice(targetIndex, 0, newTask);
+
+        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
+
+        this.dragEnd();
+        this.$nextTick(() => this.updateTaskProgress());
+        return;
+    }
+
+    // -----------------------
+    // CASE B: Normal move BETWEEN existing tasks
+    // -----------------------
+    // If either index is invalid, abort (can't move)
+    if (draggedIndex === -1 || targetIndex === -1) return;
+
+    const draggedTask = this.tasks[draggedIndex];
+    
+    // Ensure the task being moved also gets the target's correct module/category
+    draggedTask.app = targetTask.app;
+    draggedTask.category = targetTask.category;
+
+    // remove dragged and insert
+    const [moved] = this.tasks.splice(draggedIndex, 1);
+
+    // correct target index if dragged was before target
+    let insertIndex = targetIndex;
+    if (draggedIndex < targetIndex) insertIndex = targetIndex - 1;
+
+    this.tasks.splice(insertIndex, 0, moved);
+
+    this.dragEnd();
+    this.$nextTick(() => this.updateTaskProgress());
+},
+
+                /* Highlight module container on drag */
+               isDropTarget(app, category) {
+    // A module is a valid drop zone ONLY when:
+    // 1. A task is being dragged
+    // 2. This module matches the targeted module
+    // 3. There is NO hoverTask (meaning drop on empty module space)
+    return (
+        this.draggedTaskId &&
+        this.dropTarget.app === app &&
+        this.dropTarget.category === category &&
+        this.dropTarget.hoverTaskId === null
+    );
+},
+
+                getTaskCardClass(task, activeTaskId, draggedTaskId) {
+    return {
+        'task-tile': true,
+        'pending': !task.complete,
+        'complete': !!task.complete,
+        'task-dragging': draggedTaskId === task.id,
+        'active-card': activeTaskId === task.id
+    };
+},
+
+                // --- END TASK DRAG & DROP ENGINE ---
+
+
+                selectRange(opt) {
+                // Switch to selected preset
+                this.selectedRange = opt;
+
+                // Hide custom date label
+                this.selectedRangeLabel = "";
+
+                // Hide calendar if open
+                if (this.datePicker) {
+                    this.datePicker.hide();
+                }
+
+                // Generate dummy data based on selected preset
+                if (opt === "Default") {
+                    this.loadDefaultData();
                 } 
-                else if (this.taskFilter === 'Completed Tasks') {
-                    task.hidden = !task.complete;
+                else if (opt === "7D") {
+                    this.generateRandomDays(7);
                 }
-                else if (this.taskFilter === 'Pending Tasks') {
-                    task.hidden = task.complete;
+                else if (opt === "1M") {
+                    this.generateRandomDays(30);
                 }
-            });
-        }
-    }
-},
+                else if (opt === "3M") {
+                    this.generateRandomDays(90);
+                }
+                else if (opt === "6M") {
+                    this.generateRandomDays(180);
+                }
+                else if (opt === "1Y") {
+                    this.generateRandomDays(365);
+                }
 
-generateDateOptions() {
-    return [
-        "Today",
-        "Yesterday",
-        "Monday, Dec 01, 2025",
-        "Sunday, Nov 30, 2025",
-        "Saturday, Nov 29, 2025",
-        "Friday, Nov 28, 2025",
-        "Thursday, Nov 27, 2025",
-    ];
-},
+                // Re-render chart
+                this.$nextTick(() => this.renderChart());
+            },
 
-openKpiPopup(kpiId) {
-    this.popupOpen = true;
-    this.popupMode = "graph";
+            generateRandomDays(n) {
+                const days = [];
+                const current = [];
+                const lastWeek = [];
+                const lastYear = [];
 
-    // Keep original functionality (no changes)
-    this.popupTitle = this.kpis.find(k => k.id === kpiId)?.name || "KPI Details";
+                const today = new Date();
+                for (let i = 0; i < n; i++) {
+                    const d = new Date(today);
+                    d.setDate(today.getDate() - (n - 1 - i));
 
-    const dates = [
-        "12/08/2025","12/09/2025","12/10/2025",
-        "12/11/2025","12/12/2025","12/13/2025","12/14/2025"
-    ];
+                    const label = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+                    days.push(label);
 
-    // Restore real dummy values
-    this.currentWeekData = [6582.21, 6898.79, 7040.93, 7213.69, 8129.51, 7661.88, 6497.03];
-    this.lastWeekData    = [6400.11, 6701.52, 6955.33, 7100.49, 7988.22, 7600.12, 6430.55];
-    this.lastYearData    = [6300.75, 6588.90, 6700.32, 6901.11, 7200.44, 7100.75, 6350.99];
+                    current.push(Math.floor(Math.random() * 8000) + 2000);
+                    lastWeek.push(Math.floor(Math.random() * 8000) + 2000);
+                    lastYear.push(Math.floor(Math.random() * 8000) + 2000);
+                }
 
-    // Build the table exactly as before
-    this.popupTableData = dates.map((d, i) => ({
+                this.popupTableData = days.map((d, i) => ({
+                    date: d,
+                    current: current[i],
+                    lastWeek: lastWeek[i],
+                    lastYear: lastYear[i]
+                }));
+
+                this.currentWeekData = current;
+                this.lastWeekData = lastWeek;
+                this.lastYearData = lastYear;
+            },
+
+
+            openTaskPopup(task) {
+                this.taskPopupTitle = task.name;
+
+                // Get the original DOM node
+                const source = document.querySelector('[data-task-detail="' + task.id + '"]');
+
+                if (source) {
+                    // Clone node including x-data, x-model, x-for, everything
+                    const clone = source.cloneNode(true);
+                    clone.style.display = "block"; // ensure visible
+                    clone.removeAttribute("x-show"); // remove hidden flag
+
+                    // Inject into popup container
+                    this.$refs.taskPopupContainer.innerHTML = "";
+                    this.$refs.taskPopupContainer.appendChild(clone);
+
+                    // Re-initialize Alpine inside this container
+                    Alpine.initTree(this.$refs.taskPopupContainer);
+                    
+                    this.taskPopupOpen = true;
+
+                    this.$nextTick(() => lucide.createIcons());
+                }
+            }
+            ,
+
+            getTaskDetailContent(id) {
+
+                if (id === "task-forecast") {
+                    return `
+                        <h3 class="text-sm font-bold mb-3">Weekly Forecast</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-forecast"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-actual-sales") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Actual Sales</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-actual-sales"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-timeoff") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Time Off Request</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-timeoff"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-time-loss") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Time Loss Summary</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-time-loss"\']')?.innerHTML ?? ""}
+                    `;
+                }
+                
+                if (id === "task-sod-swapshift") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Swap Shift Approval</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-swapshift"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-availability") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Availability</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-availability"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-schedule") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'Schedule</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-schedule"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-unbalanced") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Unbalanced Punches</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-unbalanced"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-mismatch") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Mismatch Punches</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-mismatch"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                if (id === "task-sod-punches-ex") {
+                    return `
+                        <h3 class='text-sm font-bold mb-3'>Punch Exception</h3>
+                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-punches-ex"\']')?.innerHTML ?? ""}
+                    `;
+                }
+
+                return `<p class='text-gray-600 text-sm'>No details available.</p>`;
+            },
+
+            applyCustomDateRange() {
+                if (!this.customStart || !this.customEnd) {
+                    // Use console.error instead of alert
+                    console.error("Please select both start and end date.");
+                    return;
+                }
+
+                // Mark the active filter as Custom (important for UI)
+                this.selectedRange = "Custom";
+
+                const start = new Date(this.customStart);
+                const end = new Date(this.customEnd);
+
+                const days = [];
+                const valuesCurrent = [];
+                const valuesLastWeek = [];
+                const valuesLastYear = [];
+
+                let curr = new Date(start);
+
+                // Build date labels + random values ONCE
+                while (curr <= end) {
+                    const label = `${curr.getMonth() + 1}/${curr.getDate()}/${curr.getFullYear()}`;
+                    days.push(label);
+
+                    valuesCurrent.push(Math.floor(Math.random() * 8000) + 2000);
+                    valuesLastWeek.push(Math.floor(Math.random() * 8000) + 2000);
+                    valuesLastYear.push(Math.floor(Math.random() * 8000) + 2000);
+
+                    curr.setDate(curr.getDate() + 1);
+                }
+
+                // Build table data
+                this.popupTableData = days.map((d, i) => ({
+                    date: d,
+                    current: valuesCurrent[i],
+                    lastWeek: valuesLastWeek[i],
+                    lastYear: valuesLastYear[i]
+                }));
+
+                // Set chart datasets
+                this.currentWeekData = valuesCurrent;
+                this.lastWeekData = valuesLastWeek;
+                this.lastYearData = valuesLastYear;
+
+                // Show selected range as chip
+                this.selectedRangeLabel =
+                    `${new Date(this.customStart).toLocaleDateString()} - ${new Date(this.customEnd).toLocaleDateString()}`;
+
+                // Refresh chart
+                this.$nextTick(() => this.renderChart());
+            },
+
+            // Sample datasets for filters
+            rangeData: {
+                Default: {
+                    dates: ["12/08","12/09","12/10","12/11","12/12","12/13","12/14"],
+                    current: [6582,6898,7040,7213,8129,7661,6497],
+                    lastWeek: [6400,6701,6955,7100,7988,7600,6430],
+                    lastYear: [6300,6588,6700,6901,7200,7100,6350]
+                },
+                "7D": {
+                    dates: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+                    current: [5200,5300,5400,5500,5600,5700,5800],
+                    lastWeek: [5000,5100,5200,5300,5400,5500,5600],
+                    lastYear: [4800,4950,5050,5200,5250,5400,5450]
+                },
+                "1M": {
+                    dates: ["Week 1","Week 2","Week 3","Week 4"],
+                    current: [21000,22000,23000,21500],
+                    lastWeek: [20000,21000,22000,20500],
+                    lastYear: [19000,20000,21000,19500]
+                },
+                "3M": {
+                    dates: ["Jan","Feb","Mar"],
+                    current: [65000,68000,70000],
+                    lastWeek: [60000,62000,64000],
+                    lastYear: [58000,60000,61000]
+                },
+                "6M": {
+                    dates: ["Q1","Q2"],
+                    current: [130000,140000],
+                    lastWeek: [120000,128000],
+                    lastYear: [115000,122000]
+                },
+                "1Y": {
+                    dates: ["2024"],
+                    current: [820000],
+                    lastWeek: [790000],
+                    lastYear: [760000]
+                }
+            },
+
+            applyDateFilter() {
+                const r = this.rangeData[this.selectedRange];
+
+                this.popupTableData = r.dates.map((d, i) => ({
+                    date: d,
+                    current: r.current[i],
+                    lastWeek: r.lastWeek[i],
+                    lastYear: r.lastYear[i]
+                }));
+
+                this.currentWeekData = r.current;
+                this.lastWeekData = r.lastWeek;
+                this.lastYearData = r.lastYear;
+
+                this.$nextTick(() => this.renderChart());
+            },
+
+            // KPI Drag & Drop Logic (original logic)
+            dragOver(i) {
+                // Not using, but kept in case user wanted it for KPI tiles
+            },
+
+            dropTile(i) {
+                if (this.dragIndex === null) return;
+
+                const temp = this.kpis[this.dragIndex];
+                this.kpis.splice(this.dragIndex, 1);
+                this.kpis.splice(i, 0, temp);
+
+                this.dragIndex = null;
+            },
+
+            aiInsightsOpen: false,
+
+            openAiInsights() {
+                this.aiInsightsOpen = true;
+                this.$nextTick(() => lucide.createIcons());
+            },
+
+
+
+            period: 'Daily',
+
+            setPeriod(p) {
+                this.period = p;
+                this.updateByPeriod();
+            },
+
+            updateByPeriod() {
+                // Simple example logic — replace with your actual backend values
+                if (this.period === 'Daily') {
+                    this.kpis.forEach(k => k.value = k.daily);
+                }
+                if (this.period === 'WTD') {
+                    this.kpis.forEach(k => k.value = k.wtd);
+                }
+                if (this.period === 'MTD') {
+                    this.kpis.forEach(k => k.value = k.mtd);
+                }
+
+                // Re-render icons
+                setTimeout(() => lucide.createIcons(), 10);
+            },
+
+            updateTaskDisplay() {
+                // Re-render lucide icons
+                this.$nextTick(() => lucide.createIcons());
+
+                // Force Alpine refresh
+                console.log("Task visibility updated");
+            },
+
+
+            taskFilter: 'All',
+
+            filterTasks() {
+                // Loop through every task in the groupedTasks structure
+                for (const group in this.groupedTasks) {
+                    for (const moduleName in this.groupedTasks[group]) {
+                        this.groupedTasks[group][moduleName].forEach(task => {
+                            if (this.taskFilter === 'All') {
+                                task.hidden = false;
+                            } 
+                            else if (this.taskFilter === 'Completed Tasks') {
+                                task.hidden = !task.complete;
+                            }
+                            else if (this.taskFilter === 'Pending Tasks') {
+                                task.hidden = task.complete;
+                            }
+                        });
+                    }
+                }
+            },
+
+            generateDateOptions() {
+                return [
+                    "Today",
+                    "Yesterday",
+                    "Monday, Dec 01, 2025",
+                    "Sunday, Nov 30, 2025",
+                    "Saturday, Nov 29, 2025",
+                    "Friday, Nov 28, 2025",
+                    "Thursday, Nov 27, 2025",
+                ];
+            },
+
+            openKpiPopup(kpiId) {
+                this.popupOpen = true;
+                this.popupMode = "graph";
+                this.selectedRange = 'Default';
+                this.applyDateFilter();
+
+
+                // Keep original functionality (no changes)
+                this.popupTitle = this.kpis.find(k => k.id === kpiId)?.name || "KPI Details";
+
+                const dates = [
+                    "12/08/2025","12/09/2025","12/10/2025",
+                    "12/11/2025","12/12/2025","12/13/2025","12/14/2025"
+                ];
+
+                // Restore real dummy values
+                this.currentWeekData = [6582.21, 6898.79, 7040.93, 7213.69, 8129.51, 7661.88, 6497.03];
+                this.lastWeekData    = [6400.11, 6701.52, 6955.33, 7100.49, 7988.22, 7600.12, 6430.55];
+                this.lastYearData    = [6300.75, 6588.90, 6700.32, 6901.11, 7200.44, 7100.75, 6350.99];
+
+                // Build the table exactly as before
+                this.popupTableData = dates.map((d, i) => ({
         date: d,
         current: this.currentWeekData[i],
         lastWeek: this.lastWeekData[i],
@@ -3299,44 +4479,30 @@ renderChart() {
         window.kpiChartInstance.destroy();
     }
 
-    // Elegant enterprise colors
-    const colors = {
-        blue: "rgba(59, 130, 246, 0.85)",
-        green: "rgba(16, 185, 129, 0.85)",
-        pink: "rgba(236, 72, 153, 0.85)"
-    };
+    const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 300);
+gradient.addColorStop(0, "rgba(108, 99, 255, 0.55)");   // darker top
+gradient.addColorStop(0.6, "rgba(108, 99, 255, 0.20)"); // mid transition
+gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
+
 
     window.kpiChartInstance = new Chart(ctx, {
-        type: "bar",
+        type: "line",
+
         data: {
             labels: this.popupTableData.map(r => r.date),
             datasets: [
                 {
-                    label: "Current Week",
+                    label: "Sales",
                     data: this.currentWeekData,
-                    backgroundColor: colors.blue,
-                    borderColor: "rgba(59,130,246,1)",
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    maxBarThickness: 28
-                },
-                {
-                    label: "Last Week",
-                    data: this.lastWeekData,
-                    backgroundColor: colors.green,
-                    borderColor: "rgba(16,185,129,1)",
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    maxBarThickness: 28
-                },
-                {
-                    label: "Last Year",
-                    data: this.lastYearData,
-                    backgroundColor: colors.pink,
-                    borderColor: "rgba(236,72,153,1)",
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    maxBarThickness: 28
+                    borderColor: "#6C63FF",          // purple line
+                    backgroundColor: gradient,       // gradient fill
+                    borderWidth: 3,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#6C63FF",
+                    pointBorderWidth: 2,
+                    pointHoverRadius: 6,
+                    tension: 0.45,                   // smooth curve
+                    fill: true                       // gradient area
                 }
             ]
         },
@@ -3346,12 +4512,12 @@ renderChart() {
             maintainAspectRatio: false,
 
             animation: {
-                duration: 650,
-                easing: "easeOutCubic"
+                duration: 700,
+                easing: "easeOutQuart"
             },
 
             layout: {
-                padding: { top: 10, right: 20, bottom: 0, left: 10 }
+                padding: { top: 10, right: 18, bottom: 0, left: 10 }
             },
 
             scales: {
@@ -3363,46 +4529,43 @@ renderChart() {
                         padding: 8
                     }
                 },
+
                 y: {
-                    beginAtZero: true,
+                    beginAtZero: false,
                     grid: {
-                        color: "rgba(0,0,0,0.04)",
+                        color: "rgba(0,0,0,0.06)",
                         lineWidth: 1,
                         drawBorder: false
                     },
                     ticks: {
                         color: "#64748b",
                         font: { size: 12 },
-                        callback: (v) => v.toLocaleString(),
-                        padding: 6
+                        callback: (v) => "$" + v.toLocaleString(),
+                        padding: 8
                     }
                 }
             },
 
             plugins: {
-                legend: {
-                    position: "bottom",
-                    labels: {
-                        font: { size: 13, weight: 600 },
-                        color: "#1e293b",
-                        usePointStyle: true,
-                        pointStyle: "round",
-                        padding: 16
-                    }
-                },
+                legend: { display: false },
 
                 tooltip: {
-                    backgroundColor: "rgba(30,41,59,0.95)", // slate-800
-                    titleFont: { size: 13, weight: 700 },
-                    bodyFont: { size: 12 },
-                    padding: 10,
-                    cornerRadius: 6,
+                    backgroundColor: "rgba(30,30,45,0.92)", // dark slate
+                    cornerRadius: 8,
+                    padding: 12,
                     displayColors: false,
+                    titleFont: { size: 13, weight: 600 },
+                    bodyFont: { size: 12 },
                     callbacks: {
-                        label: (ctx) =>
-                            `${ctx.dataset.label}: ${ctx.raw.toLocaleString()}`
+                        title: (items) => items[0].label,  
+                        label: (ctx) => "Sales : $" + ctx.raw.toLocaleString()
                     }
                 }
+            },
+
+            hover: {
+                mode: "nearest",
+                intersect: false
             }
         }
     });
@@ -3421,7 +4584,7 @@ renderChart() {
         yesterdayValue: '$4,980.50',
         trend: 'up',
         trendVal: '1.5%',
-        percent: +2.1         // NEW
+        percent: +2.1,
     },
 
     {
@@ -3435,7 +4598,7 @@ renderChart() {
         yesterdayValue: '$5,100.25',
         trend: 'up',
         trendVal: '2.1%',
-        percent: +3.4         // NEW
+        percent: +3.4,
     },
 
     {
@@ -3449,7 +4612,8 @@ renderChart() {
         yesterdayValue: '+50.10',
         trend: 'neutral',
         trendVal: '-',
-        percent: +1.8         // NEW
+        percent: +1.8,
+        comparison: 'vs. Last Month'
     },
 
     {
@@ -3463,7 +4627,8 @@ renderChart() {
         yesterdayValue: '21.8%',
         trend: 'up',
         trendVal: '0.6%',
-        percent: +0.6         // NEW (example)
+        percent: +0.6,
+        comparison: 'vs. Last Month'
     },
 
     {
@@ -3478,7 +4643,8 @@ renderChart() {
         trend: 'up',
         trendVal: '1.5',
         trendClass: 'trend-up-bad',  // stays red
-        percent: -12.5        // NEW (negative -> red)
+        percent: -12.5,
+        comparison: 'vs. Last Month'
     },
 
     {
@@ -3492,7 +4658,8 @@ renderChart() {
         yesterdayValue: '28.0%',
         trend: 'up',
         trendVal: '0.5%',
-        percent: +0.5         // NEW
+        percent: +0.5,
+        comparison: 'vs. Last Month'
     },
 
     /* ======================================================
@@ -3508,7 +4675,8 @@ renderChart() {
         wtd: "$7,820.00",
         mtd: "$32,540.00",
 
-        percent: -1.2,        // NEW
+        percent: -1.2,
+        comparison: 'vs. Last Month',
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3535,7 +4703,8 @@ renderChart() {
         wtd: "760 hrs",
         mtd: "3,220 hrs",
 
-        percent: +2.4,        // NEW
+        percent: +2.4,
+        comparison: 'vs. Last Month',
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3562,7 +4731,8 @@ renderChart() {
         wtd: "$1,120.00",
         mtd: "$4,380.00",
 
-        percent: +3.9,        // NEW
+        percent: +3.9,
+        comparison: 'vs. Last Month',
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3589,7 +4759,8 @@ renderChart() {
         wtd: "$420.00",
         mtd: "$1,650.00",
 
-        percent: -3.3,        // NEW
+        percent: -3.3,
+        comparison: 'vs. Last Month',
 
         graphData: {
             labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
@@ -3605,56 +4776,87 @@ renderChart() {
 ],
 
                 tasks: [
-                    // START OF DAY
-                    { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1 },
-                    { id: 'task-actual-sales', name: 'Actual Sales', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1 },
+    // START OF DAY — FORECAST
+    { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1 },
+    { id: 'task-actual-sales', name: 'Actual Sales', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1 },
 
-                    { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0 },
-                    { id: 'task-sod-hr', name: 'Pending Employees', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4 },
-                    { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
+    // START OF DAY — LABOR MANAGEMENT
+    { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0 },
+    { id: 'task-sod-hr', name: 'Pending Employees', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4 },
+    { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
+    { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
+    { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
+    { id: 'task-sod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
+    { id: 'task-sod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
 
-                    { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
-                    { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
-                    { id: 'task-sod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
-                    { id: 'task-sod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
+    // START OF DAY — PAYROLL MANAGEMENT
+    { id: 'task-sod-punches-ex', name: 'Punch Exceptions', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 8 },
+    { id: 'task-sod-punches-rev', name: 'Punch Review', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
+    { id: 'task-sod-punches-app', name: 'Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22 },
+    { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2 },
+    { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 },
 
-                    { id: 'task-sod-punches-ex', name: 'Punch Exceptions', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 8 },
-                    { id: 'task-sod-punches-rev', name: 'Punch Review', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
-                    { id: 'task-sod-punches-app', name: 'Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22 },
-                    { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2 },
-                    { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 },
+    // START OF DAY — FOOD MANAGEMENT
+    { id: 'task-sod-ordering', name: 'Ordering', app: 'Food Management', category: 'Start of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2 },
+    { id: 'task-sod-receiving', name: 'Receiving', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'truck', badge: 0 },
+    { id: 'task-sod-transfer', name: 'Transfer', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0 },
+    { id: 'task-sod-waste', name: 'Waste', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0 },
 
-                    { id: 'task-sod-ordering',   name: 'Ordering',   app: 'Food Management', category: 'Start of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2 },
-                    { id: 'task-sod-receiving',  name: 'Receiving',  app: 'Food Management', category: 'Start of Day', enabled: true, complete: true,  icon: 'truck', badge: 0 },
-                    { id: 'task-sod-transfer',   name: 'Transfer',   app: 'Food Management', category: 'Start of Day', enabled: true, complete: true,  icon: 'arrow-right-left', badge: 0 },
-                    { id: 'task-sod-waste',      name: 'Waste',      app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0 },
+    // CLOSE OF DAY — FOOD MANAGEMENT
+    { id: 'task-cod-ordering', name: 'Ordering', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2 },
+    { id: 'task-cod-receiving', name: 'Receiving', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'truck', badge: 0 },
+    { id: 'task-cod-transfer', name: 'Transfer', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0 },
+    { id: 'task-cod-waste', name: 'Waste', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0 },
+    { id: 'task-cod-inventory', name: 'Inventory', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clipboard-list', badge: 0 },
 
-                    // CLOSE OF DAY
-                    { id: 'task-cod-ordering', name: 'Ordering', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2 },
-                    { id: 'task-cod-receiving', name: 'Receiving', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'truck', badge: 0 },
+    // CLOSE OF DAY — LABOR MANAGEMENT
+    { id: 'task-cod-violation', name: 'Labor Violations', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
+    { id: 'task-cod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
+    { id: 'task-cod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
+    { id: 'task-cod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
+    { id: 'task-cod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
 
-                    { id: 'task-cod-transfer', name: 'Transfer', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0 },
-                    { id: 'task-cod-waste', name: 'Waste', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0 },
-                    { id: 'task-cod-inventory', name: 'Inventory', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clipboard-list', badge: 0 },
+    // CLOSE OF DAY — PAYROLL MANAGEMENT
+    { id: 'task-cod-punches-ex', name: 'Punch Exception', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 15 },
+    { id: 'task-cod-punches-rev', name: 'Review Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
+    { id: 'task-cod-misc-pay', name: 'Misc Pay', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'gift', badge: 0 },
+    { id: 'task-cod-ot', name: 'Approaching OT', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clock-3', badge: 0 },
+    { id: 'task-cod-payroll-sum', name: 'Payroll Summary', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'file-check', badge: 1 },
+    { id: 'task-cod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 3 },
+    { id: 'task-cod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 }
+],
 
-                    { id: 'task-cod-violation', name: 'Labor Violations', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1 },
-                    { id: 'task-cod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'percent', badge: 4 },
-                    { id: 'task-cod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-x', badge: 2 },
-                    { id: 'task-cod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-check', badge: 2 },
-                    { id: 'task-cod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'repeat', badge: 2 },
 
-                    { id: 'task-cod-punches-ex', name: 'Punch Exception', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 15 },
-                    { id: 'task-cod-punches-rev', name: 'Review Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'edit', badge: 2 },
-                    { id: 'task-cod-misc-pay', name: 'Misc Pay', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'gift', badge: 0 },
-                    { id: 'task-cod-ot', name: 'Approaching OT', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clock-3', badge: 0 },
-                    { id: 'task-cod-payroll-sum', name: 'Payroll Summary', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'file-check', badge: 1 },
-                    { id: 'task-cod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 3 },
-                    { id: 'task-cod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1 },
-                ],
 
-                init() {
+
+
+
+init() {
+    this.sidebarTasks = this.predefinedTasks.map(t => ({...t}));
                     this.updateTaskProgress();
-                },
+this.$nextTick(() => {
+    this.datePicker = new Litepicker({
+        element: document.getElementById('kpiDatePicker'), // hidden input
+        parentEl: document.getElementById('kpiCalendarContainer'), // ⭐ important
+        singleMode: false,
+        numberOfMonths: 2,
+        numberOfColumns: 2,
+        autoApply: true,
+        allowRepick: true,
+        format: "YYYY-MM-DD",
+
+        setup: (picker) => {
+            picker.on('selected', (start, end) => {
+                this.customStart = start.format("YYYY-MM-DD");
+                this.customEnd   = end.format("YYYY-MM-DD");
+
+                this.applyCustomDateRange();
+                picker.hide();
+                });
+            }
+        });
+    });
+},
 
                 // Search filtering for settings
                 matchesSearch(text) {
@@ -3733,4 +4935,3 @@ renderChart() {
     </script>
 </body>
 </html>
-
