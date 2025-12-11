@@ -1637,6 +1637,63 @@
 </div>
 
 
+<!-- ADD TASK POPUP -->
+<div 
+    x-show="addTaskPopupOpen"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
+>
+    <div class="bg-white w-[420px] rounded-xl shadow-xl p-5 space-y-4" @click.stop>
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">
+            Add Tasks
+        </h2>
+
+        <!-- SELECT ALL -->
+        <label class="flex items-center gap-2 mb-2 cursor-pointer">
+            <input type="checkbox" x-model="selectAllTasks" @change="toggleSelectAllTasks">
+            <span class="text-sm font-medium">Select All</span>
+        </label>
+
+        <!-- TASK LIST -->
+        <div class="max-h-64 overflow-y-auto border rounded-lg p-3 space-y-3">
+            <template x-for="task in sidebarTasks" :key="task.id">
+                <label class="flex items-center gap-3 cursor-pointer">
+
+                    <!-- ICON -->
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
+                        :class="getTaskIconColor(task.id)">
+                        <i :data-lucide="task.icon" class="w-4 h-4"></i>
+                    </div>
+
+                    <input type="checkbox" 
+                        class="mr-2" 
+                        :value="task.id"
+                        x-model="selectedTasksToAdd">
+
+                    <span class="text-sm font-medium" x-text="task.name"></span>
+                </label>
+            </template>
+        </div>
+
+        <!-- BUTTONS -->
+        <div class="flex justify-end gap-3 mt-4">
+            <button 
+                @click="addTaskPopupOpen=false"
+                class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium"
+            >
+                Cancel
+            </button>
+
+            <button 
+                @click="applyAddedTasks()"
+                class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium"
+            >
+                Apply
+            </button>
+        </div>
+
+    </div>
+</div>
 
 
 
@@ -1877,47 +1934,6 @@
 
         </div>
     </div>
-</div>
-
-<div 
-    x-show="taskPickerOpen"
-    x-transition
-    class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-
-    <div class="bg-white rounded-lg shadow-xl w-96 p-5">
-
-        <h3 class="text-lg font-semibold mb-3">Select Tasks</h3>
-
-        <div class="mb-3 border-b pb-2">
-            <label class="flex items-center gap-2 font-bold text-gray-800 cursor-pointer">
-                <input type="checkbox" 
-                       x-model="allTasksSelected"
-                       @change="toggleSelectAll()"
-                       class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <span>Select All</span>
-            </label>
-        </div>
-        <div class="h-64 overflow-y-auto border rounded p-3">
-            <template x-for="task in predefinedTasks" :key="task.id">
-                <label class="flex items-center gap-2 mb-2 hover:bg-gray-50 p-1 rounded cursor-pointer">
-                    <input type="checkbox" 
-                           :value="task.id" 
-                           x-model="selectedTaskIds"
-                           @change="allTasksSelected = false"
-                           class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                    <i :data-lucide="task.icon" class="w-5 h-5 text-gray-600"></i>
-                    <span x-text="task.name" class="text-sm text-gray-700"></span>
-                </label>
-            </template>
-        </div>
-
-        <div class="flex justify-end gap-3 mt-4">
-            <button @click="taskPickerOpen = false" class="px-4 py-2 bg-gray-200 rounded-lg text-gray-700 font-medium hover:bg-gray-300">Cancel</button>
-            <button @click="addSelectedTasks()" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">Add</button>
-        </div>
-
-    </div>
-
 </div>
 
 
@@ -2241,6 +2257,19 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Forecast', 'Start of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
+
                   </div>
                 </div>
 
@@ -2491,6 +2520,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Food Management', 'Start of Day')"
+>
+<div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -2583,6 +2623,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Labor Management', 'Start of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -2900,6 +2951,17 @@
                     </div>
 
                 </template>
+                <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Payroll Management', 'Start of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
             </div>
         </div>
 
@@ -3105,6 +3167,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Food Management', 'CLose of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -3254,6 +3327,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Zip Inventory', 'CLose of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -3437,6 +3521,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Labor Management', 'CLose of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -3657,6 +3752,17 @@
                               x-text="task.name"></span>
                       </div>
                     </template>
+                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
+<div 
+    x-show="editMode"
+    class="flex items-center justify-center cursor-pointer mt-1"
+    @click="openAddTaskPopup('Payroll Management', 'CLose of Day')"
+>
+    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+        <span class="text-xl leading-none font-bold">+</span>
+    </div>
+</div>
+
                   </div>
                 </div>
 
@@ -3847,6 +3953,92 @@ allTasksSelected: false,
 taskSearchTerm: '',
 
 sidebarTasks: [],
+
+addTaskPopupOpen: false,
+selectedTasksToAdd: [],
+selectAllTasks: false,
+addTargetModule: null,
+addTargetSection: null,
+
+openAddTaskPopup(module, section) {
+    // 1. SET THE TARGET
+    this.addTargetModule = module;
+    this.addTargetSection = section;
+
+    // 2. RESET STATE
+    this.selectedTasksToAdd = [];
+    this.selectAllTasks = false;
+    this.addTaskPopupOpen = true;
+
+    // We must identify tasks *not already in the target module* for the sidebar.
+    const tasksInModule = this.getModuleTasks(module, section).map(t => t.id.split('-')[0]); // Get base ID
+    this.availableSidebarTasks = this.sidebarTasks.filter(t => !tasksInModule.includes(t.id));
+
+    this.$nextTick(() => lucide.createIcons());
+},
+
+toggleSelectAllTasks() {
+    if (this.selectAllTasks) {
+        this.selectedTasksToAdd = this.sidebarTasks.map(t => t.id);
+    } else {
+        this.selectedTasksToAdd = [];
+    }
+},
+
+applyAddedTasks() {
+    // ❌ OLD: if (!this.selectedModule || !this.selectedSection) return;
+    // ✅ NEW: Check the correct target variables
+    if (!this.addTargetModule || !this.addTargetSection) return;
+    
+    // Get a reference to the tasks array
+    const targetTasks = this.tasks;
+
+    this.selectedTasksToAdd.forEach(taskId => {
+        
+        // 1️⃣ FIND TASK FROM SIDEBAR (Source of truth)
+        const sourceTask = this.sidebarTasks.find(t => t.id === taskId);
+
+        if (!sourceTask) {
+            console.warn("Task not found in sidebarTasks:", taskId);
+            return;
+        }
+
+        // 2️⃣ CLONE TASK SAFELY to avoid reference issues
+        const clonedTask = JSON.parse(JSON.stringify(sourceTask));
+
+        // 3️⃣ GENERATE UNIQUE ID and SET PROPERTIES FOR WORKFLOW
+        clonedTask.id = sourceTask.id + '-' + Date.now(); // Ensure unique ID
+        clonedTask.app = this.addTargetModule;
+        clonedTask.category = this.addTargetSection;
+        clonedTask.enabled = true;
+        clonedTask.hidden = false;
+        clonedTask.complete = false;
+        // Keep original badge/icon/name from sidebar
+
+        // 4️⃣ ADD INTO THE MAIN TASKS ARRAY
+        targetTasks.push(clonedTask); // Pushing to the main tasks array
+    });
+
+    this.addTaskPopupOpen = false;
+    this.selectedTasksToAdd = [];
+    this.selectAllTasks = false;
+    
+    // Crucial for the progress bar and UI update
+    this.$nextTick(() => this.updateTaskProgress());
+},
+
+addTaskToModule(module, section, taskId) {
+    const task = JSON.parse(JSON.stringify(this.sidebarTasks.find(t => t.id === taskId)));
+    if (!task) return;
+
+    this.workflow[module][section].push(task);
+},
+
+getTaskIconColor(taskId) {
+    return {
+        'bg-purple-200 text-purple-700': true,
+    };
+},
 
 
 predefinedTasks: [
