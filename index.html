@@ -1637,7 +1637,6 @@
 </div>
 
 
-<!-- ADD TASK POPUP -->
 <div 
     x-show="addTaskPopupOpen"
     class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
@@ -1648,18 +1647,15 @@
             Add Tasks
         </h2>
 
-        <!-- SELECT ALL -->
         <label class="flex items-center gap-2 mb-2 cursor-pointer">
             <input type="checkbox" x-model="selectAllTasks" @change="toggleSelectAllTasks">
             <span class="text-sm font-medium">Select All</span>
         </label>
 
-        <!-- TASK LIST -->
         <div class="max-h-64 overflow-y-auto border rounded-lg p-3 space-y-3">
             <template x-for="task in sidebarTasks" :key="task.id">
                 <label class="flex items-center gap-3 cursor-pointer">
 
-                    <!-- ICON -->
                     <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
                         :class="getTaskIconColor(task.id)">
                         <i :data-lucide="task.icon" class="w-4 h-4"></i>
@@ -1675,7 +1671,6 @@
             </template>
         </div>
 
-        <!-- BUTTONS -->
         <div class="flex justify-end gap-3 mt-4">
             <button 
                 @click="addTaskPopupOpen=false"
@@ -1696,10 +1691,119 @@
 </div>
 
 
+<div 
+    x-show="addGroupPopupOpen"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
+>
+    <div class="bg-white w-[420px] rounded-xl shadow-xl p-5 space-y-4" @click.stop>
 
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">
+            Add New Group
+        </h2>
 
+        <div>
+            <label for="group-name" class="block text-sm font-medium text-gray-700 mb-1">Group Name</label>
+            <input type="text" id="group-name" x-model="newGroupName" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="e.g., Daily Checklists, Safety Audits">
+        </div>
 
-    <div class="flex items-center gap-2 ml-4 text-[12px]" x-data>
+        <div class="flex justify-end gap-3 mt-4">
+            <button 
+                @click="addGroupPopupOpen=false; newGroupName='';"
+                class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium"
+            >
+                Close
+            </button>
+
+            <button 
+                @click="saveNewGroup()"
+                :disabled="!newGroupName.trim()"
+                class="px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors"
+                :class="newGroupName.trim() ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-400 cursor-not-allowed'"
+            >
+                Save
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<div 
+    x-show="addDayPartPopupOpen"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[200]"
+>
+    <div class="bg-white w-[420px] rounded-xl shadow-xl p-5 space-y-4" @click.stop>
+
+        <h2 class="text-lg font-semibold text-gray-800 mb-2">
+            Add Workflow Day Part
+        </h2>
+
+        <div>
+            <label for="day-part-name" class="block text-sm font-medium text-gray-700 mb-1">Day Part Name</label>
+            <input type="text" id="day-part-name" x-model="newDayPartName" 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                   placeholder="e.g., Lunch Prep, Evening Service">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 pt-2">
+            
+            <div @click="copyFromDayPart = null"
+                 class="p-4 rounded-lg border-2 cursor-pointer transition-all"
+                 :class="copyFromDayPart === null ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100' : 'border-gray-200 hover:border-blue-300'"
+            >
+                <div class="flex items-center gap-2 text-sm font-semibold"
+                     :class="copyFromDayPart === null ? 'text-blue-700' : 'text-gray-700'">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Build from Scratch
+                </div>
+            </div>
+
+            <div class="relative" x-data="{ open: false }">
+                <div @click="open = !open"
+                     class="p-4 rounded-lg border-2 cursor-pointer transition-all h-full flex flex-col justify-center"
+                     :class="copyFromDayPart !== null ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100' : 'border-gray-200 hover:border-blue-300'"
+                >
+                    <div class="flex items-center gap-2 text-sm font-semibold"
+                         :class="copyFromDayPart !== null ? 'text-blue-700' : 'text-gray-700'">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                        <span x-text="copyFromDayPart ? 'Copy from ' + copyFromDayPart : 'Copy from existing'"></span>
+                        <i data-lucide="chevron-down" class="w-3 h-3 ml-auto"></i>
+                    </div>
+                </div>
+                
+                <div x-show="open" @click.outside="open = false"
+                     class="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 rounded-lg shadow-xl z-30 py-1 text-[12px]">
+                    <a href="#" @click="copyFromDayPart = 'Start of Day'; open=false"
+                       class="block px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium">Start of Day</a>
+                    <a href="#" @click="copyFromDayPart = 'Close of Day'; open=false"
+                       class="block px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium">Close of Day</a>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="flex justify-end gap-3 mt-4">
+            <button 
+                @click="addDayPartPopupOpen=false; newDayPartName='';"
+                class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-sm font-medium"
+            >
+                Cancel
+            </button>
+
+            <button 
+                @click="saveNewDayPart()"
+                :disabled="!newDayPartName.trim()"
+                class="px-4 py-2 rounded-lg text-white text-sm font-medium transition-colors"
+                :class="newDayPartName.trim() ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-400 cursor-not-allowed'"
+            >
+                Save
+            </button>
+        </div>
+
+    </div>
+</div>
+<div class="flex items-center gap-2 ml-4 text-[12px]" x-data>
     <div class="flex bg-gray-100 px-1 py-1 rounded-lg shadow-inner">
 
         <button 
@@ -2053,6 +2157,29 @@
         <span x-text="opt"></span>
     </button>
 </template>
+<div class="flex items-center gap-2">
+    <div class="relative" x-data="{ open: false }">
+        <button @click="open = !open" 
+            class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all border bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 flex items-center gap-2">
+            <i data-lucide="calculator" class="w-4 h-4"></i>
+            <span x-text="aggregationPeriod"></span>
+            <i data-lucide="chevron-down" class="w-3 h-3"></i>
+        </button>
+
+        <div x-show="open" @click.outside="open = false"
+             class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-lg shadow-xl z-30 py-1 text-[12px]">
+
+            <a href="#" @click="aggregationPeriod = 'Daily'; open=false; renderChart()"
+               class="block px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium">Daily</a>
+
+            <a href="#" @click="aggregationPeriod = 'Weekly'; open=false; renderChart()"
+               class="block px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium">Weekly</a>
+
+            <a href="#" @click="aggregationPeriod = '14-Day'; open=false; renderChart()"
+               class="block px-3 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-700 font-medium">Period (1 Month)</a>
+        </div>
+    </div>
+    </div>
     </div>
 
 </div>
@@ -2183,1718 +2310,388 @@
 <br>
 
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden sod-wrapper">
-          <div class="section-header !py-2 !px-4" @click="sodExpanded = !sodExpanded">
+          <div class="section-header !py-2 !px-4" @click="toggleDayPart('Start of Day')">
             <div class="flex items-center gap-3">
               <div class="bg-white/10 p-1 rounded-md">
-                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="sodExpanded ? 'rotate-180' : 'rotate-0'"></i>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="isDayPartExpanded('Start of Day') ? 'rotate-180' : 'rotate-0'"></i>
               </div>
               <h3 class="text-sm font-semibold">Start of Day</h3>
             </div>
 
             <div class="flex items-center gap-3">
               <div class="text-right">
-                <span id="sod-count" class="text-xs font-bold text-white">0/0</span>
+                <span id="sod-count" class="text-xs font-bold text-white" x-text="getDayPartProgress('Start of Day').countText"></span>
               </div>
               <div class="header-progress-track h-2 w-32 bg-gray-700/50">
-                <div id="sod-progress" class="header-progress-fill"></div>
+                <div id="sod-progress" class="header-progress-fill" :style="'width:' + getDayPartProgress('Start of Day').percent + '%'"></div>
               </div>
             </div>
           </div>
 
-          <div x-show="sodExpanded" x-collapse class="p-8 sod-inner timeline-container bg-white">
+          <div x-show="isDayPartExpanded('Start of Day')" x-collapse class="p-8 sod-inner timeline-container bg-white">
             <div class="timeline-line"></div>
 
-            <div class="relative mb-10 pl-11" x-show="hasVisibleTasks('Forecast', 'Start of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                  <i data-lucide="trending-up" class="w-5 h-5"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Forecast'"></h4>
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Forecast', 'Start of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Forecast', 'Start of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Forecast', 'Start of Day')"
-     @drop.prevent="dropToModule($event, 'Forecast', 'Start of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Forecast', 'Start of Day') }">
-
-
-                    <template x-for="task in getModuleTasks('Forecast', 'Start of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)"
-                           x-init="$nextTick(() => lucide.createIcons())">
-                           
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg shadow-inner">
-                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
-                          <i x-show="task.complete" data-lucide="check" class="w-6 h-6"></i>
+            <template x-for="module in getWorkflowModules('Start of Day')" :key="module.name">
+                <div class="relative mb-10 pl-11" x-show="hasVisibleTasks(module.name, 'Start of Day') || module.customGroup">
+                    <div class="absolute left-0 top-2">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white"
+                             :class="module.colorClasses || 'bg-gradient-to-br from-blue-500 to-blue-600'">
+                            <i :data-lucide="module.icon || 'folder-open'" class="w-5 h-5"></i>
                         </div>
-
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Forecast', 'Start of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-
-                  </div>
-                </div>
-
-                <div class="detail-content"
-     data-task-detail="task-forecast"
-     x-show="false"
-     style="display:none!important"
-     x-data="{
-        editingRow: null,   // null | 'ai' | 'mgr'
-        ai:['4200','3800','4100','5200','6500','6800','4500'],
-        mgr:['4500','4000','4200','5500','6800','7000','4800'],
-        startEditing(row){ this.editingRow = row; this.$nextTick(()=>{ /* focus first input */ const el = this.$el.querySelector('input'); if(el) el.focus(); }) },
-        stopEditing(){ this.editingRow = null; }
-     }">
-
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-sm font-bold text-gray-900">Weekly Forecast</h3>
-        <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
-            Export CSV
-        </button>
-    </div>
-
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm text-center text-gray-700 border">
-            <thead class="bg-gray-50 font-semibold">
-                <tr>
-                    <th class="p-2 border text-left">Days</th>
-                    <th class="p-2 border">11/25</th>
-                    <th class="p-2 border">11/26</th>
-                    <th class="p-2 border">11/27</th>
-                    <th class="p-2 border">11/28</th>
-                    <th class="p-2 border">11/29</th>
-                    <th class="p-2 border">11/30</th>
-                    <th class="p-2 border">12/01</th>
-                    <th class="p-2 border">Action</th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y">
-
-                <tr>
-                    <td class="p-2 border font-medium text-left">AI Forecast</td>
-
-                    <template x-for="(val,i) in ai" :key="'ai'+i">
-                        <td class="p-2 border">
-                            <span x-show="editingRow !== 'ai'" x-text="'$' + val"></span>
-
-                            <input x-show="editingRow === 'ai'"
-                                   x-model="ai[i]"
-                                   class="inline-block min-w-[70px] max-w-[180px] px-2 py-1 rounded border text-sm text-center"
-                                   />
-                        </td>
-                    </template>
-
-                    <td class="p-2 border w-[80px]">
-                        <div class="flex flex-col items-center justify-center gap-2">
-                            <div x-show="editingRow !== 'ai'">
-                                <button @click.stop="startEditing('ai')"
-                                        class="p-1 rounded hover:bg-gray-100">
-                                    <i data-lucide="edit" class="w-4 h-4 text-blue-500"></i>
-                                </button>
-                            </div>
-
-                            <div x-show="editingRow === 'ai'">
-                                <button @click.stop="stopEditing()"
-                                        class="p-1 rounded hover:bg-gray-100">
-                                    <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="p-2 border font-medium text-left">Mgr. Forecast</td>
-
-                    <template x-for="(val,i) in mgr" :key="'mgr'+i">
-                        <td class="p-2 border">
-                            <span x-show="editingRow !== 'mgr'" x-text="'$' + val"></span>
-
-                            <input x-show="editingRow === 'mgr'"
-                                   x-model="mgr[i]"
-                                   class="inline-block min-w-[70px] max-w-[180px] px-2 py-1 rounded border text-sm text-center"
-                                   />
-                        </td>
-                    </template>
-
-                    <td class="p-2 border w-[80px]">
-                        <div class="flex flex-col items-center justify-center gap-2">
-                            <div x-show="editingRow !== 'mgr'">
-                                <button @click.stop="startEditing('mgr')"
-                                        class="p-1 rounded hover:bg-gray-100">
-                                    <i data-lucide="edit" class="w-4 h-4 text-blue-500"></i>
-                                </button>
-                            </div>
-
-                            <div x-show="editingRow === 'mgr'">
-                                <button @click.stop="stopEditing()"
-                                        class="p-1 rounded hover:bg-gray-100">
-                                    <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-
-
-        <div class="detail-content"
-     data-task-detail="task-actual-sales"
-     x-show="false" 
-     style="display:none!important"
-     x-data="{
-        editing: false,
-        sales: ['$5210','$4980','$5340','$6120','$7450','$6980','$5760']
-     }">
-
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-sm font-bold text-gray-900">Actual Sales</h3>
-        <button class="text-xs bg-gray-100 hover:bg-gray-200 px-3 py-1 rounded text-gray-600">
-            Export CSV
-        </button>
-    </div>
-
-    <div class="overflow-x-auto">
-        <table class="w-full text-xs text-center text-gray-600 border">
-
-            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                <tr>
-                    <th class="p-2 border">Actual Sales</th>
-                    <th class="p-2 border">11/25</th>
-                    <th class="p-2 border">11/26</th>
-                    <th class="p-2 border">11/27</th>
-                    <th class="p-2 border">11/28</th>
-                    <th class="p-2 border">11/29</th>
-                    <th class="p-2 border">11/30</th>
-                    <th class="p-2 border">12/01</th>
-                    <th class="p-2 border">Action</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td class="p-2 border font-medium">Sales ($)</td>
-
-                    <template x-for="(val,i) in sales" :key="i">
-                        <td class="p-2 border">
-                            <span x-show="!editing" x-text="val"></span>
-
-                            <input x-show="editing"
-                                   x-model="sales[i]"
-                                   class="w-20 text-center border rounded p-1 text-xs" />
-                        </td>
-                    </template>
-
-                    <td class="p-2 border">
-    <div class="flex justify-center items-center gap-4">
-
-        <div x-show="!editing" @click="editing = true"
-             class="cursor-pointer hover:scale-110 transition">
-            <i data-lucide="edit" class="w-4 h-4 text-blue-400"></i>
-        </div>
-
-        <div x-show="editing" @click="editing = false"
-             class="cursor-pointer hover:scale-110 transition">
-            <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600"
-               title="Save"></i>
-        </div>
-
-    </div>
-</td>
-
-
-
-
-                </tr>
-            </tbody>
-
-        </table>
-    </div>
-</div>
-
-
-    </div>
-</div>
-
-
-        
-
-
-                <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Start of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                  <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Food Management'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Food Management', 'Start of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Food Management', 'Start of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Food Management', 'Start of Day')"
-     @drop.prevent="dropToModule($event, 'Food Management', 'Start of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Food Management', 'Start of Day') }">
-
-
-
-                    <template x-for="task in getModuleTasks('Food Management', 'Start of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg shadow-inner">
-                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                        </div>
-
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Food Management', 'Start of Day')"
->
-<div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-                  </div>
-                </div>
-
-        <div x-show="[
-        'task-sod-ordering',
-        'task-sod-receiving',
-        'task-sod-transfer',
-        'task-sod-waste'
-    ].includes(activeTaskId)"
-    class="add-task-container">
-
-            <button 
-                class="add-task-button"
-                @click="
-                    activeTaskId === 'task-sod-ordering'   ? addOrdering() :
-                    activeTaskId === 'task-sod-receiving'  ? addReceiving() :
-                    activeTaskId === 'task-sod-transfer'   ? addTransfer() :
-                    activeTaskId === 'task-sod-waste'      ? addWaste() :
-                    null
-                ">
-                <span x-text="
-                    activeTaskId === 'task-sod-ordering'   ? 'Add Ordering'   :
-                    activeTaskId === 'task-sod-receiving'  ? 'Add Receiving'  :
-                    activeTaskId === 'task-sod-transfer'   ? 'Add Transfer'   :
-                    activeTaskId === 'task-sod-waste'      ? 'Add Waste'      :
-                    ''
-                "></span>
-
-            </button>
-        </div>
-
-    </div>
-</div>
-
-
-
-
-        
-
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Start of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                  <i data-lucide="users" class="w-4 h-4"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Labor Management'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Labor Management', 'Start of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Labor Management', 'Start of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Labor Management', 'Start of Day')"
-     @drop.prevent="dropToModule($event, 'Labor Management', 'Start of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Labor Management', 'Start of Day') }">
-
-
-                    <template x-for="task in getModuleTasks('Labor Management', 'Start of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg shadow-inner">
-                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                        </div>
-
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Labor Management', 'Start of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-                  </div>
-                </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-schedule"
-     x-show="false"
-     style="display:none!important">
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Date</th>
-                            <th class="p-2 border">Mgr. Forecast</th>
-                            <th class="p-2 border">Sch Hrs</th>
-                            <th class="p-2 border">Proj. Hrs</th>
-                            <th class="p-2 border">Act. Hrs</th>
-                            <th class="p-2 border">Ideal Hrs</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Actions</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border">02/17/24</td>
-                            <td class="p-2 border">$5,559</td>
-                            <td class="p-2 border">125:00</td>
-                            <td class="p-2 border">128:00</td>
-                            <td class="p-2 border">45:00</td>
-                            <td class="p-2 border">120:00</td>
-                            <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="edit" class="w-3 h-3"></i>
-                                <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border">02/24/24</td>
-                            <td class="p-2 border">$3,562</td>
-                            <td class="p-2 border">128:00</td>
-                            <td class="p-2 border">130:00</td>
-                            <td class="p-2 border">0:00</td>
-                            <td class="p-2 border">128:00</td>
-                            <td class="p-2 border text-gray-500">Open</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="edit" class="w-3 h-3"></i>
-                                <i data-lucide="printer" class="w-3 h-3 text-gray-500"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border">03/02/24</td>
-                            <td class="p-2 border">$6,100</td>
-                            <td class="p-2 border">140:00</td>
-                            <td class="p-2 border">135:00</td>
-                            <td class="p-2 border">0:00</td>
-                            <td class="p-2 border">130:00</td>
-                            <td class="p-2 border text-gray-500">Open</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="edit" class="w-3 h-3"></i>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-time-loss"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Metric</th>
-                            <th class="p-2 border">Value</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border font-medium">Time Loss %</td>
-                            <td class="p-2 border">4.8%</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Early Clock In ($)</td>
-                            <td class="p-2 border">$32.50</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Late Clock Out ($)</td>
-                            <td class="p-2 border">$45.00</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">OT Loss ($)</td>
-                            <td class="p-2 border">$120.00</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Break Loss ($)</td>
-                            <td class="p-2 border">$18.75</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-timeoff"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Employee</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border font-medium">Rohit Sharma</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Lara Benson</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-availability"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Employee</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Michael Scott</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Tina Ross</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-swapshift"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Date</th>
-                            <th class="p-2 border">Time</th>
-                            <th class="p-2 border">Position</th>
-                            <th class="p-2 border">Offered By</th>
-                            <th class="p-2 border">Accepted By</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border">01/14/25</td>
-                            <td class="p-2 border">8:00a - 4:00p</td>
-                            <td class="p-2 border">Assistant Manager</td>
-                            <td class="p-2 border">Lara</td>
-                            <td class="p-2 border">1 Employee</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border">01/15/25</td>
-                            <td class="p-2 border">2:00p - 10:00p</td>
-                            <td class="p-2 border">Crew Member</td>
-                            <td class="p-2 border">Rohit</td>
-                            <td class="p-2 border">1 Employee</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-    </div>
-</div>
-
-
-        
-
-
-        <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Start of Day')">
-
-    <div class="absolute left-0 top-2">
-        <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
-            <i data-lucide="clock" class="w-4 h-4"></i>
-        </div>
-    </div>
-
-    <div class="flex flex-col gap-4">
-
-        <div class="flex items-center gap-4">
-            <h4 class="text-sm font-bold text-gray-900" 
-                :contenteditable="editMode"
-                @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                x-text="'Payroll Management'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Payroll Management', 'Start of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Payroll Management', 'Start of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Payroll Management', 'Start of Day')"
-     @drop.prevent="dropToModule($event, 'Payroll Management', 'Start of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Payroll Management', 'Start of Day') }">
-
-
-                <template x-for="task in getModuleTasks('Payroll Management', 'Start of Day')" :key="task.id">
-                    <div x-show="!task.hidden"
-                         :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                         class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                         @click="openTaskPopup(task)"
-                         x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)"
-                            class="card-action-btn text-green-600 hover:bg-green-50">
-                            <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0"
-                             class="notification-badge"
-                             x-text="task.badge"></div>
-
-                        <div class="task-icon-bg">
-                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
-                        </div>
-
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
                     </div>
 
-                </template>
-                <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Payroll Management', 'Start of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-4">
+                            <h4 class="text-sm font-bold text-gray-900" 
+                                :contenteditable="editMode"
+                                @blur="if(editMode) module.name = $event.target.textContent.trim()"
+                                x-text="module.name"></h4>
+
+                            <div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+                                 @dragover.prevent="dragOverModule($event, module.name, 'Start of Day')"
+                                 @dragenter.prevent="dragEnterModule($event, module.name, 'Start of Day')"
+                                 @dragleave.prevent="dragLeaveModule($event, module.name, 'Start of Day')"
+                                 @drop.prevent="dropToModule($event, module.name, 'Start of Day')"
+                                 :class="{ 'module-drop-target': isDropTarget(module.name, 'Start of Day') }">
+
+                                <template x-for="task in getModuleTasks(module.name, 'Start of Day')" :key="task.id">
+                                    <div x-show="!task.hidden"
+                                         :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                                         class="task-tile"
+                                         :draggable="editMode"
+                                         @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+                                         @dragend="if (editMode) dragEnd($event)"
+                                         @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+                                         @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+                                         @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+                                         @click="openTaskPopup(task)"
+                                         x-init="$nextTick(() => lucide.createIcons())">
+                                        
+                                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                        </button>
+
+                                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
+
+                                        <div class="task-icon-bg shadow-inner" :class="task.app === 'Forecast' ? 'bg-blue-100 text-blue-600' : task.app === 'Food Management' ? 'bg-purple-100 text-purple-600' : task.app === 'Labor Management' ? 'bg-amber-100 text-amber-600' : task.app === 'Payroll Management' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'">
+                                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
+                                            <i x-show="task.complete" data-lucide="check" class="w-6 h-6 text-green-600"></i>
+                                        </div>
+
+                                        <span class="task-name"
+                                              :contenteditable="editMode"
+                                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                                              x-text="task.name"></span>
+                                    </div>
+                                </template>
+
+                                <div 
+                                    x-show="editMode"
+                                    class="flex items-center justify-center cursor-pointer mt-1"
+                                    @click="openAddTaskPopup(module.name, 'Start of Day')"
+                                >
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+                                        <span class="text-xl leading-none font-bold">+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div x-show="module.name === 'Forecast'">
+                             <div class="detail-content" data-task-detail="task-forecast" x-show="false" style="display:none!important">
+                                </div>
+                              <div class="detail-content" data-task-detail="task-actual-sales" x-show="false" style="display:none!important">
+                                </div>
+                        </div>
+
+                        <div x-show="module.name === 'Food Management'">
+                            <div class="add-task-container">
+                                </div>
+                        </div>
+
+                        <div x-show="module.name === 'Labor Management'">
+                             <div class="detail-content" data-task-detail="task-sod-schedule" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-time-loss" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-timeoff" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-availability" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-swapshift" x-show="false" style="display:none!important"></div>
+                        </div>
+
+                        <div x-show="module.name === 'Payroll Management'">
+                             <div class="detail-content" data-task-detail="task-sod-punches-ex" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-unbalanced" x-show="false" style="display:none!important"></div>
+                             <div class="detail-content" data-task-detail="task-sod-mismatch" x-show="false" style="display:none!important"></div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </template>
+            
+            <div x-show="editMode" class="flex justify-start pl-11 mt-6">
+                <button @click="openAddGroupPopup('Start of Day')"
+                    class="add-task-button !bg-blue-600 !text-white !border-blue-700 hover:!bg-blue-700"
+                >
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    Add Group
+                </button>
+            </div>
+
+          </div>
 </div>
 
-            </div>
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-punches-ex"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="space-y-2 text-xs">
-
-                <div class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
-                    <span><strong>Akash G</strong> - Missing Clock Out (12:00 In)</span>
-                    <button class="text-blue-600 underline">Fix</button>
-                </div>
-
-                <div class="p-2 bg-gray-50 border border-gray-200 rounded flex justify-between items-center">
-                    <span><strong>Annie V</strong> - Long Shift (11 Hrs)</span>
-                    <button class="text-blue-600 underline">Review</button>
-                </div>
-
-                <div class="p-2 bg-red-50 border border-red-100 rounded flex justify-between items-center">
-                    <span><strong>Robert P</strong> - Early Clock In (08:30 In)</span>
-                    <button class="text-blue-600 underline">Fix</button>
-                </div>
-
-            </div>
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-unbalanced"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Clock In</th>
-                            <th class="p-2 border">Clock Out</th>
-                            <th class="p-2 border">Comment</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 07, 02:00 PM</td>
-                            <td class="p-2 border">—</td>
-                            <td class="p-2 border">Forgot to punch out</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 07, 10:00 AM</td>
-                            <td class="p-2 border">—</td>
-                            <td class="p-2 border">Clock-out missing</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-        <div class="detail-content"
-     data-task-detail="task-sod-mismatch"
-     x-show="false"
-     style="display:none!important">
-
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Clock In</th>
-                            <th class="p-2 border">Clock Out</th>
-                            <th class="p-2 border">Comment</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 07, 09:00 AM</td>
-                            <td class="p-2 border">Sun, Dec 07, 03:00 PM</td>
-                            <td class="p-2 border">Punch mismatch detected</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sat, Dec 06, 11:30 AM</td>
-                            <td class="p-2 border">Sat, Dec 06, 04:30 PM</td>
-                            <td class="p-2 border">Out punch incorrect</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-400 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-    </div>
+<div x-show="editMode" class="flex justify-center my-6">
+    <button @click="openAddDayPartPopup()"
+        class="add-task-button !bg-indigo-600 !text-white !border-indigo-700 hover:!bg-indigo-700">
+        <i data-lucide="plus-circle" class="w-5 h-5"></i>
+        Add Workflow Day Part
+    </button>
 </div>
+<template x-for="(dayPart, index) in customDayParts" :key="dayPart.name + index">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-10">
+        <div class="section-header !py-2 !px-4" @click="toggleDayPart(dayPart.name)">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/10 p-1 rounded-md">
+                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="isDayPartExpanded(dayPart.name) ? 'rotate-180' : 'rotate-0'"></i>
+                </div>
+                <h3 class="text-sm font-semibold" x-text="dayPart.name"></h3>
+            </div>
 
-</div> </div> <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-          <div class="section-header !py-2 !px-4" @click="codExpanded = !codExpanded">
+            <div class="flex items-center gap-3">
+                <button x-show="editMode" @click.stop="removeDayPart(dayPart.name)" 
+                    class="p-1.5 rounded-full text-white/70 hover:text-white hover:bg-white/20 transition">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                </button>
+                <div class="text-right">
+                    <span class="text-xs font-bold text-white" x-text="getDayPartProgress(dayPart.name).countText"></span>
+                </div>
+                <div class="header-progress-track h-2 w-32 bg-gray-700/50">
+                    <div class="header-progress-fill" :style="'width:' + getDayPartProgress(dayPart.name).percent + '%'"></div>
+                </div>
+            </div>
+        </div>
+
+        <div x-show="isDayPartExpanded(dayPart.name)" x-collapse class="p-8 timeline-container bg-white">
+            <div class="timeline-line"></div>
+
+            <template x-for="module in getWorkflowModules(dayPart.name)" :key="module.name">
+                <div class="relative mb-10 pl-11" x-show="hasVisibleTasks(module.name, dayPart.name) || module.customGroup">
+                    <div class="absolute left-0 top-2">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg ring-4 ring-white"
+                             :class="module.colorClasses || 'bg-gradient-to-br from-gray-400 to-gray-500'">
+                            <i :data-lucide="module.icon || 'folder-open'" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-4">
+                            <h4 class="text-sm font-bold text-gray-900" 
+                                :contenteditable="editMode"
+                                @blur="if(editMode) module.name = $event.target.textContent.trim()"
+                                x-text="module.name"></h4>
+
+                            <div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+                                 @dragover.prevent="dragOverModule($event, module.name, dayPart.name)"
+                                 @dragenter.prevent="dragEnterModule($event, module.name, dayPart.name)"
+                                 @dragleave.prevent="dragLeaveModule($event, module.name, dayPart.name)"
+                                 @drop.prevent="dropToModule($event, module.name, dayPart.name)"
+                                 :class="{ 'module-drop-target': isDropTarget(module.name, dayPart.name) }">
+
+                                <template x-for="task in getModuleTasks(module.name, dayPart.name)" :key="task.id">
+                                     <div x-show="!task.hidden"
+                                         :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                                         class="task-tile"
+                                         :draggable="editMode"
+                                         @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+                                         @dragend="if (editMode) dragEnd($event)"
+                                         @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+                                         @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+                                         @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+                                         @click="openTaskPopup(task)"
+                                         x-init="$nextTick(() => lucide.createIcons())">
+                                        
+                                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                        </button>
+
+                                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
+
+                                        <div class="task-icon-bg shadow-inner" :class="task.app === 'Zip Inventory' ? 'bg-green-100 text-green-600' : task.app === 'Food Management' ? 'bg-purple-100 text-purple-600' : task.app === 'Labor Management' ? 'bg-amber-100 text-amber-600' : task.app === 'Payroll Management' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'">
+                                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                                        </div>
+
+                                        <span class="task-name"
+                                              :contenteditable="editMode"
+                                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                                              x-text="task.name"></span>
+                                    </div>
+                                </template>
+
+                                <div 
+                                    x-show="editMode"
+                                    class="flex items-center justify-center cursor-pointer mt-1"
+                                    @click="openAddTaskPopup(module.name, dayPart.name)"
+                                >
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+                                        <span class="text-xl leading-none font-bold">+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+            
+            <div x-show="editMode" class="flex justify-start pl-11 mt-6">
+                <button @click="openAddGroupPopup(dayPart.name)"
+                    class="add-task-button !bg-blue-600 !text-white !border-blue-700 hover:!bg-blue-700"
+                >
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    Add Group
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+
+<div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+          <div class="section-header !py-2 !px-4" @click="toggleDayPart('Close of Day')">
             <div class="flex items-center gap-3">
               <div class="bg-white/10 p-1 rounded-md">
-                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="codExpanded ? 'rotate-180' : 'rotate-0'"></i>
+                <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-300" :class="isDayPartExpanded('Close of Day') ? 'rotate-180' : 'rotate-0'"></i>
               </div>
               <h3 class="text-sm font-semibold">Close of Day</h3>
             </div>
 
             <div class="flex items-center gap-3">
               <div class="text-right">
-                <span id="cod-count" class="text-xs font-bold text-white">0/0</span>
+                <span id="cod-count" class="text-xs font-bold text-white" x-text="getDayPartProgress('Close of Day').countText"></span>
               </div>
               <div class="header-progress-track h-2 w-32 bg-gray-700/50">
-                <div id="cod-progress" class="header-progress-fill"></div>
+                <div id="cod-progress" class="header-progress-fill" :style="'width:' + getDayPartProgress('Close of Day').percent + '%'"></div>
               </div>
             </div>
           </div>
 
-          <div x-show="codExpanded" x-collapse class="p-8 timeline-container bg-white">
+          <div x-show="isDayPartExpanded('Close of Day')" x-collapse class="p-8 timeline-container bg-white">
             <div class="timeline-line"></div>
 
-            <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Food Management', 'Close of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white">
-                  <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                </div>
-              </div>
+            <template x-for="module in getWorkflowModules('Close of Day')" :key="module.name">
+                <div class="relative mb-10 pl-12" x-show="hasVisibleTasks(module.name, 'Close of Day') || module.customGroup">
+                    <div class="absolute left-0 top-2">
+                         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white shadow-lg ring-4 ring-white"
+                             :class="module.colorClasses || 'bg-gradient-to-br from-purple-500 to-pink-600'">
+                            <i :data-lucide="module.icon || 'folder-open'" class="w-5 h-5"></i>
+                        </div>
+                    </div>
 
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Food Management'"></h4>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-center gap-4">
+                            <h4 class="text-sm font-bold text-gray-900" 
+                                :contenteditable="editMode"
+                                @blur="if(editMode) module.name = $event.target.textContent.trim()"
+                                x-text="module.name"></h4>
 
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Food Management', 'Close of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Food Management', 'Close of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Food Management', 'Close of Day')"
-     @drop.prevent="dropToModule($event, 'Food Management', 'Close of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Food Management', 'Close of Day') }">
+                            <div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
+                                 @dragover.prevent="dragOverModule($event, module.name, 'Close of Day')"
+                                 @dragenter.prevent="dragEnterModule($event, module.name, 'Close of Day')"
+                                 @dragleave.prevent="dragLeaveModule($event, module.name, 'Close of Day')"
+                                 @drop.prevent="dropToModule($event, module.name, 'Close of Day')"
+                                 :class="{ 'module-drop-target': isDropTarget(module.name, 'Close of Day') }">
 
+                                <template x-for="task in getModuleTasks(module.name, 'Close of Day')" :key="task.id">
+                                     <div x-show="!task.hidden"
+                                         :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
+                                         class="task-tile"
+                                         :draggable="editMode"
+                                         @dragstart="if (editMode) dragStart($event, task.id, 'task')"
+                                         @dragend="if (editMode) dragEnd($event)"
+                                         @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
+                                         @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
+                                         @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+                                         @click="openTaskPopup(task)"
+                                         x-init="$nextTick(() => lucide.createIcons())">
+                                        
+                                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
+                                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                                        </button>
 
-                    <template x-for="task in getModuleTasks('Food Management', 'Close of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
+                                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
 
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
+                                        <div class="task-icon-bg shadow-inner" :class="task.app === 'Zip Inventory' ? 'bg-green-100 text-green-600' : task.app === 'Food Management' ? 'bg-purple-100 text-purple-600' : task.app === 'Labor Management' ? 'bg-amber-100 text-amber-600' : task.app === 'Payroll Management' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'">
+                                            <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
+                                            <i x-show="task.complete" data-lucide="check" class="w-5 h-5 text-green-600"></i>
+                                        </div>
 
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
+                                        <span class="task-name"
+                                              :contenteditable="editMode"
+                                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
+                                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
+                                              x-text="task.name"></span>
+                                    </div>
+                                </template>
 
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg shadow-inner">
-                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                                <div 
+                                    x-show="editMode"
+                                    class="flex items-center justify-center cursor-pointer mt-1"
+                                    @click="openAddTaskPopup(module.name, 'Close of Day')"
+                                >
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
+                                        <span class="text-xl leading-none font-bold">+</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Food Management', 'CLose of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-                  </div>
-                </div>
-
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-ordering'">
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Pending Orders</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                                <tr>
-                                    <th class="p-2 border">Vendor</th>
-                                    <th class="p-2 border">Delivery Schedule</th>
-                                    <th class="p-2 border">Order Date</th>
-                                    <th class="p-2 border">Order Status</th>
-                                    <th class="p-2 border">Amount</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 border">Main St. Produce</td>
-                                    <td class="p-2 border">Mon, 12/01</td>
-                                    <td class="p-2 border">11/29/25</td>
-                                    <td class="p-2 border">Suggested</td>
-                                    <td class="p-2 border">$185.60</td>
-                                    <td class="p-2 border text-blue-600">Finalize</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 border">City Meat Co.</td>
-                                    <td class="p-2 border">Tue, 12/02</td>
-                                    <td class="p-2 border">11/30/25</td>
-                                    <td class="p-2 border">Suggested</td>
-                                    <td class="p-2 border">$450.00</td>
-                                    <td class="p-2 border text-blue-600">Finalize</td>
-                                </tr>
-                                <tr>
-                                    <td class="p-2 border">Bakery Supplies</td>
-                                    <td class="p-2 border">Wed, 12/03</td>
-                                    <td class="p-2 border">12/01/25</td>
-                                    <td class="p-2 border">Pending</td>
-                                    <td class="p-2 border">$120.00</td>
-                                    <td class="p-2 border text-blue-600">Finalize</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-receiving'">
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Receiving Log</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                                <tr>
-                                    <th class="p-2 border">Delivery Date</th>
-                                    <th class="p-2 border">Vendor</th>
-                                    <th class="p-2 border">PO No.</th>
-                                    <th class="p-2 border">Invoice</th>
-                                    <th class="p-2 border">Total Amount</th>
-                                    <th class="p-2 border">Cases Rec.</th>
-                                    <th class="p-2 border">Status</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 border">11/28/25</td>
-                                    <td class="p-2 border">Sysco</td>
-                                    <td class="p-2 border">998877</td>
-                                    <td class="p-2 border">INV-001</td>
-                                    <td class="p-2 border">$500</td>
-                                    <td class="p-2 border">10</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border"><i data-lucide="eye" class="w-3 h-3"></i></td>
-                                </tr>
-
-                                <tr>
-                                    <td class="p-2 border">11/29/25</td>
-                                    <td class="p-2 border">US Foods</td>
-                                    <td class="p-2 border">998878</td>
-                                    <td class="p-2 border">INV-002</td>
-                                    <td class="p-2 border">$350</td>
-                                    <td class="p-2 border">5</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border"><i data-lucide="eye" class="w-3 h-3"></i></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-                
-
-
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Zip Inventory', 'Close of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center ring-4 ring-white">
-                  <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Inventory'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Zip Inventory', 'Close of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Zip Inventory', 'Close of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Zip Inventory', 'Close of Day')"
-     @drop.prevent="dropToModule($event, 'Zip Inventory', 'Close of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Zip Inventory', 'Close of Day') }">
-
-
-                    <template x-for="task in getModuleTasks('Zip Inventory', 'Close of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg">
-                          <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
-                          <i x-show="task.complete" data-lucide="check" class="w-5 h-5"></i>
+                        <div x-show="module.name === 'Food Management'">
+                            <div class="detail-content" x-show="activeTaskId === 'task-cod-ordering'">
+                                </div>
+                            <div class="detail-content" x-show="activeTaskId === 'task-cod-receiving'">
+                                </div>
                         </div>
 
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Zip Inventory', 'CLose of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-                  </div>
-                </div>
-
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-transfer'">
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Transfers In/Out</h3>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead class="bg-gray-50 text-gray-700 font-semibold">
-                                <tr>
-                                    <th class="p-2 border">Date</th>
-                                    <th class="p-2 border">From</th>
-                                    <th class="p-2 border">To</th>
-                                    <th class="p-2 border">Amount</th>
-                                    <th class="p-2 border">Submitted</th>
-                                    <th class="p-2 border">Type</th>
-                                    <th class="p-2 border">Status</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 border">11/28/25</td>
-                                    <td class="p-2 border">Main WH</td>
-                                    <td class="p-2 border">Store 101</td>
-                                    <td class="p-2 border">$200</td>
-                                    <td class="p-2 border">Yes</td>
-                                    <td class="p-2 border">In</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border"><i data-lucide="eye" class="w-3 h-3"></i></td>
-                                </tr>
-
-                                <tr>
-                                    <td class="p-2 border">11/29/25</td>
-                                    <td class="p-2 border">Store 102</td>
-                                    <td class="p-2 border">Store 101</td>
-                                    <td class="p-2 border">$50</td>
-                                    <td class="p-2 border">Yes</td>
-                                    <td class="p-2 border">In</td>
-                                    <td class="p-2 border text-gray-500">Pending</td>
-                                    <td class="p-2 border"><i data-lucide="eye" class="w-3 h-3"></i></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-waste'">
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Waste Log</h3>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead>
-                                <tr>
-                                    <th class="p-2 border">Date</th>
-                                    <th class="p-2 border">Amount</th>
-                                    <th class="p-2 border">Status</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y">
-                                <tr>
-                                    <td class="p-2 border">11/29/25</td>
-                                    <td class="p-2 border">$45</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border">
-                                        <i data-lucide="trash-2" class="w-3 h-3"></i>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="p-2 border">11/30/25</td>
-                                    <td class="p-2 border">$12.50</td>
-                                    <td class="p-2 border text-blue-600 font-semibold">Finalized</td>
-                                    <td class="p-2 border">
-                                        <i data-lucide="trash-2" class="w-3 h-3"></i>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="detail-content" x-show="activeTaskId === 'task-cod-inventory'">
-
-
-                    <h3 class="text-sm font-bold text-gray-900 mb-2">Scheduled Inventory Counts</h3>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-xs text-center text-gray-600 border">
-                            <thead>
-                                <tr>
-                                    <th class="p-2 border">Date</th>
-                                    <th class="p-2 border">Count</th>
-                                    <th class="p-2 border">Sales</th>
-                                    <th class="p-2 border">$ Var</th>
-                                    <th class="p-2 border">% Var (Actual)</th>
-                                    <th class="p-2 border">% Var (Std)</th>
-                                    <th class="p-2 border">Inv. Cost</th>
-                                    <th class="p-2 border">Warn #</th>
-                                    <th class="p-2 border">Status</th>
-                                    <th class="p-2 border">Actions</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <tr>
-                                    <td class="p-2 border font-bold text-blue-600">12/02/25</td>
-                                    <td class="p-2 border">Daily</td>
-                                    <td class="p-2 border">$11,719.96</td>
-                                    <td class="p-2 border text-red-500">($718.23)</td>
-                                    <td class="p-2 border text-red-500">(6.13%)</td>
-                                    <td class="p-2 border text-red-500">(5.50%)</td>
-                                    <td class="p-2 border">0</td>
-                                    <td class="p-2 border">2</td>
-                                    <td class="p-2 border text-green-600 font-bold">Finalized</td>
-                                    <td class="p-2 border"><button class="text-blue-600 underline">Start</button></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </div>
-                    
-        </div>
-
-
-
-        <div class="relative mb-10 pl-12" x-show="hasVisibleTasks('Labor Management', 'Close of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center ring-4 ring-white">
-                  <i data-lucide="users" class="w-4 h-4"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Labor Management'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Labor Management', 'Close of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Labor Management', 'Close of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Labor Management', 'Close of Day')"
-     @drop.prevent="dropToModule($event, 'Labor Management', 'Close of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Labor Management', 'Close of Day') }">
-
-
-                    <template x-for="task in getModuleTasks('Labor Management', 'Close of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg">
-                          <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                        <div x-show="module.name === 'Zip Inventory'">
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-transfer'">
+                                </div>
+                            <div class="detail-content" x-show="activeTaskId === 'task-cod-waste'">
+                                </div>
+                            <div class="detail-content" x-show="activeTaskId === 'task-cod-inventory'">
+                                </div>
                         </div>
 
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Labor Management', 'CLose of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
-
-                  </div>
-                </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-time-loss'">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Loss Summary</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Metric</th>
-                            <th class="p-2 border">Value</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border font-medium">Time Loss %</td>
-                            <td class="p-2 border">5.2%</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Early Clock In ($)</td>
-                            <td class="p-2 border">$40.00</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Late Clock Out ($)</td>
-                            <td class="p-2 border">$52.00</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">OT Loss ($)</td>
-                            <td class="p-2 border">$98.00</td>
-                        </tr>
-                        <tr>
-                            <td class="p-2 border font-medium">Break Loss ($)</td>
-                            <td class="p-2 border">$22.50</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-timeoff'">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Time Off Requests</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Employee</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Alicia Keys</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Daniel Scott</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-availability'">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Availability Requests</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Employee</th>
-                            <th class="p-2 border">Status</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-                        <tr>
-                            <td class="p-2 border font-medium">Nina Patel</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Chris Walker</td>
-                            <td class="p-2 border text-yellow-600">Pending</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-swapshift'">
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Swap Shift Approval</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Date</th>
-                            <th class="p-2 border">Time</th>
-                            <th class="p-2 border">Position</th>
-                            <th class="p-2 border">Offered By</th>
-                            <th class="p-2 border">Accepted By</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border">01/18/25</td>
-                            <td class="p-2 border">10:00a - 6:00p</td>
-                            <td class="p-2 border">Shift Lead</td>
-                            <td class="p-2 border">Alicia</td>
-                            <td class="p-2 border">1 Employee</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border">01/19/25</td>
-                            <td class="p-2 border">3:00p - 11:00p</td>
-                            <td class="p-2 border">Crew Member</td>
-                            <td class="p-2 border">Daniel</td>
-                            <td class="p-2 border">1 Employee</td>
-                            <td class="p-2 border flex justify-center gap-2">
-                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
-                                <i data-lucide="x-circle" class="w-4 h-4 text-red-600"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-
-                
-
-
-        <div class="relative pl-12" x-show="hasVisibleTasks('Payroll Management', 'Close of Day')">
-              <div class="absolute left-0 top-2">
-                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center ring-4 ring-white">
-                  <i data-lucide="clock" class="w-4 h-4"></i>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-4">
-                <div class="flex items-center gap-4">
-                  <h4 class="text-sm font-bold text-gray-900" 
-                      :contenteditable="editMode"
-                      @blur="if(editMode) $event.target.textContent = $event.target.textContent.trim()"
-                      x-text="'Payroll Management'"></h4>
-
-<div class="flex flex-wrap gap-4 p-2 rounded-lg transition-all min-h-[50px] flex-1"
-     @dragover.prevent="dragOverModule($event, 'Payroll Management', 'Close of Day')"
-     @dragenter.prevent="dragEnterModule($event, 'Payroll Management', 'Close of Day')"
-     @dragleave.prevent="dragLeaveModule($event, 'Payroll Management', 'Close of Day')"
-     @drop.prevent="dropToModule($event, 'Payroll Management', 'Close of Day')"
-     :class="{ 'module-drop-target': isDropTarget('Payroll Management', 'Close of Day') }">
-
-
-                    <template x-for="task in getModuleTasks('Payroll Management', 'Close of Day')" :key="task.id">
-                      <div x-show="!task.hidden"
-                           :class="getTaskCardClass(task, activeTaskId, draggedTaskId)"
-                           class="task-tile"
-    :draggable="editMode"
-    @dragstart="if (editMode) dragStart($event, task.id, 'task')"
-    @dragend="if (editMode) dragEnd($event)"
-    @dragover.prevent.stop="if (editMode) dragOverTask($event, task.id)"
-    @dragleave.prevent.stop="if (editMode) dragLeaveTask($event, task.id)"
-    @drop.prevent.stop="if (editMode) dropOnTask($event, task.id)"
-
-                           @click="openTaskPopup(task)" x-init="$nextTick(() => lucide.createIcons())">
-
-                        <button @click.stop="completeTask(task.id)" class="card-action-btn text-green-600 hover:bg-green-50">
-                          <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        </button>
-
-                        <div x-show="!task.complete && task.badge > 0" class="notification-badge" x-text="task.badge"></div>
-
-                        <div class="task-icon-bg">
-                          <i :data-lucide="task.icon" class="w-5 h-5"></i>
+                        <div x-show="module.name === 'Labor Management'">
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-time-loss'"></div>
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-timeoff'"></div>
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-availability'"></div>
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-swapshift'"></div>
                         </div>
 
-                        <span class="task-name"
-                              :contenteditable="editMode"
-                              @blur="if(editMode) { task.name = $event.target.textContent.trim(); $event.target.textContent = task.name; }"
-                              @keydown.enter.prevent="if(editMode) $event.target.blur()"
-                              x-text="task.name"></span>
-                      </div>
-                    </template>
-                    <!-- ADD TASK BUTTON (SHOW ONLY IN EDIT MODE) -->
-<div 
-    x-show="editMode"
-    class="flex items-center justify-center cursor-pointer mt-1"
-    @click="openAddTaskPopup('Payroll Management', 'CLose of Day')"
->
-    <div class="w-8 h-8 rounded-full bg-blue-100 border border-blue-300 text-blue-600 flex items-center justify-center shadow-sm hover:bg-blue-200 hover:scale-105 transition">
-        <span class="text-xl leading-none font-bold">+</span>
-    </div>
-</div>
+                        <div x-show="module.name === 'Payroll Management'">
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-payroll-sum'"></div>
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-unbalanced'"></div>
+                             <div class="detail-content" x-show="activeTaskId === 'task-cod-mismatch'"></div>
+                        </div>
 
-                  </div>
+                    </div>
                 </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-payroll-sum'">
-
-            <h3 class="text-sm font-bold text-gray-900 mb-2">Daily Payroll Summary</h3>
-
-            <table class="w-full text-xs text-left text-gray-600 border">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="p-2">Store</th>
-                        <th class="p-2">Total Hrs</th>
-                        <th class="p-2">Pay</th>
-                    </tr>
-                </thead>
-
-                <tbody class="divide-y">
-                    <tr>
-                        <td class="p-2">Altametrics Store</td>
-                        <td class="p-2">154.5</td>
-                        <td class="p-2">$2,450.00</td>
-                    </tr>
-                    <tr>
-                        <td class="p-2">Store #102</td>
-                        <td class="p-2">140.0</td>
-                        <td class="p-2">$2,100.00</td>
-                    </tr>
-                    <tr>
-                        <td class="p-2">Store #103</td>
-                        <td class="p-2">160.0</td>
-                        <td class="p-2">$2,600.00</td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </div>
-
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-unbalanced'">
-
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Unbalanced Punches</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Clock In</th>
-                            <th class="p-2 border">Clock Out</th>
-                            <th class="p-2 border">Comment</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 08, 01:00 PM</td>
-                            <td class="p-2 border">—</td>
-                            <td class="p-2 border">Missed punch</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 08, 07:00 AM</td>
-                            <td class="p-2 border">—</td>
-                            <td class="p-2 border">No clock-out found</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
+            </template>
+            
+            <div x-show="editMode" class="flex justify-start pl-11 mt-6">
+                <button @click="openAddGroupPopup('Close of Day')"
+                    class="add-task-button !bg-blue-600 !text-white !border-blue-700 hover:!bg-blue-700"
+                >
+                    <i data-lucide="folder-plus" class="w-4 h-4"></i>
+                    Add Group
+                </button>
             </div>
 
-        </div>
 
-        <div class="detail-content" x-show="activeTaskId === 'task-cod-mismatch'">
-
-            <h3 class="text-sm font-bold text-gray-900 mb-4">Mismatch Punch</h3>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-xs text-center text-gray-600 border">
-
-                    <thead class="bg-gray-50 text-gray-700 font-semibold">
-                        <tr>
-                            <th class="p-2 border">Clock In</th>
-                            <th class="p-2 border">Clock Out</th>
-                            <th class="p-2 border">Comment</th>
-                            <th class="p-2 border">Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody class="divide-y">
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sun, Dec 08, 09:45 AM</td>
-                            <td class="p-2 border">Sun, Dec 08, 01:30 PM</td>
-                            <td class="p-2 border">In/Out mismatch</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="p-2 border font-medium">Sat, Dec 07, 11:00 AM</td>
-                            <td class="p-2 border">Sat, Dec 07, 05:00 PM</td>
-                            <td class="p-2 border">Punch mismatch detected</td>
-                            <td class="p-2 border flex justify-center gap-3">
-                                <i data-lucide="thumbs-up" class="w-4 h-4 text-green-600 cursor-pointer"
-                                   title="Authorize Punch"></i>
-                                <i data-lucide="edit" class="w-4 h-4 text-blue-600 cursor-pointer"></i>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-            </div>
-
-        </div>
-
-    </div>
+          </div>
 </div>
 
 
@@ -3923,8 +2720,12 @@
                 settingsOpen: false,
                 searchTerm: '',
                 activeTaskId: null, 
-                sodExpanded: true,
-                codExpanded: true,
+                // ⭐ UPDATED: Use an object to track all day part expansions
+                dayPartExpansion: {
+                    'Start of Day': true,
+                    'Close of Day': true,
+                },
+                
                 popupOpen: false,
                 storeRank: 3, // you can update dynamically later
                 popupTitle: "",
@@ -3949,139 +2750,399 @@
                 picker: null,
                 selectedRange: "Default",
                 sidebarOpen: false,
-allTasksSelected: false,
-taskSearchTerm: '',
+                allTasksSelected: false,
+                taskSearchTerm: '',
 
-sidebarTasks: [],
+                sidebarTasks: [],
 
-addTaskPopupOpen: false,
-selectedTasksToAdd: [],
-selectAllTasks: false,
-addTargetModule: null,
-addTargetSection: null,
+                addTaskPopupOpen: false,
+                selectedTasksToAdd: [],
+                selectAllTasks: false,
+                addTargetModule: null,
+                addTargetSection: null,
 
-openAddTaskPopup(module, section) {
-    // 1. SET THE TARGET
-    this.addTargetModule = module;
-    this.addTargetSection = section;
+                // NEW GROUP MANAGEMENT STATE
+                addGroupPopupOpen: false,
+                newGroupName: '',
+                newGroupSection: null, // 'Start of Day' or 'Close of Day'
+                customModules: [], // Array to hold custom groups/modules
+                
+                // ⭐ NEW: DAY PART MANAGEMENT STATE
+                addDayPartPopupOpen: false,
+                newDayPartName: '',
+                copyFromDayPart: null, // 'Start of Day', 'Close of Day', or null (scratch)
+                customDayParts: [], // Array to hold custom day parts/sections
 
-    // 2. RESET STATE
-    this.selectedTasksToAdd = [];
-    this.selectAllTasks = false;
-    this.addTaskPopupOpen = true;
+                isDayPartExpanded(dayPartName) {
+                    return this.dayPartExpansion[dayPartName] === true;
+                },
 
-    // We must identify tasks *not already in the target module* for the sidebar.
-    const tasksInModule = this.getModuleTasks(module, section).map(t => t.id.split('-')[0]); // Get base ID
-    this.availableSidebarTasks = this.sidebarTasks.filter(t => !tasksInModule.includes(t.id));
+                toggleDayPart(dayPartName) {
+                    this.dayPartExpansion[dayPartName] = !this.dayPartExpansion[dayPartName];
+                },
 
-    this.$nextTick(() => lucide.createIcons());
-},
+                getDayPartProgress(dayPartName) {
+                    const relevant = this.tasks.filter(t => t.category === dayPartName && t.enabled);
+                    const total = relevant.length;
+                    const done = relevant.filter(t => t.complete).length;
+                    const percent = total === 0 ? 0 : (done / total) * 100;
+                    return {
+                        countText: `${done}/${total}`,
+                        percent: percent
+                    };
+                },
 
-toggleSelectAllTasks() {
-    if (this.selectAllTasks) {
-        this.selectedTasksToAdd = this.sidebarTasks.map(t => t.id);
-    } else {
-        this.selectedTasksToAdd = [];
-    }
-},
+                // ⭐ NEW: DAY PART LOGIC
+                openAddDayPartPopup() {
+                    this.newDayPartName = '';
+                    this.copyFromDayPart = null; // Default to build from scratch
+                    this.addDayPartPopupOpen = true;
+                    this.$nextTick(() => lucide.createIcons());
+                },
 
-applyAddedTasks() {
-    // ❌ OLD: if (!this.selectedModule || !this.selectedSection) return;
-    // ✅ NEW: Check the correct target variables
-    if (!this.addTargetModule || !this.addTargetSection) return;
-    
-    // Get a reference to the tasks array
-    const targetTasks = this.tasks;
+                saveNewDayPart() {
+                    const name = this.newDayPartName.trim();
+                    if (!name) return;
 
-    this.selectedTasksToAdd.forEach(taskId => {
-        
-        // 1️⃣ FIND TASK FROM SIDEBAR (Source of truth)
-        const sourceTask = this.sidebarTasks.find(t => t.id === taskId);
+                    // 1. Check for duplicate name (Day Part names must be unique)
+                    const existingDayParts = ['Start of Day', 'Close of Day', ...this.customDayParts.map(d => d.name)];
+                    if (existingDayParts.some(d => d.toLowerCase() === name.toLowerCase())) {
+                        alert(`A Workflow Day Part named "${name}" already exists. Please choose a different name.`);
+                        return;
+                    }
 
-        if (!sourceTask) {
-            console.warn("Task not found in sidebarTasks:", taskId);
-            return;
-        }
+                    // 2. Add the new custom Day Part entry
+                    this.customDayParts.push({ name: name });
 
-        // 2️⃣ CLONE TASK SAFELY to avoid reference issues
-        const clonedTask = JSON.parse(JSON.stringify(sourceTask));
+                    // 3. Initialize its expansion state
+                    this.dayPartExpansion[name] = true;
 
-        // 3️⃣ GENERATE UNIQUE ID and SET PROPERTIES FOR WORKFLOW
-        clonedTask.id = sourceTask.id + '-' + Date.now(); // Ensure unique ID
-        clonedTask.app = this.addTargetModule;
-        clonedTask.category = this.addTargetSection;
-        clonedTask.enabled = true;
-        clonedTask.hidden = false;
-        clonedTask.complete = false;
-        // Keep original badge/icon/name from sidebar
+                    // 4. Handle Copy Logic
+                    if (this.copyFromDayPart) {
+                        const sourceTasks = this.tasks.filter(t => t.category === this.copyFromDayPart);
+                        const sourceModules = this.customModules.filter(m => m.category === this.copyFromDayPart);
 
-        // 4️⃣ ADD INTO THE MAIN TASKS ARRAY
-        targetTasks.push(clonedTask); // Pushing to the main tasks array
-    });
+                        // Copy Tasks
+                        sourceTasks.forEach(t => {
+                            const clonedTask = JSON.parse(JSON.stringify(t));
+                            clonedTask.id = t.id.split('-')[0] + '-' + Date.now() + Math.random().toString(36).substring(7); // New unique ID
+                            clonedTask.category = name;
+                            clonedTask.complete = false; // Reset completion state
+                            clonedTask.badge = Math.floor(Math.random() * 5); // New badge
+                            this.tasks.push(clonedTask);
+                        });
 
-    this.addTaskPopupOpen = false;
-    this.selectedTasksToAdd = [];
-    this.selectAllTasks = false;
-    
-    // Crucial for the progress bar and UI update
-    this.$nextTick(() => this.updateTaskProgress());
-},
+                        // Copy Custom Modules/Groups (only if they are custom groups, not hardcoded modules)
+                         sourceModules.forEach(m => {
+                            const clonedModule = JSON.parse(JSON.stringify(m));
+                            clonedModule.category = name;
+                            this.customModules.push(clonedModule);
+                        });
+                    }
 
-addTaskToModule(module, section, taskId) {
-    const task = JSON.parse(JSON.stringify(this.sidebarTasks.find(t => t.id === taskId)));
-    if (!task) return;
+                    // 5. Close popup and cleanup
+                    this.addDayPartPopupOpen = false;
+                    this.newDayPartName = '';
+                    this.copyFromDayPart = null;
+                    
+                    this.$nextTick(() => {
+                        lucide.createIcons();
+                        this.updateTaskProgress();
+                    });
+                },
+                
+                removeDayPart(dayPartName) {
+                    if (!confirm(`Are you sure you want to remove the entire Day Part: ${dayPartName}? This will remove all associated tasks.`)) {
+                        return;
+                    }
 
-    this.workflow[module][section].push(task);
-},
+                    // 1. Remove from customDayParts
+                    this.customDayParts = this.customDayParts.filter(d => d.name !== dayPartName);
 
-getTaskIconColor(taskId) {
-    return {
-        'bg-purple-200 text-purple-700': true,
-    };
-},
+                    // 2. Remove all associated tasks
+                    this.tasks = this.tasks.filter(t => t.category !== dayPartName);
+                    
+                    // 3. Remove all associated custom modules/groups
+                    this.customModules = this.customModules.filter(m => m.category !== dayPartName);
+                    
+                    // 4. Remove expansion state
+                    delete this.dayPartExpansion[dayPartName];
+
+                    this.$nextTick(() => {
+                        this.updateTaskProgress();
+                        lucide.createIcons();
+                    });
+                },
+                // ⭐ END NEW DAY PART LOGIC
+
+                getWorkflowModules(category) {
+                    // This array is the source of truth for hardcoded modules
+                    const defaultModules = [
+                        { name: 'Forecast', icon: 'trending-up', colorClasses: 'from-blue-500 to-blue-600' },
+                        { name: 'Food Management', icon: 'shopping-cart', colorClasses: 'from-purple-500 to-pink-600' },
+                        { name: 'Labor Management', icon: 'users', colorClasses: 'from-amber-400 to-orange-500' },
+                        { name: 'Payroll Management', icon: 'clock', colorClasses: 'bg-indigo-100 text-indigo-600' },
+                    ];
+
+                    let allHardcoded = [...defaultModules];
+                    if (category === 'Close of Day' || this.customDayParts.some(d => d.name === category)) {
+                        // Zip Inventory is relevant to COD and potentially other custom Day Parts
+                        // We filter it out if it's already there to prevent duplication
+                         if (!allHardcoded.some(m => m.name === 'Zip Inventory')) {
+                            allHardcoded.splice(1, 0, { name: 'Zip Inventory', icon: 'file-spreadsheet', colorClasses: 'bg-green-100 text-green-600' });
+                        }
+                    }
+
+                    // Filter out modules that have no visible tasks in this category
+                    const filteredDefaults = allHardcoded.filter(m => 
+                        this.getModuleTasks(m.name, category).length > 0 || m.name === 'Forecast' // Keep Forecast module even if empty in custom day parts
+                    );
+
+                    // Combine with custom modules for this category
+                    const custom = this.customModules.filter(m => m.category === category);
+
+                    // Remove duplicates by name and category (just in case)
+                    const allModules = [...filteredDefaults, ...custom];
+
+                    const uniqueModules = [];
+                    const seen = new Set();
+                    allModules.forEach(m => {
+                        const key = m.name + m.category;
+                        if (!seen.has(key)) {
+                            seen.add(key);
+                            uniqueModules.push(m);
+                        }
+                    });
+
+                    // Sort custom modules to appear after default modules if not in editMode
+                    // Keep default module order, then append custom modules
+                    const defaultNames = defaultModules.map(m => m.name);
+                    
+                    const sortedModules = uniqueModules.sort((a, b) => {
+                        const aIsDefault = defaultNames.includes(a.name);
+                        const bIsDefault = defaultNames.includes(b.name);
+                        
+                        if (aIsDefault && !bIsDefault) return -1;
+                        if (!aIsDefault && bIsDefault) return 1;
+                        return 0; // Maintain insertion order for items of the same type (default/custom)
+                    });
+
+                    return sortedModules;
+                },
+
+                openAddGroupPopup(section) {
+                    this.newGroupSection = section;
+                    this.newGroupName = '';
+                    this.addGroupPopupOpen = true;
+                },
+
+                saveNewGroup() {
+                    const name = this.newGroupName.trim();
+                    const section = this.newGroupSection;
+                    
+                    if (!name || !section) return;
+
+                    // 1. Check for duplicate name in the same section
+                    const isDuplicate = this.getWorkflowModules(section).some(m => m.name.toLowerCase() === name.toLowerCase());
+                    if (isDuplicate) {
+                        alert(`A group named "${name}" already exists in ${section}. Please choose a different name.`);
+                        return;
+                    }
+
+                    // 2. Create the new custom module object
+                    const newModule = {
+                        name: name,
+                        icon: 'folder-open', // Default icon for custom groups
+                        colorClasses: 'from-gray-400 to-gray-500', // Neutral color for custom groups
+                        category: section,
+                        customGroup: true, // Marker to distinguish from hardcoded groups
+                    };
+
+                    // 3. Add to the customModules array
+                    this.customModules.push(newModule);
+
+                    // 4. Close popup and cleanup
+                    this.addGroupPopupOpen = false;
+                    this.newGroupName = '';
+                    this.newGroupSection = null;
+
+                    this.$nextTick(() => lucide.createIcons());
+                },
 
 
-predefinedTasks: [
-    { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up' },
-    { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart' },
-    { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet' }, 
-    { id: 'ordering', name: 'Ordering', icon: 'shopping-cart' },
-    { id: 'receiving', name: 'Receiving', icon: 'truck' },
-    { id: 'transfer', name: 'Transfer', icon: 'refresh-cw' },
-    { id: 'waste', name: 'Waste', icon: 'trash-2' },
-    { id: 'schedule', name: 'Schedule', icon: 'calendar' },
-    { id: 'pending-employees', name: 'Pending Employees', icon: 'users' },
-    { id: 'violation', name: 'Violation', icon: 'alert-triangle' },
-    { id: 'time-loss', name: 'Time Loss Summary', icon: 'clock' },
-    { id: 'tor', name: 'Time Off Request', icon: 'user-x' },
-    { id: 'availability-request', name: 'Availability Request', icon: 'user-check' },
-    { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat' },
-    { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint' },
-    { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check' },
-    { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet' },
-    { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon' },
-    { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text' },
-    { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide' },
-    { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle' }
-],
+                openAddTaskPopup(module, section) {
+                    // 1. SET THE TARGET
+                    this.addTargetModule = module;
+                    this.addTargetSection = section;
+
+                    // 2. RESET STATE
+                    this.selectedTasksToAdd = [];
+                    this.selectAllTasks = false;
+                    
+                    // We must identify tasks *not already in the target module* for the sidebar.
+                    const tasksInModule = this.getModuleTasks(module, section).map(t => t.id.split('-')[0]); // Get base ID
+                    
+                    // Filter sidebar tasks to only include those not already in the target module
+                    this.availableSidebarTasks = this.predefinedTasks.filter(t => !tasksInModule.includes(t.id));
+
+                    this.addTaskPopupOpen = true;
+
+                    this.$nextTick(() => lucide.createIcons());
+                },
+
+                toggleSelectAllTasks() {
+                    if (this.selectAllTasks) {
+                        // Select only the available tasks
+                        this.selectedTasksToAdd = this.availableSidebarTasks.map(t => t.id);
+                    } else {
+                        this.selectedTasksToAdd = [];
+                    }
+                },
+
+                applyAddedTasks() {
+                    // Check the correct target variables
+                    if (!this.addTargetModule || !this.addTargetSection) return;
+                    
+                    // Get a reference to the tasks array
+                    const targetTasks = this.tasks;
+
+                    this.selectedTasksToAdd.forEach(taskId => {
+                        
+                        // 1️⃣ FIND TASK FROM PREDEFINED TASKS (Source of truth)
+                        const sourceTask = this.predefinedTasks.find(t => t.id === taskId);
+
+                        if (!sourceTask) {
+                            console.warn("Task not found in predefinedTasks:", taskId);
+                            return;
+                        }
+
+                        // 2️⃣ CLONE TASK SAFELY to avoid reference issues
+                        const clonedTask = { ...sourceTask }; // Shallow copy is fine for this structure
+
+                        // 3️⃣ GENERATE UNIQUE ID and SET PROPERTIES FOR WORKFLOW
+                        clonedTask.id = sourceTask.id + '-' + Date.now(); // Ensure unique ID
+                        clonedTask.app = this.addTargetModule;
+                        clonedTask.category = this.addTargetSection;
+                        clonedTask.enabled = true;
+                        clonedTask.hidden = false;
+                        clonedTask.complete = false;
+                        clonedTask.badge = Math.floor(Math.random() * 5); // Example badge
+                        
+                        // 4️⃣ ADD INTO THE MAIN TASKS ARRAY
+                        targetTasks.push(clonedTask); // Pushing to the main tasks array
+                    });
+
+                    this.addTaskPopupOpen = false;
+                    this.selectedTasksToAdd = [];
+                    this.selectAllTasks = false;
+                    
+                    // Crucial for the progress bar and UI update
+                    this.$nextTick(() => this.updateTaskProgress());
+                },
+
+                addTaskToModule(module, section, taskId) {
+                    const task = JSON.parse(JSON.stringify(this.sidebarTasks.find(t => t.id === taskId)));
+                    if (!task) return;
+
+                    this.workflow[module][section].push(task);
+                },
+
+                getTaskIconColor(taskId) {
+                    return {
+                        'bg-purple-200 text-purple-700': true,
+                    };
+                },
+
+
+                aggregationPeriod: 'Daily',
+
+                // Inside appState() return object, after your existing functions:
+
+                // ... existing functions like updateTaskProgress, etc. ...
+
+                // ⭐ NEW: UPDATED AGGREGATION FUNCTION
+                aggregateData(dates, currentData, aggregationType) {
+                    if (aggregationType === 'Daily') {
+                        return { labels: dates, current: currentData };
+                    }
+
+                    const aggregated = [];
+                    const newLabels = [];
+                    
+                    // ⭐ CHANGE: Use 30 days for '1-Month' period
+                    const periodDays = aggregationType === 'Weekly' ? 7 : 30; 
+
+                    let currentSum = 0;
+                    let count = 0;
+                    let startIndex = 0;
+
+                    for (let i = 0; i < currentData.length; i++) {
+                        currentSum += currentData[i];
+                        count++;
+
+                        // If the period is complete OR it's the last data point
+                        if (count === periodDays || i === currentData.length - 1) {
+                            // Calculate Average for the aggregated value
+                            const average = Math.round(currentSum / count);
+                            aggregated.push(average);
+
+                            // Create the label: e.g., "12/08 - 12/14"
+                            const startLabel = dates[startIndex];
+                            const endLabel = dates[i];
+                            newLabels.push(`${startLabel.split('/')[0]}/${startLabel.split('/')[1]} - ${endLabel.split('/')[0]}/${endLabel.split('/')[1]}`);
+
+                            // Reset counters for the next period
+                            currentSum = 0;
+                            count = 0;
+                            startIndex = i + 1;
+                        }
+                    }
+                    return { labels: newLabels, current: aggregated };
+                },
+
+
+                predefinedTasks: [
+                    // Base IDs for sidebar tasks. Details like app/category/badge are added on drag/add.
+                    { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up' },
+                    { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart' },
+                    { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet' }, 
+                    { id: 'ordering', name: 'Ordering', icon: 'shopping-cart' },
+                    { id: 'receiving', name: 'Receiving', icon: 'truck' },
+                    { id: 'transfer', name: 'Transfer', icon: 'refresh-cw' },
+                    { id: 'waste', name: 'Waste', icon: 'trash-2' },
+                    { id: 'schedule', name: 'Schedule', icon: 'calendar' },
+                    { id: 'pending-employees', name: 'Pending Employees', icon: 'users' },
+                    { id: 'violation', name: 'Violation', icon: 'alert-triangle' },
+                    { id: 'time-loss', name: 'Time Loss Summary', icon: 'clock' },
+                    { id: 'tor', name: 'Time Off Request', icon: 'user-x' },
+                    { id: 'availability-request', name: 'Availability Request', icon: 'user-check' },
+                    { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat' },
+                    { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint' },
+                    { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check' },
+                    { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet' },
+                    { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon' },
+                    { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text' },
+                    { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide' },
+                    { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle' }
+                ],
 
 
 
-// Called when pointer first enters a module area
-dragEnterModule(evt, app, category) {
-    // Only act when a drag is active
-    if (!this.draggedTaskId) return;
+                // Called when pointer first enters a module area
+                dragEnterModule(evt, app, category) {
+                    // Only act when a drag is active
+                    if (!this.draggedTaskId) return;
 
-    // Set this module as the current drop target (no hover task)
-    this.dropTarget = { app, category, hoverTaskId: null };
+                    // Set this module as the current drop target (no hover task)
+                    this.dropTarget = { app, category, hoverTaskId: null };
 
-    // Prevent default so drop will be allowed
-    evt.preventDefault();
-},
+                    // Prevent default so drop will be allowed
+                    evt.preventDefault();
+                },
 
                 allowDrag() {
-    return this.editMode === true;
-},
+                    return this.editMode === true;
+                },
                 // ⭐ NEW: EDIT MODE STATE
                 editMode: false,
 
@@ -4097,68 +3158,68 @@ dragEnterModule(evt, app, category) {
                 },
 
                 // --- TASK DRAG & DROP ENGINE ---
-dragStart(evt, id, type) {
-    // 1. Set the source type and ID
-    this.dragSourceType = type;
-    this.draggedTaskId = id;
+                dragStart(evt, id, type) {
+                    // 1. Set the source type and ID
+                    this.dragSourceType = type;
+                    this.draggedTaskId = id;
 
-    if (type === 'task') {
-        evt.dataTransfer.setData("text/task-id", id);
-    }
-    // ⭐ NEW: Identify a sidebar task
-    if (type === 'sidebarTask') {
-        // We use a different key to signal this is a new task creation event
-        evt.dataTransfer.setData("text/sidebar-task-id", id);
-    }
+                    if (type === 'task') {
+                        evt.dataTransfer.setData("text/task-id", id);
+                    }
+                    // ⭐ NEW: Identify a sidebar task
+                    if (type === 'sidebarTask') {
+                        // We use a different key to signal this is a new task creation event
+                        evt.dataTransfer.setData("text/sidebar-task-id", id);
+                    }
 
-    evt.dataTransfer.effectAllowed = "move";
-    evt.currentTarget.classList.add('task-dragging');
-},
+                    evt.dataTransfer.effectAllowed = "move";
+                    evt.currentTarget.classList.add('task-dragging');
+                },
 
 
-dragEnd(evt) {
-    this.draggedTaskId = null;
-    this.dragSourceType = null; // ⭐ Reset drag source type
-    this.dropTarget = { app: null, category: null, hoverTaskId: null };
+                dragEnd(evt) {
+                    this.draggedTaskId = null;
+                    this.dragSourceType = null; // ⭐ Reset drag source type
+                    this.dropTarget = { app: null, category: null, hoverTaskId: null };
 
-    // Cleanup dragging classes
-    document.querySelectorAll('.task-dragging').forEach(el => el.classList.remove('task-dragging'));
-    document.querySelectorAll('.kpi-dragging').forEach(el => el.classList.remove('kpi-dragging'));
-    document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
-},
+                    // Cleanup dragging classes
+                    document.querySelectorAll('.task-dragging').forEach(el => el.classList.remove('task-dragging'));
+                    document.querySelectorAll('.kpi-dragging').forEach(el => el.classList.remove('kpi-dragging'));
+                    document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
+                },
 
-// -------------------------------------------------------------------
-// MODULE DRAG / DROP HANDLERS  (MISSING IN YOUR FILE, NOW ADDED)
-// ------------------------------------------------------------------
+                // -------------------------------------------------------------------
+                // MODULE DRAG / DROP HANDLERS  (MISSING IN YOUR FILE, NOW ADDED)
+                // ------------------------------------------------------------------
 
 
                 // Dragging over the entire module container (e.g., "Food Management")
                 dragOverModule(evt, app, category) {
-    // Only active while dragging a task
-    if (!this.draggedTaskId) return;
+                    // Only active while dragging a task
+                    if (!this.draggedTaskId) return;
 
-    evt.preventDefault();
+                    evt.preventDefault();
 
-    // When dragging over the module container (not a task),
-    // hoverTaskId MUST be null to signal "drop on module"
-    this.dropTarget = { 
-        app: app, 
-        category: category, 
-        hoverTaskId: null 
-    };
-},
+                    // When dragging over the module container (not a task),
+                    // hoverTaskId MUST be null to signal "drop on module"
+                    this.dropTarget = { 
+                        app: app, 
+                        category: category, 
+                        hoverTaskId: null 
+                    };
+                },
 
                 dragLeaveModule(evt) {
-    // Leave ONLY if cursor actually leaves this container
-    if (!evt.currentTarget.contains(evt.relatedTarget)) {
-        // Clear ONLY if it is pointing to this module
-        if (this.dropTarget && 
-            this.dropTarget.app === null || 
-            this.dropTarget.category === null) return;
+                    // Leave ONLY if cursor actually leaves this container
+                    if (!evt.currentTarget.contains(evt.relatedTarget)) {
+                        // Clear ONLY if it is pointing to this module
+                        if (this.dropTarget && 
+                            this.dropTarget.app === null || 
+                            this.dropTarget.category === null) return;
 
-        this.dropTarget = { app: null, category: null, hoverTaskId: null };
-    }
-},
+                        this.dropTarget = { app: null, category: null, hoverTaskId: null };
+                    }
+                },
 
                 // Dragging over a specific task card within a module
                 dragOverTask(evt, taskId) {
@@ -4209,108 +3270,119 @@ dragEnd(evt) {
                 },
 
                 // Drop onto an empty module container → append
-dropToModule(evt, app, category) {
-    evt.preventDefault();
+                dropToModule(evt, app, category) {
+                    evt.preventDefault();
 
-    const draggedId = this.draggedTaskId;
-    if (!draggedId) return;
+                    const draggedId = this.draggedTaskId;
+                    if (!draggedId) return;
 
-    /* --------------------------------------
-       CASE 1: SIDEBAR → WORKFLOW (Creation)
-    ---------------------------------------*/
-    if (this.dragSourceType === 'sidebarTask') {
-        const sidebarTask = this.sidebarTasks.find(t => t.id === draggedId);
-        if (!sidebarTask) return;
+                    /* --------------------------------------
+                       CASE 1: SIDEBAR → WORKFLOW (Creation)
+                    ---------------------------------------*/
+                    if (this.dragSourceType === 'sidebarTask') {
+                        const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
+                        if (!sidebarTask) return;
 
-        const newTask = {
-            id: sidebarTask.id + '-' + Date.now(), // Generate unique ID for the new task
-            name: sidebarTask.name,
-            icon: sidebarTask.icon,
-            app: app,
-            category: category,
-            enabled: true,
-            hidden: false,
-            complete: false,
-            badge: 0,
-        };
+                        const newTask = {
+                            id: sidebarTask.id + '-' + Date.now(), // Generate unique ID for the new task
+                            name: sidebarTask.name,
+                            icon: sidebarTask.icon,
+                            app: app,
+                            category: category,
+                            enabled: true,
+                            hidden: false,
+                            complete: false,
+                            badge: Math.floor(Math.random() * 5), // Random badge count
+                        };
 
-        this.tasks.push(newTask);
+                        this.tasks.push(newTask);
 
-        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
+                        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
 
-        this.dragEnd();
-        this.$nextTick(() => this.updateTaskProgress());
-        return;
-    }
+                        this.dragEnd();
+                        this.$nextTick(() => this.updateTaskProgress());
+                        return;
+                    }
 
-    /* --------------------------------------
-       CASE 2: TASK → MOVE TO ANOTHER MODULE (Relocation)
-    ---------------------------------------*/
-    const index = this.tasks.findIndex(t => t.id === draggedId);
-    if (index === -1) return;
+                    /* --------------------------------------
+                       CASE 2: TASK → MOVE TO ANOTHER MODULE (Relocation)
+                    ---------------------------------------*/
+                    const index = this.tasks.findIndex(t => t.id === draggedId);
+                    if (index === -1) return;
 
-    const [moved] = this.tasks.splice(index, 1);
+                    const [moved] = this.tasks.splice(index, 1);
 
-    moved.app = app;
-    moved.category = category;
+                    moved.app = app;
+                    moved.category = category;
 
-    this.tasks.push(moved);
+                    // Remove old module if it's a custom group and now empty (optional cleanup)
+                    if (moved.customGroup && this.getModuleTasks(moved.app, moved.category).length === 0) {
+                        // Find and remove the original group entry
+                        this.customModules = this.customModules.filter(m => !(m.name === moved.app && m.category === moved.category));
+                    }
 
-    this.dragEnd();
-    this.$nextTick(() => this.updateTaskProgress());
-},
 
-dropOnTask(evt, targetTaskId) {
-    evt.preventDefault();
+                    this.tasks.push(moved);
 
-    const draggedId = this.draggedTaskId;
-    if (!draggedId || draggedId === targetTaskId) return;
+                    this.dragEnd();
+                    this.$nextTick(() => this.updateTaskProgress());
+                },
 
-    // find indexes in the main tasks array
-    const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
-    const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
+                dropOnTask(evt, targetTaskId) {
+                    evt.preventDefault();
 
-    // Get target task for module info
-    const targetTask = this.tasks[targetIndex];
-    if (!targetTask) return;
+                    const draggedId = this.draggedTaskId;
+                    if (!draggedId || draggedId === targetTaskId) return;
 
-    // -----------------------
-    // CASE A: dragged FROM SIDEBAR (Creation before a task)
-    // -----------------------
-    if (this.dragSourceType === 'sidebarTask') {
-        const sidebarTask = this.sidebarTasks.find(t => t.id === draggedId);
-        if (!sidebarTask) return;
+                    // find indexes in the main tasks array
+                    const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
+                    const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
 
-        const newTask = {
-            id: sidebarTask.id + '-' + Date.now(),
-            name: sidebarTask.name,
-            icon: sidebarTask.icon,
-            app: targetTask.app,
-            category: targetTask.category,
-            enabled: true,
-            hidden: false,
-            complete: false,
-            badge: 0
-        };
+                    // Get target task for module info
+                    const targetTask = this.tasks[targetIndex];
+                    if (!targetTask) return;
 
-        // insert before the found targetIndex
-        this.tasks.splice(targetIndex, 0, newTask);
+                    // -----------------------
+                    // CASE A: dragged FROM SIDEBAR (Creation before a task)
+                    // -----------------------
+                    if (this.dragSourceType === 'sidebarTask') {
+                        const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
+                        if (!sidebarTask) return;
 
-        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
+                        const newTask = {
+                            id: sidebarTask.id + '-' + Date.now(),
+                            name: sidebarTask.name,
+                            icon: sidebarTask.icon,
+                            app: targetTask.app,
+                            category: targetTask.category,
+                            enabled: true,
+                            hidden: false,
+                            complete: false,
+                            badge: Math.floor(Math.random() * 5),
+                        };
 
-        this.dragEnd();
-        this.$nextTick(() => this.updateTaskProgress());
-        return;
-    }
+                        // insert before the found targetIndex
+                        this.tasks.splice(targetIndex, 0, newTask);
 
-    // -----------------------
-    // CASE B: Normal move BETWEEN existing tasks
-    // -----------------------
-    // If either index is invalid, abort (can't move)
-    if (draggedIndex === -1 || targetIndex === -1) return;
+                        // ⭐ REMOVED LINE: this.sidebarTasks = this.sidebarTasks.filter(t => t.id !== draggedId);
 
-    const draggedTask = this.tasks[draggedIndex];
-    
+                        this.dragEnd();
+                        this.$nextTick(() => this.updateTaskProgress());
+                        return;
+                    }
+
+                    // -----------------------
+                    // CASE B: Normal move BETWEEN existing tasks
+                    // -----------------------
+                    // If either index is invalid, abort (can't move)
+                    if (draggedIndex === -1 || targetIndex === -1) return;
+
+                    const draggedTask = this.tasks[draggedIndex];
+                    
+                    // Check if the original module needs cleanup (if it's a custom group that will be empty)
+                    const originalApp = draggedTask.app;
+                    const originalCategory = draggedTask.category;
+
     // Ensure the task being moved also gets the target's correct module/category
     draggedTask.app = targetTask.app;
     draggedTask.category = targetTask.category;
@@ -4323,6 +3395,13 @@ dropOnTask(evt, targetTaskId) {
     if (draggedIndex < targetIndex) insertIndex = targetIndex - 1;
 
     this.tasks.splice(insertIndex, 0, moved);
+
+    // After move, check if the original module is a custom group and is now empty
+    const isCustom = this.customModules.some(m => m.name === originalApp && m.category === originalCategory);
+    if (isCustom && this.getModuleTasks(originalApp, originalCategory).length === 0) {
+         this.customModules = this.customModules.filter(m => !(m.name === originalApp && m.category === originalCategory));
+    }
+
 
     this.dragEnd();
     this.$nextTick(() => this.updateTaskProgress());
@@ -4424,104 +3503,86 @@ dropOnTask(evt, targetTaskId) {
 
 
             openTaskPopup(task) {
+                this.activeTaskId = task.id; // Set active task to show/hide details correctly
                 this.taskPopupTitle = task.name;
 
                 // Get the original DOM node
                 const source = document.querySelector('[data-task-detail="' + task.id + '"]');
 
+                // Fallback for dynamically added tasks that might not have a data-task-detail match (e.g., custom group tasks)
+                let detailHtml = '';
                 if (source) {
-                    // Clone node including x-data, x-model, x-for, everything
-                    const clone = source.cloneNode(true);
-                    clone.style.display = "block"; // ensure visible
-                    clone.removeAttribute("x-show"); // remove hidden flag
+                    detailHtml = source.innerHTML;
+                } else if (task.customGroup) {
+                    detailHtml = `<div class="detail-content" style="display:block;"><p class='text-gray-600 text-sm'>No specific details available for this custom task yet. Drag a new task into this group to add one, or click to toggle details if you've already added one.</p></div>`;
+                }
 
+                if (detailHtml) {
+                     // Get the cloned node/content to inject
+                    const contentToInject = this.getTaskDetailContent(task.id);
+                    
                     // Inject into popup container
-                    this.$refs.taskPopupContainer.innerHTML = "";
-                    this.$refs.taskPopupContainer.appendChild(clone);
-
+                    this.$refs.taskPopupContainer.innerHTML = contentToInject;
+                
                     // Re-initialize Alpine inside this container
                     Alpine.initTree(this.$refs.taskPopupContainer);
                     
                     this.taskPopupOpen = true;
 
                     this.$nextTick(() => lucide.createIcons());
+                } else {
+                    // This handles scenarios where tasks like 'Pending Employees' don't have a matching detail content.
+                    const defaultDetail = this.getTaskDetailContent(task.id);
+                    if(defaultDetail) {
+                        this.$refs.taskPopupContainer.innerHTML = defaultDetail;
+                        Alpine.initTree(this.$refs.taskPopupContainer);
+                        this.taskPopupOpen = true;
+                        this.$nextTick(() => lucide.createIcons());
+                    } else {
+                         // Fallback for tasks with no detail content defined in the file
+                         this.taskPopupTitle = task.name;
+                         this.$refs.taskPopupContainer.innerHTML = `<div class="p-4 text-center text-gray-500">No specific task details configured for <strong>${task.name}</strong>.</div>`;
+                         this.taskPopupOpen = true;
+                    }
                 }
             }
             ,
 
+            // This function is the single source of truth for loading detail content into the popup.
             getTaskDetailContent(id) {
 
-                if (id === "task-forecast") {
-                    return `
-                        <h3 class="text-sm font-bold mb-3">Weekly Forecast</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-forecast"\']')?.innerHTML ?? ""}
-                    `;
+                // Map specific task IDs to their hidden HTML content for cloning
+                const detailMapping = {
+                    'task-forecast': document.querySelector('[data-task-detail="task-forecast"]')?.outerHTML ?? '',
+                    'task-actual-sales': document.querySelector('[data-task-detail="task-actual-sales"]')?.outerHTML ?? '',
+                    'task-sod-schedule': document.querySelector('[data-task-detail="task-sod-schedule"]')?.outerHTML ?? '',
+                    'task-sod-time-loss': document.querySelector('[data-task-detail="task-sod-time-loss"]')?.outerHTML ?? '',
+                    'task-sod-timeoff': document.querySelector('[data-task-detail="task-sod-timeoff"]')?.outerHTML ?? '',
+                    'task-sod-availability': document.querySelector('[data-task-detail="task-sod-availability"]')?.outerHTML ?? '',
+                    'task-sod-swapshift': document.querySelector('[data-task-detail="task-sod-swapshift"]')?.outerHTML ?? '',
+                    'task-sod-punches-ex': document.querySelector('[data-task-detail="task-sod-punches-ex"]')?.outerHTML ?? '',
+                    'task-sod-unbalanced': document.querySelector('[data-task-detail="task-sod-unbalanced"]')?.outerHTML ?? '',
+                    'task-sod-mismatch': document.querySelector('[data-task-detail="task-sod-mismatch"]')?.outerHTML ?? '',
+                    
+                    // The original file only has X-SHOWs for COD/other details, so we match the closest generic content block
+                    // For tasks without unique hidden blocks, return a generic message to keep the popup open.
+                };
+
+                // Check for a direct match
+                if (detailMapping[id]) {
+                    // Clone the element from the mapping value
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = detailMapping[id];
+                    
+                    // Return the innerHTML of the detail content
+                    // IMPORTANT: The cloned content's outerHTML still has display:none!important
+                    const innerContent = tempDiv.querySelector('.detail-content') ? tempDiv.querySelector('.detail-content').innerHTML : tempDiv.innerHTML;
+                    
+                    return `<div class="task-popup-content-wrapper">${innerContent}</div>`;
                 }
 
-                if (id === "task-actual-sales") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Actual Sales</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-actual-sales"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-timeoff") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Time Off Request</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-timeoff"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-time-loss") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Time Loss Summary</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-time-loss"\']')?.innerHTML ?? ""}
-                    `;
-                }
-                
-                if (id === "task-sod-swapshift") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Swap Shift Approval</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-swapshift"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-availability") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Availability</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-availability"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-schedule") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'Schedule</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-schedule"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-unbalanced") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Unbalanced Punches</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-unbalanced"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-mismatch") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Mismatch Punches</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-mismatch"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                if (id === "task-sod-punches-ex") {
-                    return `
-                        <h3 class='text-sm font-bold mb-3'>Punch Exception</h3>
-                        ${document.querySelector('[x-show=\'activeTaskId === "task-sod-punches-ex"\']')?.innerHTML ?? ""}
-                    `;
-                }
-
-                return `<p class='text-gray-600 text-sm'>No details available.</p>`;
+                // Generic message for other tasks
+                return `<div class="p-4 text-center text-gray-500">No specific task details configured for this item.</div>`;
             },
 
             applyCustomDateRange() {
@@ -4693,22 +3754,19 @@ dropOnTask(evt, targetTaskId) {
             taskFilter: 'All',
 
             filterTasks() {
-                // Loop through every task in the groupedTasks structure
-                for (const group in this.groupedTasks) {
-                    for (const moduleName in this.groupedTasks[group]) {
-                        this.groupedTasks[group][moduleName].forEach(task => {
-                            if (this.taskFilter === 'All') {
-                                task.hidden = false;
-                            } 
-                            else if (this.taskFilter === 'Completed Tasks') {
-                                task.hidden = !task.complete;
-                            }
-                            else if (this.taskFilter === 'Pending Tasks') {
-                                task.hidden = task.complete;
-                            }
-                        });
+                // Loop through every task in the tasks array
+                this.tasks.forEach(task => {
+                    if (this.taskFilter === 'All') {
+                        task.hidden = false;
+                    } 
+                    else if (this.taskFilter === 'Completed Tasks') {
+                        task.hidden = !task.complete;
                     }
-                }
+                    else if (this.taskFilter === 'Pending Tasks') {
+                        task.hidden = task.complete;
+                    }
+                });
+                // This will automatically filter on next render
             },
 
             generateDateOptions() {
@@ -4764,21 +3822,37 @@ renderChart() {
         window.kpiChartInstance.destroy();
     }
 
+    // --- AGGREGATION LOGIC START ---
+    const dates = this.popupTableData.map(r => r.date);
+    const currentData = this.currentWeekData;
+
+    let aggregatedLabels = dates;
+    let aggregatedData = currentData;
+
+    if (this.aggregationPeriod !== 'Daily') {
+        const aggregated = this.aggregateData(dates, currentData, this.aggregationPeriod);
+        aggregatedLabels = aggregated.labels;
+        aggregatedData = aggregated.current;
+    }
+    // --- AGGREGATION LOGIC END ---
+
     const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 300);
-gradient.addColorStop(0, "rgba(108, 99, 255, 0.55)");   // darker top
-gradient.addColorStop(0.6, "rgba(108, 99, 255, 0.20)"); // mid transition
-gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
+    gradient.addColorStop(0, "rgba(108, 99, 255, 0.55)");   // darker top
+    gradient.addColorStop(0.6, "rgba(108, 99, 255, 0.20)"); // mid transition
+    gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
 
 
     window.kpiChartInstance = new Chart(ctx, {
         type: "line",
 
         data: {
-            labels: this.popupTableData.map(r => r.date),
+            // ⭐ UPDATED: Use aggregated labels
+            labels: aggregatedLabels,
             datasets: [
                 {
                     label: "Sales",
-                    data: this.currentWeekData,
+                    // ⭐ UPDATED: Use aggregated data
+                    data: aggregatedData,
                     borderColor: "#6C63FF",          // purple line
                     backgroundColor: gradient,       // gradient fill
                     borderWidth: 3,
@@ -4842,7 +3916,16 @@ gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
                     titleFont: { size: 13, weight: 600 },
                     bodyFont: { size: 12 },
                     callbacks: {
-                        title: (items) => items[0].label,  
+                        // Title should show the full date range if aggregated
+                        title: (items) => {
+                            const label = items[0].label;
+                            if (label.includes('-')) {
+                                // Aggregated label already contains start/end date
+                                return label;
+                            }
+                            // Daily label, standard
+                            return label;
+                        },
                         label: (ctx) => "Sales : $" + ctx.raw.toLocaleString()
                     }
                 }
