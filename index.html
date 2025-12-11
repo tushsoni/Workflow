@@ -52,6 +52,12 @@
     margin: 24px 0;
 }
 
+@keyframes border-run {
+    /* We only define the hue rotation here */
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+}
+
 @keyframes scaleIn {
   from { transform: scale(0.9); opacity: 0; }
   to   { transform: scale(1); opacity: 1; }
@@ -60,12 +66,99 @@
   animation: scaleIn 0.22s ease-out;
 }
 
+/* --- AI BUTTON: White Box / Dark Text with Animated Rainbow Border --- */
+
+/* Base Styles (Inverted Look: White Box, Dark Text) */
+/* --- AI BUTTON: White Box, Dark Text, Animated Rainbow Border ONLY --- */
+
+/* Base Styles (Inverted Look: White Box, Dark Text) */
+/* --- AI BUTTON: White Box, Dark Text, Animated Rainbow Border ONLY (FIXED) --- */
+
+/* Base Styles */
+/* --- AI BUTTON: White Box, Dark Text, Animated Rainbow Border ONLY (Final Fix) --- */
+
+/* Base Styles */
 .ai-button {
-    border: 1px solid #dfe3ff;
+    /* Main appearance: White box, Dark text */
+    background: white !important; 
+    color: #071a36 !important;
+    
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px; 
+    border-radius: 9999px; 
+    font-size: 0.9rem;
+    font-weight: 600;
+    
+    /* Remove default border, let the pseudo-element handle all borders */
+    border: none !important; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative; 
+    
+    /* CRITICAL: Use an inset box-shadow to cover the animated background/border */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 
+                inset 0 0 0 100px white; /* Hides the gradient layer */
+    
+    /* Ensure no animation is applied to the button itself */
+    animation: none !important; 
 }
 
+/* On hover, maintain white background, strong shadow */
 .ai-button:hover {
-    border-color: #c7d0ff;
+    transform: translateY(-1px);
+    background: white !important;
+    
+    /* Apply a subtle blue box shadow on hover */
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2), 
+                inset 0 0 0 100px white; /* Keep covering the gradient */
+    
+    animation: none !important; 
+}
+
+/* Pseudo-element for the continuous rainbow glow border */
+.ai-button::before {
+    content: '';
+    position: absolute;
+    
+    /* Make the pseudo-element slightly larger than the button to form the border */
+    top: -3px; 
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    
+    border-radius: 9999px;
+    
+    /* Conic gradient for the static color pattern */
+    background: conic-gradient(
+        #60a5fa, #34d399, #facc15, #f87171, #a78bfa, #60a5fa 
+    );
+    
+    z-index: -1;
+    opacity: 0.6; /* Slight visibility even when not hovered (optional) */
+    filter: blur(1px); /* Keep border sharp, not fully blurred */
+    transition: all 0.3s ease;
+    
+    /* Apply the animation to the pseudo-element's hue filter */
+    animation: border-run 4s linear infinite;
+    animation-play-state: paused;
+}
+
+/* Enhance the glow effect on hover */
+.ai-button:hover::before {
+    opacity: 1; 
+    filter: blur(0.5px); /* Make the border look continuous and crisp */
+    transform: scale(1.01); /* Subtle scale effect */
+    
+    /* Start the animation on hover */
+    animation-play-state: running; 
+}
+
+/* Ensure the icon and text maintain the dark blue color */
+.ai-button i, .ai-button span {
+    color: #071a36 !important;
 }
 
 /* Scrollable table container */
@@ -4585,6 +4678,7 @@ gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
         trend: 'up',
         trendVal: '1.5%',
         percent: +2.1,
+        comparison: 'vs. Last Month',
     },
 
     {
@@ -4599,6 +4693,7 @@ gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");   // darker bottom fade
         trend: 'up',
         trendVal: '2.1%',
         percent: +3.4,
+        comparison: 'vs. Last Month',
     },
 
     {
