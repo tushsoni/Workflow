@@ -834,12 +834,12 @@
 
 
         /* Fixed Sidebar */
-        .fixed-sidebar {
+.fixed-sidebar {
             position: fixed;
             top: 56px;
             left: 0;
             bottom: 0;
-            width: 56px;
+            width: 56px; /* Default (Collapsed) Width */
             background-color: var(--brand-navy);
             z-index: 40;
             display: flex;
@@ -847,15 +847,99 @@
             align-items: center;
             padding-top: 1rem;
             border-top: 1px solid rgba(255,255,255,0.1);
+            
+            /* Add transition for smooth expansion */
+            transition: width 0.3s ease; 
+            overflow: hidden; /* Hide overflow content */
+            padding-left: 0.5rem; /* Ensure consistent horizontal padding */
+            padding-right: 0.5rem; /* Ensure consistent horizontal padding */
+        }
+        
+        /* Expansion on Hover (keep this as is) */
+        .fixed-sidebar:hover {
+            width: 250px; /* Expanded Width */
+            align-items: flex-start; /* Align content to the left when expanded */
+            padding-left: 1rem; /* Add some left padding */
+            padding-right: 1rem;
         }
 
-        /* Main Layout */
+        /* Sidebar Link Styles - Set the Base Link Layout to ensure vertical stacking in collapsed state */
+        .fixed-sidebar a {
+            /* Reset to vertical column when not hovered, but use row when hovered */
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; /* Center items for the icon-only look */
+            padding: 8px 0px !important; /* Minimal vertical padding, remove horizontal padding */
+            width: 100%; 
+            transition: background-color 0.2s, color 0.2s;
+        }
+        
+        /* Apply row layout and proper alignment only when sidebar is hovered */
+        .fixed-sidebar:hover a {
+             flex-direction: row; 
+             justify-content: flex-start; 
+             align-items: center;
+             padding: 8px 4px !important; /* Restore padding on hover */
+        }
+
+        /* Sidebar Icon and Text Layout */
+        .fixed-sidebar a i {
+            flex-shrink: 0; 
+            margin-right: 0px; /* REMOVE MARGIN in collapsed state */
+            width: 20px !important; 
+            height: 20px !important;
+        }
+        
+        /* Add margin to icon only when sidebar is hovered/expanded */
+        .fixed-sidebar:hover a i {
+             margin-right: 10px; 
+        }
+
+        .fixed-sidebar a span {
+            white-space: nowrap; 
+            opacity: 0; /* Hide text completely in collapsed state */
+            height: 0; /* Collapse text vertically when hidden */
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: opacity 0.2s 0.1s ease, height 0.3s; 
+        }
+        
+        /* Reveal text on hover (and make space for it) */
+        .fixed-sidebar:hover a span {
+            opacity: 1;
+            height: auto; 
+            line-height: 1.2;
+            margin-top: 4px; /* Add space below icon */
+        }
+        
+        /* Fix the Dashboard highlight positioning in the collapsed state */
+        .fixed-sidebar a.bg-white\/10 {
+             /* Reset transformation for collapsed state */
+             transform: scale(1);
+        }
+        
+        .fixed-sidebar:hover a.bg-white\/10 {
+             /* Only apply transformation when expanded, as before */
+             transform: scale(1.05);
+        }
+
+        /* Hide the default Alpine tooltip when sidebar is collapsed (using the old CSS) */
+        /* NOTE: You should keep this from the previous iteration. */
+        .fixed-sidebar:not(:hover) a[data-tooltip]::after,
+        .fixed-sidebar:not(:hover) a[data-tooltip]::before {
+            display: none !important;
+        }
+
+                /* Main Layout */
         .main-layout {
             padding-top: 56px;
-            padding-left: 56px;
+            padding-left: 56px; /* Default (Collapsed) Padding-Left */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            
+            /* Add transition for smooth shift of main content */
+            transition: padding-left 0.3s ease; 
         }
 
         /* Banner Style */
@@ -1420,15 +1504,45 @@
         </header>
 
         <aside class="fixed-sidebar">
-            <div class="flex flex-col gap-4 w-full items-center pt-4">
-                <button class="p-2 bg-white/10 text-white rounded-xl shadow-lg border border-white/10 hover:bg-white/20 transition-all">
-                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </button>
-                <div class="w-8 h-0.5 bg-white/10 rounded-full my-2"></div>
-                <button class="p-2 text-white/60 hover:text-white transition-colors"><i data-lucide="layout-grid" class="w-5 h-5"></i></button>
-                <button class="p-2 text-white/60 hover:text-white transition-colors"><i data-lucide="calendar" class="w-5 h-5"></i></button>
-            </div>
-        </aside>
+    <div class="flex flex-col gap-4 w-full items-center pt-4 px-2">
+
+                <a href="https://tushsoni.github.io/Workflow/" target="_blank"
+           class="p-2 bg-white/10 text-white rounded-xl shadow-lg border border-white/10 hover:bg-white/20 transition-all flex flex-col items-center gap-1 w-full text-center text-xs" 
+           data-tooltip="Workflow Dashboard UI">
+            <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+            <span class="text-[0.6rem] font-medium leading-none">Workflow Dashboard UI</span>
+        </a>
+        
+        <a href="https://tushsoni.github.io/GlobalWorkflowLookup/" target="_blank"
+           class="p-2 text-white/60 hover:text-white transition-colors flex flex-col items-center gap-1 w-full text-center text-xs" 
+           data-tooltip="Global Workflow Lookup">
+            <i data-lucide="search" class="w-5 h-5"></i>
+            <span class="text-[0.6rem] font-medium leading-none">Global Workflow Lookup</span> 
+        </a>
+        
+        <a href="https://tushsoni.github.io/GlobalWorkflowConfiguration/" target="_blank"
+           class="p-2 text-white/60 hover:text-white transition-colors flex flex-col items-center gap-1 w-full text-center text-xs" 
+           data-tooltip="Global Workflow Configuration">
+            <i data-lucide="wrench" class="w-5 h-5"></i>
+            <span class="text-[0.6rem] font-medium leading-none">Global Workflow Configuration</span>
+        </a>
+        
+        <a href="https://gemini.google.com/share/0d14d99693f8" target="_blank"
+           class="p-2 text-white/60 hover:text-white transition-colors flex flex-col items-center gap-1 w-full text-center text-xs" 
+           data-tooltip="Workflow Role Wise Setup">
+            <i data-lucide="users" class="w-5 h-5"></i>
+            <span class="text-[0.6rem] font-medium leading-none">Workflow Role Wise Setup</span>
+        </a>
+        
+        <a href="https://tushsoni.github.io/WorkflowSummary/" target="_blank"
+           class="p-2 text-white/60 hover:text-white transition-colors flex flex-col items-center gap-1 w-full text-center text-xs" 
+           data-tooltip="Workflow Summary Setup">
+            <i data-lucide="file-text" class="w-5 h-5"></i>
+            <span class="text-[0.6rem] font-medium leading-none">Workflow Summary Setup</span>
+        </a>
+        
+    </div>
+</aside>
 
         <div x-show="settingsOpen" @keydown.escape.window="settingsOpen = false" class="relative z-[60]" style="display: none;">
             <div x-show="settingsOpen" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
