@@ -10,6 +10,11 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
 
+<script>
+    window.row = null;
+</script>
+
+
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1920,15 +1925,17 @@
             <template x-for="task in sidebarTasks" :key="task.id">
                 <label class="flex items-center gap-3 cursor-pointer">
 
-                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
-                        :class="getTaskIconColor(task.id)">
-                        <i :data-lucide="task.icon" class="w-4 h-4"></i>
-                    </div>
+
 
                     <input type="checkbox" 
                         class="mr-2" 
                         :value="task.id"
                         x-model="selectedTasksToAdd">
+
+                     <div class="w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm"
+                        :class="getTaskIconColor(task.id)">
+                        <i :data-lucide="task.icon" class="w-4 h-4"></i>
+                    </div>
 
                     <span class="text-sm font-medium" x-text="task.name"></span>
                 </label>
@@ -2065,6 +2072,101 @@
             </button>
         </div>
 
+    </div>
+</div>
+
+<div 
+    x-show="pendingEmployeeModalOpen"
+    @keydown.escape.window="pendingEmployeeModalOpen = false"
+    class="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[400]"
+>
+    <div class="bg-white w-[900px] h-[600px] rounded-xl shadow-xl p-5 flex flex-col" @click.stop>
+
+        <div class="flex justify-between items-center mb-4 border-b pb-3">
+            <h2 class="text-xl font-bold text-gray-900">Pending Employee</h2>
+            <button @click="pendingEmployeeModalOpen = false"
+                class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-red-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 flex overflow-hidden">
+            
+            <div class="w-1/2 p-4 border-r border-gray-200 overflow-y-auto">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Details of Employee</h3>
+
+                <div class="space-y-4">
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700 mb-1">First Name</label>
+                        <input type="text" value="abc" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                        <input type="text" value="" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700 mb-1">Integration ID</label>
+                        <input type="text" value="106588013" disabled class="px-3 py-2 border border-gray-200 rounded-lg shadow-inner bg-gray-100" />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700 mb-1">Email ID</label>
+                        <input type="text" value="abc@gmail.com" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                    </div>
+                    <div class="flex flex-col">
+                        <label class="text-sm font-medium text-gray-700 mb-1">Contact Number</label>
+                        <input type="text" placeholder="Enter Contact Number" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                    </div>
+
+                    <button class="w-full mt-6 px-4 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium shadow-md transition">
+                        Create New Employee
+                    </button>
+                </div>
+            </div>
+
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center gap-2">
+                <div class="text-xl font-bold text-gray-400">OR</div>
+            </div>
+
+            <div class="w-1/2 p-4 flex flex-col">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4">Select to merge with an existing employee</h3>
+                
+                <div class="relative mb-4">
+                    <input type="text" placeholder="Search Employee" class="w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-3"></i>
+                </div>
+
+                <div class="flex-1 overflow-y-auto space-y-3">
+                    <div class="p-3 bg-gray-100 rounded-lg border border-blue-400 shadow-md cursor-pointer">
+                        <h4 class="font-bold text-gray-900">Abc</h4>
+                        <p class="text-xs text-gray-600">Bag21</p>
+                        <p class="text-xs text-gray-600">crew12@gmail.com</p>
+                        <p class="text-xs text-gray-600">2028596589</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
+                        <h4 class="font-bold text-gray-900">Emp25</h4>
+                        <p class="text-xs text-gray-600">emp25@gmail.com</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
+                        <h4 class="font-bold text-gray-900">G Jee</h4>
+                        <p class="text-xs text-gray-600">2028596578</p>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
+                        <h4 class="font-bold text-gray-900">Happy</h4>
+                    </div>
+                    <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
+                        <h4 class="font-bold text-gray-900">Max Steel</h4>
+                        <p class="text-xs text-gray-600">max@steel.com</p>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex justify-end pt-4 border-t border-gray-100">
+                    <button class="px-6 py-2 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium shadow-md transition">
+                        Next
+                    </button>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 <div class="relative ml-4" x-data="{ openFilter:false }">
@@ -3089,1607 +3191,1487 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <script>
-        function appState() {
-            return {
-                // --- NEW STATE FOR CONTEXT MENU ---
-                contextMenuOpen: false,
-                contextMenuTargetTask: null,
-                contextMenuX: 0,
-                contextMenuY: 0,
-                // --- END NEW STATE ---
+function appState() {
+    return {
+        // --- NEW STATE FOR CONTEXT MENU ---
+        contextMenuOpen: false,
+        contextMenuTargetTask: null,
+        contextMenuX: 0,
+        contextMenuY: 0,
+        // --- END NEW STATE ---
 
-                currentTab: 'workflow',
-                settingsOpen: false,
-                searchTerm: '',
-                activeTaskId: null, 
-                dayPartExpansion: {
-                    'Start of Day': true,
-                    'Close of Day': true,
-                },
-                
-                popupOpen: false,
-                storeRank: 3, 
-                popupTitle: "",
-                popupMode: "graph",
-                popupTableData: [],
-                currentKpiData: [],
-                currentWeekData: [],
-                lastWeekData: [],
-                lastYearData: [],
-                dragIndex: null, 
-                selectedRange: 'Default',
-                showCustomPicker: false,
-                customStart: "",
-                customEnd: "",
-                taskPopupOpen: false,
-                taskPopupTitle: "",
-                taskPopupContent: "",
-                taskTableHTML: "",
-                showCustomPicker: false,
-                customStart: null,
-                customEnd: null,
-                selectedRangeLabel: "",
-                picker: null,
-                sidebarOpen: false,
-                allTasksSelected: false,
-                taskSearchTerm: '',
+        currentTab: 'workflow',
+        settingsOpen: false,
+        searchTerm: '',
+        activeTaskId: null,
+        dayPartExpansion: {
+            'Start of Day': true,
+            'Close of Day': true,
+        },
 
-                sidebarTasks: [],
+        popupOpen: false,
+        storeRank: 3,
+        popupTitle: "",
+        popupMode: "graph",
+        popupTableData: [],
+        currentKpiData: [],
+        currentWeekData: [],
+        lastWeekData: [],
+        lastYearData: [],
+        dragIndex: null,
+        selectedRange: 'Default',
+        showCustomPicker: false,
+        customStart: "",
+        customEnd: "",
+        taskPopupOpen: false,
+        taskPopupTitle: "",
+        taskPopupContent: "",
+        taskTableHTML: "",
+        selectedRangeLabel: "",
+        picker: null,
+        sidebarOpen: false,
+        allTasksSelected: false,
+        taskSearchTerm: '',
 
-                addTaskPopupOpen: false,
-                selectedTasksToAdd: [],
-                selectAllTasks: false,
-                addTargetModule: null,
-                addTargetSection: null,
+        sidebarTasks: [],
 
-                addGroupPopupOpen: false,
-                newGroupName: '',
-                newGroupSection: null, 
-                customModules: [], 
-                
-                addDayPartPopupOpen: false,
-                newDayPartName: '',
-                copyFromDayPart: null, 
-                customDayParts: [], 
+        addTaskPopupOpen: false,
+        selectedTasksToAdd: [],
+        selectAllTasks: false,
+        addTargetModule: null,
+        addTargetSection: null,
 
-                // --- NEW DYNAMIC TASK DETAIL DATA & STATE ---
-                // Stores data for all task detail popups, accessible by task ID (excluding prefix)
-                taskDetailData: {
-    // 1) Review Forecast
-    'review-forecast': {
-        headers: ['Type', 'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Action'],
-        rows: [
-            // NOTE: These rows intentionally have no action string in cols, 
-            // as the editable icon logic handles the last column based on the key.
-            { id: 'my-forecast', cols: ['My Forecast', 1180, 1320, 1280, 1410, 1525, 1580, 1680] },
-            { id: 'ai-forecast', cols: ['AI Forecast', 1210, 1290, 1265, 1390, 1510, 1590, 1720] }
-        ],
-        editState: { 'my-forecast': false, 'ai-forecast': false }
-    },
-    // 2) Actual Sales
-    'actual-sales': {
-        headers: ['Sales', 'Day -7', 'Day -6', 'Day -5', 'Day -4', 'Day -3', 'Day -2', 'Day -1', 'Action'],
-        rows: [
-            // No action string in cols, as the editable icon logic handles the last column based on the key.
-            { id: 'actual-sales-row', cols: ['Actual Sales', 1100, 1250, 1300, 1280, 1500, 1550, 1580] }
-        ],
-        editState: { 'actual-sales-row': false }
-    },
-    // 3) Ordering - FIX: Action included in cols array, only Finalize
-    'ordering': {
-        headers: ['Vendor', 'Order Date', 'Delivery Date', 'Status', 'Amount', 'Action'],
-        rows: [
-            { id: 'order-1', cols: ['Sysco', '12/14/2025', '12/16/2025', 'Placed', '$450.50', 'Finalize'] },
-            { id: 'order-2', cols: ['Produce Co', '12/14/2025', '12/15/2025', 'Pending', '$120.00', 'Finalize'] }
-        ]
-    },
-    // 4) Inventory - FIX: Action included in cols array, only Finalize
-    'inventory': {
-        headers: ['Inv Date', 'Count Cycle', 'Inv Value', 'Act. Usage %', 'Ideal Usage %', 'Variance %', 'Action'],
-        rows: [
-            { id: 'inv-1', cols: ['12/14/2025', 'Weekly', '$8,520.00', '32.1%', '31.5%', '0.6%', 'Finalize'] },
-            { id: 'inv-2', cols: ['12/13/2025', 'Daily', '$950.00', '28.8%', '29.0%', '-0.2%', 'Finalize'] }
-        ]
-    },
-    // 5) Transfer Out - FIX: Action included in cols array, only Finalize
-    'transfer-out': {
-        headers: ['Transfer ID', 'Transfer Date', 'Transfer To', 'Created By', 'Item Value', 'Action'],
-        rows: [
-            { id: 'to-1', cols: ['TO-1234', '12/14/2025', 'Store 901', 'Jane Doe', '$85.00', 'Finalize'] },
-        ]
-    },
-    // 6) Transfer In - FIX: Action included in cols array, only Finalize
-    'transfer': { 
-        headers: ['Transfer ID', 'Transfer Date', 'Transfer From', 'Finalized By', 'Item Value', 'Action'],
-        rows: [
-            { id: 'ti-1', cols: ['TI-5678', '12/14/2025', 'Store 902', 'John Smith', '$120.00', 'Finalize'] },
-        ]
-    },
-    // 7) Waste - FIX: Action included in cols array, only Finalize
-    'waste': {
-        headers: ['Date', 'Total Cost $', 'Last Finalized By', 'Status', 'Action'],
-        rows: [
-            { id: 'waste-1', cols: ['12/14/2025', '$48.20', 'Admin', 'Pending', 'Finalize'] },
-        ]
-    },
-    // 8) Pending Employees
-    'pending-employees': {
-        headers: ['Name', 'Source', 'Employee ID', 'Payroll ID', 'Email ID', 'Phone No.', 'Action'],
-        rows: [
-            { id: 'p-emp-1', cols: ['Sarah Connor', 'External HR', 'N/A', 'N/A', 'sconnor@email.com', '555-1234', ['Take Action', 'Ignore']] },
-        ]
-    },
-    // 9) Schedule - FIX: Action included in cols array, updated to 'Publish'
-    'schedule': {
-        headers: ['Forecasted Sales', 'Forecast Hrs', 'Schedule Hrs', 'Variance Hrs', 'Action'],
-        rows: [
-            { id: 'sched-1', cols: ['$5,210.30', '128.0', '135.5', '-7.5', 'Publish'] },
-        ]
-    },
-    // 10) Time Loss Summary (Using 'time-loss' task ID)
-    'time-loss': {
-        headers: ['Time Loss %', 'Early Clock In ($)', 'Late Clock Out ($)', 'OT Loss ($)', 'Break Loss'],
-        rows: [
-            { id: 'tl-1', cols: ['0.8%', '$15.00', '$22.50', '$8.00', '$10.00'] },
-        ]
-    },
-    // 11) Time Off Request (Using 'tor' task ID)
-    'tor': {
-        headers: ['Employee Name', 'Date', 'Status', 'Action'],
-        rows: [
-            { id: 'tor-1', cols: ['Alex Turner', '12/20/2025', 'Pending', ['Approve', 'Disapprove']] },
-            { id: 'tor-2', cols: ['Jenna R. ', '12/21/2025', 'Pending', ['Approve', 'Disapprove']] }
-        ]
-    },
-    // 12) Availability Request (Using 'availability-request' task ID)
-    'availability-request': {
-        headers: ['Employee Name', 'Date', 'Status', 'Action'],
-        rows: [
-            { id: 'ar-1', cols: ['Sam Wilson', '12/15/2025', 'Pending', ['Approve', 'Disapprove']] }
-        ]
-    },
-    // 13) Swap Shift Approval (Using 'ssa' task ID)
-    'ssa': {
-        headers: ['Shift Details', 'Employee', 'Action'],
-        rows: [
-            { id: 'ssa-1', cols: ['12/15 (8h)', 'Mike / Robin', ['Approve', 'Disapprove All']] }
-        ]
-    },
-    // 14) Approval (Review Punches)
-    'review-punches': {
-        headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action'],
-        rows: [
-            { id: 'appr-1', cols: ['12/14/2025', 'John D.', '09:00', '17:00', '1 (30m)', ['Update', 'Approve']] },
-            { id: 'appr-2', cols: ['12/14/2025', 'Jane S.', '10:00', '18:00', '1 (30m)', ['Update', 'Approve']] }
-        ]
-    },
-    // 15) Unbalanced Punches
-    'unbalanced-punches': {
-        headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action'],
-        rows: [
-            { id: 'unbal-1', cols: ['12/14/2025', 'Peter P.', '10:00', '18:00', 'Missing', ['Update', 'Approve']] }
-        ]
-    },
-    // 16) Mismatch Punch
-    'mismatch-punch': {
-        headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action of Punch'],
-        rows: [
-            // This is a special case that returns a descriptive string, not a button
-            { id: 'mis-1', cols: ['12/14/2025', 'Gwen S.', '11:00', '19:00', '1 (30m)', 'Late Clock Out'] }
-        ]
-    },
+        addGroupPopupOpen: false,
+        newGroupName: '',
+        newGroupSection: null,
+        customModules: [],
+
+        addDayPartPopupOpen: false,
+        newDayPartName: '',
+        copyFromDayPart: null,
+        customDayParts: [],
+
+        // NEW: State for the Pending Employee Modal
+        pendingEmployeeModalOpen: false,
+
+        // ----------------------------------------------------
+        // --- CORE METHODS ---
+        // ----------------------------------------------------
+
+        // NEW FUNCTION: Opens the Pending Employee Modal
+        openPendingEmployeeModal() {
+            this.pendingEmployeeModalOpen = true;
+            this.taskPopupOpen = false; // Close the task detail popup
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        // NEW FUNCTION: Generates action HTML dynamically (solves "row is not defined" error)
+        getTaskActionHTML(rowId, actionType) {
+            // Escape single quotes for the alert function calls to prevent syntax errors
+            const escapedRowId = rowId.replace(/'/g, "\\'"); 
+
+            if (actionType === 'PendingEmpActions') {
+                return `
+                    <div class="flex flex-wrap justify-center gap-1">
+                        <button @click="$event.stopPropagation(); $data.openPendingEmployeeModal()" class="bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition whitespace-nowrap shadow-sm">Take Action</button>
+                        <button @click="$event.stopPropagation(); alert('Ignore for ${escapedRowId}')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-xs font-medium hover:bg-gray-300 transition whitespace-nowrap shadow-sm">Ignore</button>
+                    </div>`;
+            }
+            if (actionType === 'TorActions') {
+                return `
+                    <div class="flex flex-wrap justify-center gap-1">
+                        <button @click="$event.stopPropagation(); alert('Approve for ${escapedRowId}')" class="p-1.5 rounded-full active:scale-95 transition-all text-green-600 hover:bg-green-100"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
+                        <button @click="$event.stopPropagation(); alert('Disapprove for ${escapedRowId}')" class="p-1.5 rounded-full active:scale-95 transition-all text-red-600 hover:bg-red-100"><i data-lucide="x" class="w-4 h-4"></i></button>
+                    </div>`;
+            }
+            if (actionType === 'SsaActions') {
+                return `
+                    <div class="flex flex-wrap justify-center gap-1">
+                        <button @click="$event.stopPropagation(); alert('Approve for ${escapedRowId}')" class="p-1.5 rounded-full active:scale-95 transition-all text-green-600 hover:bg-green-100"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
+                        <button @click="$event.stopPropagation(); alert('Disapprove All for ${escapedRowId}')" class="bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-red-700 transition whitespace-nowrap shadow-sm">Disapprove All</button>
+                    </div>`;
+            }
+            if (actionType === 'PunchReviewActions') {
+                return `
+                    <div class="flex flex-wrap justify-center gap-1">
+                        <button @click="$event.stopPropagation(); alert('Edit for ${escapedRowId}')" class="p-1.5 rounded-full active:scale-95 transition-all text-blue-600 hover:bg-blue-100"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                        <button @click="$event.stopPropagation(); alert('Approve for ${escapedRowId}')" class="p-1.5 rounded-full active:scale-95 transition-all text-green-600 hover:bg-green-100"><i data-lucide="thumbs-up" class="w-4 h-4"></i></button>
+                    </div>`;
+            }
+            return ''; // Default empty string
+        },
+
+        // NEW FUNCTION: Generates the HTML for the task detail popup
+generateTaskTable(task) {
+    try {
+        if (!task || typeof task !== "object") {
+            return `<div class="p-4 text-red-600">Invalid task data.</div>`;
+        }
+
+        // ------------------------------
+        // 1) Resolve Task Key
+        // ------------------------------
+        const fullId = task.id;
+        let key = "";
+
+        if (fullId.startsWith("task-sod-")) key = fullId.substring("task-sod-".length);
+        else if (fullId.startsWith("task-cod-")) key = fullId.substring("task-cod-".length);
+        else if (fullId.startsWith("task-")) key = fullId.substring("task-".length);
+        else key = fullId.split("-")[0];
+
+        const mapKeys = {
+            "forecast": "review-forecast",
+            "actual-sales": "actual-sales",
+            "hr": "pending-employees",
+            "tor": "tor",
+            "availability": "availability-request",
+            "ssa": "ssa",
+            "punches-ex": "punch-exception",
+            "punches-rev": "review-punches",
+            "punches-app": "review-punches",
+            "misc-pay": "misc-pay",
+            "ot": "approaching-ot",
+            "payroll-sum": "payroll-summary",
+            "unbalanced": "unbalanced-punches",
+            "mismatch": "mismatch-punch",
+        };
+
+        key = mapKeys[key] ?? key;
+
+        // ------------------------------
+        // 2) Get raw data safely
+        // ------------------------------
+        let data = this.taskDetailData[key];
+
+        if (!data) {
+            return `
+                <div class="p-4 text-center text-gray-500">
+                    No detail configuration found for <strong>${task.name}</strong>
+                    <br>(Key: ${key})
+                </div>`;
+        }
+
+        // Handle transfer special case
+        if (key === "transfer" && fullId.includes("cod")) data = { ...this.taskDetailData["transfer-out"] };
+        if (key === "transfer" && fullId.includes("sod")) data = { ...this.taskDetailData["transfer"] };
+
+        // ------------------------------
+        // 3) Safe headers / rows / cols
+        // ------------------------------
+        data.headers = Array.isArray(data.headers) ? data.headers : [];
+        data.rows = Array.isArray(data.rows) ? data.rows : [];
+
+        // Force every row to contain a "cols" array
+        data.rows = data.rows.map(row => ({
+            ...row,
+            cols: Array.isArray(row.cols) ? row.cols : []
+        }));
+
+        // ------------------------------
+        // 4) Special Forecast/Sales date header logic
+        // ------------------------------
+        const isForecast = key === "review-forecast";
+        const isSales = key === "actual-sales";
+
+        if (isForecast) {
+            const futureDates = this.getFutureDates(7);
+            data.headers = ["TYPE", ...futureDates, "ACTION"];
+        }
+
+        if (isSales) {
+            const pastDates = this.getPastDates(7);
+            data.headers = ["SALES TYPE", ...pastDates, "ACTION"];
+        }
+
+        const isEditableForecast = (isForecast || isSales);
+
+        // Initialize edit state safely
+        if (isEditableForecast) {
+            if (!data.editState) data.editState = {};
+            data.rows.forEach(r => {
+                if (!data.editState.hasOwnProperty(r.id)) {
+                    data.editState[r.id] = false;
+                }
+            });
+        }
+
+        // ------------------------------
+        // 5) If no headers => no table
+        // ------------------------------
+        if (data.headers.length === 0) {
+            return `
+                <div class="p-4 text-gray-600 text-center">
+                    No table structure defined for <strong>${task.name}</strong>.
+                </div>`;
+        }
+
+        // ------------------------------
+        // 6) BUILD TABLE
+        // ------------------------------
+
+        let tableHTML = `
+            <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+            <table class="min-w-full divide-y divide-gray-200 task-details-table">
+                <thead>
+                    <tr>
+                        ${data.headers.map(h => `<th class="whitespace-nowrap">${h}</th>`).join("")}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.rows.map(row => `
+                        <tr class="hover:bg-gray-50 transition-colors">
+                            ${data.headers.map((h, colIndex) => {
+                                const value = row.cols[colIndex] ?? "";
+
+                                // Editable (Forecast/Sales)
+                                if (isEditableForecast && h !== "TYPE" && h !== "SALES TYPE" && h !== "ACTION") {
+                                    return `
+                                        <td class="text-center">
+                                            <input x-show="$data.taskDetailData['${key}'].editState['${row.id}']"
+                                                   type="text"
+                                                   x-model.number="$data.taskDetailData['${key}'].rows.find(r=>r.id==='${row.id}').cols[${colIndex}]"
+                                                   class="w-full text-center"
+                                                   placeholder="Value">
+
+                                            <span x-show="!$data.taskDetailData['${key}'].editState['${row.id}']">
+                                                ${value}
+                                            </span>
+                                        </td>`;
+                                }
+
+                                // Action cell for Forecast/Sales
+                                if (isEditableForecast && h === "ACTION") {
+                                    return `
+                                        <td class="text-center">
+                                            <button
+                                                @click="$data.taskDetailData['${key}'].editState['${row.id}'] = !$data.taskDetailData['${key}'].editState['${row.id}']; $nextTick(() => lucide.createIcons())"
+                                                class="p-1.5 rounded-full hover:bg-gray-100 text-blue-600"
+                                            >
+                                                <i :data-lucide="$data.taskDetailData['${key}'].editState['${row.id}'] ? 'thumbs-up' : 'edit-3'" class="w-4 h-4"></i>
+                                            </button>
+                                        </td>`;
+                                }
+
+                                // Special Action Handlers
+                                if (["PendingEmpActions", "TorActions", "SsaActions", "PunchReviewActions"].includes(value)) {
+                                    return `
+                                        <td class="text-center">
+                                            <div x-html="$data.getTaskActionHTML('${row.id}', '${value}')"></div>
+                                        </td>`;
+                                }
+
+                                // Standard cell
+                                return `
+                                    <td class="${colIndex === 0 ? 'font-medium text-gray-800' : 'text-gray-600'} whitespace-nowrap">
+                                        ${value}
+                                    </td>`;
+                            }).join("")}
+                        </tr>
+                    `).join("")}
+                </tbody>
+            </table>
+            </div>
+        `;
+
+        return tableHTML;
+
+    } catch (err) {
+        console.error("SAFE TABLE GENERATION ERROR:", err);
+        return `
+            <div class="text-red-600 p-4">
+                Failed to generate table.<br>
+                Error: ${err.message}
+            </div>`;
+    }
 },
-                // --- END NEW DYNAMIC TASK DETAIL DATA & STATE ---
-
-                
-
-
-                isDayPartExpanded(dayPartName) {
-                    return this.dayPartExpansion[dayPartName] === true;
-                },
-
-                toggleDayPart(dayPartName) {
-                    this.dayPartExpansion[dayPartName] = !this.dayPartExpansion[dayPartName];
-                },
-
-                getDayPartProgress(dayPartName) {
-                    const relevant = this.tasks.filter(t => t.category === dayPartName && t.enabled);
-                    const total = relevant.length;
-                    const done = relevant.filter(t => t.complete).length;
-                    const percent = total === 0 ? 0 : (done / total) * 100;
-                    return {
-                        countText: `${done}/${total}`,
-                        percent: percent
-                    };
-                },
-
-                openAddDayPartPopup() {
-                    this.newDayPartName = '';
-                    this.copyFromDayPart = null; 
-                    this.addDayPartPopupOpen = true;
-                    this.$nextTick(() => lucide.createIcons());
-                },
-
-                saveNewDayPart() {
-                    const name = this.newDayPartName.trim();
-                    if (!name) return;
-
-                    const existingDayParts = ['Start of Day', 'Close of Day', ...this.customDayParts.map(d => d.name)];
-                    if (existingDayParts.some(d => d.toLowerCase() === name.toLowerCase())) {
-                        alert(`A Workflow Day Part named "${name}" already exists. Please choose a different name.`);
-                        return;
-                    }
-
-                    this.customDayParts.push({ name: name });
-                    this.dayPartExpansion[name] = true;
-
-                    if (this.copyFromDayPart) {
-                        const sourceTasks = this.tasks.filter(t => t.category === this.copyFromDayPart);
-                        const sourceModules = this.customModules.filter(m => m.category === this.copyFromDayPart);
-
-                        sourceTasks.forEach(t => {
-                            const clonedTask = JSON.parse(JSON.stringify(t));
-                            clonedTask.id = t.id.split('-')[0] + '-' + Date.now() + Math.random().toString(36).substring(7);
-                            clonedTask.category = name;
-                            clonedTask.complete = false; 
-                            clonedTask.badge = Math.floor(Math.random() * 5); 
-                            this.tasks.push(clonedTask);
-                        });
-
-                         sourceModules.forEach(m => {
-                            const clonedModule = JSON.parse(JSON.stringify(m));
-                            clonedModule.category = name;
-                            this.customModules.push(clonedModule);
-                        });
-                    }
-
-                    this.addDayPartPopupOpen = false;
-                    this.newDayPartName = '';
-                    this.copyFromDayPart = null;
-                    
-                    this.$nextTick(() => {
-                        lucide.createIcons();
-                        this.updateTaskProgress();
-                    });
-                },
-                
-                removeDayPart(dayPartName) {
-                    if (!confirm(`Are you sure you want to remove the entire Day Part: ${dayPartName}? This will remove all associated tasks.`)) {
-                        return;
-                    }
-
-                    this.customDayParts = this.customDayParts.filter(d => d.name !== dayPartName);
-                    this.tasks = this.tasks.filter(t => t.category !== dayPartName);
-                    this.customModules = this.customModules.filter(m => m.category !== dayPartName);
-                    delete this.dayPartExpansion[dayPartName];
-
-                    this.$nextTick(() => {
-                        this.updateTaskProgress();
-                        lucide.createIcons();
-                    });
-                },
-
-                getWorkflowModules(category) {
-                    const defaultModules = [
-                        { name: 'Forecast', icon: 'trending-up', colorClasses: 'from-blue-500 to-blue-600' },
-                        { name: 'Food Management', icon: 'shopping-cart', colorClasses: 'from-purple-500 to-pink-600' },
-                        { name: 'Labor Management', icon: 'users', colorClasses: 'from-amber-400 to-orange-500' },
-                        { name: 'Payroll Management', icon: 'clock', colorClasses: 'bg-indigo-100 text-indigo-600' },
-                    ];
-
-                    let allHardcoded = [...defaultModules];
-                    if (category === 'Close of Day' || this.customDayParts.some(d => d.name === category)) {
-                         if (!allHardcoded.some(m => m.name === 'Zip Inventory')) {
-                            allHardcoded.splice(1, 0, { name: 'Zip Inventory', icon: 'file-spreadsheet', colorClasses: 'bg-green-100 text-green-600' });
-                        }
-                    }
-
-                    const filteredDefaults = allHardcoded.filter(m => 
-                        this.getModuleTasks(m.name, category).length > 0 || m.name === 'Forecast'
-                    );
-
-                    const custom = this.customModules.filter(m => m.category === category);
-                    const allModules = [...filteredDefaults, ...custom];
-
-                    const uniqueModules = [];
-                    const seen = new Set();
-                    allModules.forEach(m => {
-                        const key = m.name + m.category;
-                        if (!seen.has(key)) {
-                            seen.add(key);
-                            uniqueModules.push(m);
-                        }
-                    });
-
-                    const defaultNames = defaultModules.map(m => m.name);
-                    
-                    const sortedModules = uniqueModules.sort((a, b) => {
-                        const aIsDefault = defaultNames.includes(a.name);
-                        const bIsDefault = defaultNames.includes(b.name);
-                        
-                        if (aIsDefault && !bIsDefault) return -1;
-                        if (!aIsDefault && bIsDefault) return 1;
-                        return 0; 
-                    });
-
-                    return sortedModules;
-                },
-
-                openAddGroupPopup(section) {
-                    this.newGroupSection = section;
-                    this.newGroupName = '';
-                    this.addGroupPopupOpen = true;
-                },
-
-                saveNewGroup() {
-                    const name = this.newGroupName.trim();
-                    const section = this.newGroupSection;
-                    
-                    if (!name || !section) return;
-
-                    const isDuplicate = this.getWorkflowModules(section).some(m => m.name.toLowerCase() === name.toLowerCase());
-                    if (isDuplicate) {
-                        alert(`A group named "${name}" already exists in ${section}. Please choose a different name.`);
-                        return;
-                    }
-
-                    const newModule = {
-                        name: name,
-                        icon: 'folder-open', 
-                        colorClasses: 'from-gray-400 to-gray-500', 
-                        category: section,
-                        customGroup: true, 
-                    };
-
-                    this.customModules.push(newModule);
-
-                    this.addGroupPopupOpen = false;
-                    this.newGroupName = '';
-                    this.newGroupSection = null;
-
-                    this.$nextTick(() => lucide.createIcons());
-                },
-
-
-                openAddTaskPopup(module, section) {
-                    this.addTargetModule = module;
-                    this.addTargetSection = section;
-
-                    this.selectedTasksToAdd = [];
-                    this.selectAllTasks = false;
-                    
-                    const tasksInModule = this.getModuleTasks(module, section).map(t => t.id.split('-')[0]); 
-                    
-                    this.availableSidebarTasks = this.predefinedTasks.filter(t => !tasksInModule.includes(t.id));
-
-                    this.addTaskPopupOpen = true;
-
-                    this.$nextTick(() => lucide.createIcons());
-                },
-
-                toggleSelectAllTasks() {
-                    if (this.selectAllTasks) {
-                        this.selectedTasksToAdd = this.availableSidebarTasks.map(t => t.id);
-                    } else {
-                        this.selectedTasksToAdd = [];
-                    }
-                },
-
-                applyAddedTasks() {
-                    if (!this.addTargetModule || !this.addTargetSection) return;
-                    
-                    const targetTasks = this.tasks;
-
-                    this.selectedTasksToAdd.forEach(taskId => {
-                        
-                        const sourceTask = this.predefinedTasks.find(t => t.id.split('-')[0] === taskId.split('-')[0]);
-
-                        if (!sourceTask) {
-                            console.warn("Task not found in predefinedTasks:", taskId);
-                            return;
-                        }
-
-                        const clonedTask = { ...sourceTask };
-
-                        clonedTask.id = sourceTask.id.split('-')[0] + '-' + Date.now();
-                        clonedTask.app = this.addTargetModule;
-                        clonedTask.category = this.addTargetSection;
-                        clonedTask.enabled = true;
-                        clonedTask.hidden = false;
-                        clonedTask.complete = false;
-                        clonedTask.badge = Math.floor(Math.random() * 5);
-                        clonedTask.mandatory = sourceTask.mandatory || false;
-
-                        targetTasks.push(clonedTask);
-                    });
-
-                    this.addTaskPopupOpen = false;
-                    this.selectedTasksToAdd = [];
-                    this.selectAllTasks = false;
-                    
-                    this.$nextTick(() => this.updateTaskProgress());
-                },
-
-                addTaskToModule(module, section, taskId) {
-                    const task = JSON.parse(JSON.stringify(this.sidebarTasks.find(t => t.id === taskId)));
-                    if (!task) return;
-
-                    this.workflow[module][section].push(task);
-                },
-
-                getTaskIconColor(taskId) {
-                    return {
-                        'bg-purple-200 text-purple-700': true,
-                    };
-                },
-
-
-                aggregationPeriod: 'Daily',
-
-                aggregateData(dates, currentData, aggregationType) {
-                    if (aggregationType === 'Daily') {
-                        return { labels: dates, current: currentData };
-                    }
-
-                    const aggregated = [];
-                    const newLabels = [];
-                    
-                    const periodDays = aggregationType === 'Weekly' ? 7 : 30; 
-
-                    let currentSum = 0;
-                    let count = 0;
-                    let startIndex = 0;
-
-                    for (let i = 0; i < currentData.length; i++) {
-                        currentSum += currentData[i];
-                        count++;
-
-                        if (count === periodDays || i === currentData.length - 1) {
-                            const average = Math.round(currentSum / count);
-                            aggregated.push(average);
-
-                            const startLabel = dates[startIndex];
-                            const endLabel = dates[i];
-                            newLabels.push(`${startLabel.split('/')[0]}/${startLabel.split('/')[1]} - ${endLabel.split('/')[0]}/${endLabel.split('/')[1]}`);
-
-                            currentSum = 0;
-                            count = 0;
-                            startIndex = i + 1;
-                        }
-                    }
-                    return { labels: newLabels, current: aggregated };
-                },
-
-
-                predefinedTasks: [
-                    // Base IDs for sidebar tasks. Mandatory property added.
-                    { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up', mandatory: true },
-                    { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart', mandatory: false },
-                    { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet', mandatory: true }, 
-                    { id: 'ordering', name: 'Ordering', icon: 'shopping-cart', mandatory: true },
-                    { id: 'receiving', name: 'Receiving', icon: 'truck', mandatory: false },
-                    { id: 'transfer', name: 'Transfer', icon: 'refresh-cw', mandatory: false }, // Used for Transfer In/Out
-                    { id: 'waste', name: 'Waste', icon: 'trash-2', mandatory: false },
-                    { id: 'schedule', name: 'Schedule', icon: 'calendar', mandatory: true },
-                    { id: 'pending-employees', name: 'Pending Employees', icon: 'users', mandatory: false },
-                    { id: 'violation', name: 'Violation', icon: 'alert-triangle', mandatory: true },
-                    { id: 'time-loss', name: 'Time Loss Summary', icon: 'clock', mandatory: false },
-                    { id: 'tor', name: 'Time Off Request', icon: 'user-x', mandatory: false },
-                    { id: 'availability-request', name: 'Availability Request', icon: 'user-check', mandatory: false },
-                    { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat', mandatory: false },
-                    { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint', mandatory: true },
-                    { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check', mandatory: false }, // Using this for 'Approval'
-                    { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet', mandatory: true },
-                    { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon', mandatory: false },
-                    { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text', mandatory: true },
-                    { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide', mandatory: false },
-                    { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle', mandatory: false }
-                ],
-
-
-                dragEnterModule(evt, app, category) {
-                    if (!this.draggedTaskId) return;
-                    this.dropTarget = { app, category, hoverTaskId: null };
-                    evt.preventDefault();
-                },
-
-                allowDrag() {
-                    return this.editMode === true;
-                },
-                editMode: false,
-
-                draggedTaskId: null,
-                dropTarget: { app: null, category: null, hoverTaskId: null },
-
-                getModuleTasks(app, category) {
-                    return this.tasks.filter(
-                        t => t.app === app && t.category === category && t.enabled
-                    );
-                },
-
-                dragStart(evt, id, type) {
-                    this.dragSourceType = type;
-                    this.draggedTaskId = id;
-
-                    if (type === 'task') {
-                        evt.dataTransfer.setData("text/task-id", id);
-                    }
-                    if (type === 'sidebarTask') {
-                        evt.dataTransfer.setData("text/sidebar-task-id", id);
-                    }
-
-                    evt.dataTransfer.effectAllowed = "move";
-                    evt.currentTarget.classList.add('task-dragging');
-                },
-
-
-                dragEnd(evt) {
-                    this.draggedTaskId = null;
-                    this.dragSourceType = null; 
-                    this.dropTarget = { app: null, category: null, hoverTaskId: null };
-
-                    document.querySelectorAll('.task-dragging').forEach(el => el.classList.remove('task-dragging'));
-                    document.querySelectorAll('.kpi-dragging').forEach(el => el.classList.remove('kpi-dragging'));
-                    document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
-                },
-
-                dragOverModule(evt, app, category) {
-                    if (!this.draggedTaskId) return;
-
-                    evt.preventDefault();
-
-                    this.dropTarget = { 
-                        app: app, 
-                        category: category, 
-                        hoverTaskId: null 
-                    };
-                },
-
-                dragLeaveModule(evt) {
-                    if (!evt.currentTarget.contains(evt.relatedTarget)) {
-                        if (this.dropTarget && 
-                            this.dropTarget.app === null || 
-                            this.dropTarget.category === null) return;
-
-                        this.dropTarget = { app: null, category: null, hoverTaskId: null };
-                    }
-                },
-
-                dragOverTask(evt, taskId) {
-                    if (!this.draggedTaskId) return;
-
+        // --- END generateTaskTable ---
+        
+        // ----------------------------------------------------
+        // --- TASK DETAIL DATA (Standardized) ---
+        // ----------------------------------------------------
+
+        'taskDetailData': {
+            // 1) Review Forecast
+            'review-forecast': { headers: ['Type', 'Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Action'], rows: [{ id: 'my-forecast', cols: ['My Forecast', 1180, 1320, 1280, 1410, 1525, 1580, 1680] }, { id: 'ai-forecast', cols: ['AI Forecast', 1210, 1290, 1265, 1390, 1510, 1590, 1720] }], editState: { 'my-forecast': false, 'ai-forecast': false } },
+            // 2) Actual Sales
+            'actual-sales': { headers: ['Sales', 'Day -7', 'Day -6', 'Day -5', 'Day -4', 'Day -3', 'Day -2', 'Day -1', 'Action'], rows: [{ id: 'actual-sales-row', cols: ['Actual Sales', 1100, 1250, 1300, 1280, 1500, 1550, 1580] }], editState: { 'actual-sales-row': false } },
+            // 3) Ordering (string action works as a button)
+            'ordering': { headers: ['Vendor', 'Order Date', 'Delivery Date', 'Status', 'Amount', 'Action'], rows: [{ id: 'order-1', cols: ['Sysco', '12/14/2025', '12/16/2025', 'Placed', '$450.50', 'Finalize'] }, { id: 'order-2', cols: ['Produce Co', '12/14/2025', '12/15/2025', 'Pending', '$120.00', 'Finalize'] }] },
+            // 4) Inventory (string action works as a button)
+            'inventory': { headers: ['Inv Date', 'Count Cycle', 'Inv Value', 'Act. Usage %', 'Ideal Usage %', 'Variance %', 'Action'], rows: [{ id: 'inv-1', cols: ['12/14/2025', 'Weekly', '$8,520.00', '32.1%', '31.5%', '0.6%', 'Finalize'] }, { id: 'inv-2', cols: ['12/13/2025', 'Daily', '$950.00', '28.8%', '29.0%', '-0.2%', 'Finalize'] }] },
+            // 5) Transfer Out (string action works as a button)
+            'transfer-out': { headers: ['Transfer ID', 'Transfer Date', 'Transfer To', 'Created By', 'Item Value', 'Action'], rows: [{ id: 'to-1', cols: ['TO-1234', '12/14/2025', 'Store 901', 'Jane Doe', '$85.00', 'Finalize'] }] },
+            // 6) Transfer In (string action works as a button)
+            'transfer': { headers: ['Transfer ID', 'Transfer Date', 'Transfer From', 'Finalized By', 'Item Value', 'Action'], rows: [{ id: 'ti-1', cols: ['TI-5678', '12/14/2025', 'Store 902', 'John Smith', '$120.00', 'Finalize'] }] },
+            // 7) Waste (string action works as a button)
+            'waste': { headers: ['Date', 'Total Cost $', 'Last Finalized By', 'Status', 'Action'], rows: [{ id: 'waste-1', cols: ['12/14/2025', '$48.20', 'Admin', 'Pending', 'Finalize'] }] },
+            // 8) Pending Employees - MODIFIED: Use new action tag for rendering HTML
+            'pending-employees': { headers: ['Name', 'Source', 'Employee ID', 'Payroll ID', 'Email ID', 'Phone No.', 'Action'], rows: [{ id: 'p-emp-1', cols: ['Sarah Connor', 'External HR', 'N/A', 'N/A', 'sconnor@email.com', '555-1234', 'PendingEmpActions'] }, { id: 'p-emp-2', cols: ['Jason Todd', 'Internal Rec', 'N/A', 'N/A', 'jtodd@email.com', '555-2222', 'PendingEmpActions'] }] },
+            // 9) Schedule (string action works as a button)
+            'schedule': { headers: ['Forecasted Sales', 'Forecast Hrs', 'Schedule Hrs', 'Variance Hrs', 'Action'], rows: [{ id: 'sched-1', cols: ['$5,210.30', '128.0', '135.5', '-7.5', 'Publish'] }] },
+            // 10) Time Loss Summary (unchanged)
+            'time-loss': { headers: ['Time Loss %', 'Early Clock In ($)', 'Late Clock Out ($)', 'OT Loss ($)', 'Break Loss'], rows: [{ id: 'tl-1', cols: ['0.8%', '$15.00', '$22.50', '$8.00', '$10.00'] }] },
+            // 11) Time Off Request - MODIFIED: Use new action tag for rendering HTML
+            'tor': { headers: ['Employee Name', 'Date', 'Status', 'Action'], rows: [{ id: 'tor-1', cols: ['Alex Turner', '12/20/2025', 'Pending', 'TorActions'] }, { id: 'tor-2', cols: ['Jenna R. ', '12/21/2025', 'Pending', 'TorActions'] }] },
+            // 12) Availability Request - MODIFIED: Use new action tag for rendering HTML
+            'availability-request': { headers: ['Employee Name', 'Date', 'Status', 'Action'], rows: [{ id: 'ar-1', cols: ['Sam Wilson', '12/15/2025', 'Pending', 'TorActions'] }] },
+            // 13) Swap Shift Approval - MODIFIED: Use new action tag for rendering HTML
+            'ssa': { headers: ['Shift Details', 'Employee', 'Action'], rows: [{ id: 'ssa-1', cols: ['12/15 (8h)', 'Mike / Robin', 'SsaActions'] }] },
+            // 14) Approval (Review Punches) - MODIFIED: Use new action tag for rendering HTML
+            'review-punches': { headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action'], rows: [{ id: 'appr-1', cols: ['12/14/2025', 'John D.', '09:00', '17:00', '1 (30m)', 'PunchReviewActions'] }, { id: 'appr-2', cols: ['12/14/2025', 'Jane S.', '10:00', '18:00', '1 (30m)', 'PunchReviewActions'] }] },
+            // 15) Unbalanced Punches - MODIFIED: Use new action tag for rendering HTML
+            'unbalanced-punches': { headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action'], rows: [{ id: 'unbal-1', cols: ['12/14/2025', 'Peter P.', '10:00', '18:00', 'Missing', 'PunchReviewActions'] }] },
+            // 16) Mismatch Punch (unchanged)
+            'mismatch-punch': { headers: ['Date', 'Employee', 'Start Time', 'End Time', 'Breaks', 'Action of Punch'], rows: [{ id: 'mis-1', cols: ['12/14/2025', 'Gwen S.', '11:00', '19:00', '1 (30m)', 'Late Clock Out'] }] },
+        },
+
+
+        // ----------------------------------------------------
+        // --- GENERAL WORKFLOW & DATA FUNCTIONS ---
+        // ----------------------------------------------------
+
+        isDayPartExpanded(dayPartName) { return this.dayPartExpansion[dayPartName] === true; },
+        toggleDayPart(dayPartName) { this.dayPartExpansion[dayPartName] = !this.dayPartExpansion[dayPartName]; },
+        getDayPartProgress(dayPartName) {
+            const relevant = this.tasks.filter(t => t.category === dayPartName && t.enabled);
+            const total = relevant.length;
+            const done = relevant.filter(t => t.complete).length;
+            const percent = total === 0 ? 0 : (done / total) * 100;
+            return { countText: `${done}/${total}`, percent: percent };
+        },
+        openAddDayPartPopup() {
+            this.newDayPartName = '';
+            this.copyFromDayPart = null;
+            this.addDayPartPopupOpen = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
+        saveNewDayPart() {
+            const name = this.newDayPartName.trim();
+            if (!name) return;
+            const existingDayParts = ['Start of Day', 'Close of Day', ...this.customDayParts.map(d => d.name)];
+            if (existingDayParts.some(d => d.toLowerCase() === name.toLowerCase())) {
+                alert(`A Workflow Day Part named "${name}" already exists. Please choose a different name.`);
+                return;
+            }
+            this.customDayParts.push({ name: name });
+            this.dayPartExpansion[name] = true;
+            if (this.copyFromDayPart) {
+                const sourceTasks = this.tasks.filter(t => t.category === this.copyFromDayPart);
+                const sourceModules = this.customModules.filter(m => m.category === this.copyFromDayPart);
+                sourceTasks.forEach(t => {
+                    const clonedTask = JSON.parse(JSON.stringify(t));
+                    clonedTask.id = t.id.split('-')[0] + '-' + Date.now() + Math.random().toString(36).substring(7);
+                    clonedTask.category = name;
+                    clonedTask.complete = false;
+                    clonedTask.badge = Math.floor(Math.random() * 5);
+                    this.tasks.push(clonedTask);
+                });
+                sourceModules.forEach(m => {
+                    const clonedModule = JSON.parse(JSON.stringify(m));
+                    clonedModule.category = name;
+                    this.customModules.push(clonedModule);
+                });
+            }
+            this.addDayPartPopupOpen = false;
+            this.newDayPartName = '';
+            this.copyFromDayPart = null;
+            this.$nextTick(() => {
+                lucide.createIcons();
+                this.updateTaskProgress();
+            });
+        },
+        removeDayPart(dayPartName) {
+            if (!confirm(`Are you sure you want to remove the entire Day Part: ${dayPartName}? This will remove all associated tasks.`)) { return; }
+            this.customDayParts = this.customDayParts.filter(d => d.name !== dayPartName);
+            this.tasks = this.tasks.filter(t => t.category !== dayPartName);
+            this.customModules = this.customModules.filter(m => m.category !== dayPartName);
+            delete this.dayPartExpansion[dayPartName];
+            this.$nextTick(() => {
+                this.updateTaskProgress();
+                lucide.createIcons();
+            });
+        },
+        getWorkflowModules(category) {
+            const defaultModules = [
+                { name: 'Forecast', icon: 'trending-up', colorClasses: 'from-blue-500 to-blue-600' },
+                { name: 'Food Management', icon: 'shopping-cart', colorClasses: 'from-purple-500 to-pink-600' },
+                { name: 'Labor Management', icon: 'users', colorClasses: 'from-amber-400 to-orange-500' },
+                { name: 'Payroll Management', icon: 'clock', colorClasses: 'bg-indigo-100 text-indigo-600' },
+            ];
+            let allHardcoded = [...defaultModules];
+            if (category === 'Close of Day' || this.customDayParts.some(d => d.name === category)) {
+                if (!allHardcoded.some(m => m.name === 'Zip Inventory')) {
+                    allHardcoded.splice(1, 0, { name: 'Zip Inventory', icon: 'file-spreadsheet', colorClasses: 'bg-green-100 text-green-600' });
+                }
+            }
+            const filteredDefaults = allHardcoded.filter(m =>
+                this.getModuleTasks(m.name, category).length > 0 || m.name === 'Forecast'
+            );
+            const custom = this.customModules.filter(m => m.category === category);
+            const allModules = [...filteredDefaults, ...custom];
+            const uniqueModules = [];
+            const seen = new Set();
+            allModules.forEach(m => {
+                const key = m.name + m.category;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueModules.push(m);
+                }
+            });
+            const defaultNames = defaultModules.map(m => m.name);
+            const sortedModules = uniqueModules.sort((a, b) => {
+                const aIsDefault = defaultNames.includes(a.name);
+                const bIsDefault = defaultNames.includes(b.name);
+                if (aIsDefault && !bIsDefault) return -1;
+                if (!aIsDefault && bIsDefault) return 1;
+                return 0;
+            });
+            return sortedModules;
+        },
+        openAddGroupPopup(section) {
+            this.newGroupSection = section;
+            this.newGroupName = '';
+            this.addGroupPopupOpen = true;
+        },
+        saveNewGroup() {
+            const name = this.newGroupName.trim();
+            const section = this.newGroupSection;
+            if (!name || !section) return;
+            const isDuplicate = this.getWorkflowModules(section).some(m => m.name.toLowerCase() === name.toLowerCase());
+            if (isDuplicate) {
+                alert(`A group named "${name}" already exists in ${section}. Please choose a different name.`);
+                return;
+            }
+            const newModule = {
+                name: name,
+                icon: 'folder-open',
+                colorClasses: 'from-gray-400 to-gray-500',
+                category: section,
+                customGroup: true,
+            };
+            this.customModules.push(newModule);
+            this.addGroupPopupOpen = false;
+            this.newGroupName = '';
+            this.newGroupSection = null;
+            this.$nextTick(() => lucide.createIcons());
+        },
+        openAddTaskPopup(module, section) {
+            this.addTargetModule = module;
+            this.addTargetSection = section;
+            this.selectedTasksToAdd = [];
+            this.selectAllTasks = false;
+            const tasksInModule = this.getModuleTasks(module, section).map(t => t.id.split('-')[0]);
+            this.availableSidebarTasks = this.predefinedTasks.filter(t => !tasksInModule.includes(t.id));
+            this.addTaskPopupOpen = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
+        toggleSelectAllTasks() {
+            if (this.selectAllTasks) {
+                this.selectedTasksToAdd = this.availableSidebarTasks.map(t => t.id);
+            } else {
+                this.selectedTasksToAdd = [];
+            }
+        },
+        applyAddedTasks() {
+            if (!this.addTargetModule || !this.addTargetSection) return;
+            const targetTasks = this.tasks;
+            this.selectedTasksToAdd.forEach(taskId => {
+                const sourceTask = this.predefinedTasks.find(t => t.id.split('-')[0] === taskId.split('-')[0]);
+                if (!sourceTask) {
+                    console.warn("Task not found in predefinedTasks:", taskId);
+                    return;
+                }
+                const clonedTask = { ...sourceTask };
+                clonedTask.id = sourceTask.id.split('-')[0] + '-' + Date.now();
+                clonedTask.app = this.addTargetModule;
+                clonedTask.category = this.addTargetSection;
+                clonedTask.enabled = true;
+                clonedTask.hidden = false;
+                clonedTask.complete = false;
+                clonedTask.badge = Math.floor(Math.random() * 5);
+                clonedTask.mandatory = sourceTask.mandatory || false;
+                targetTasks.push(clonedTask);
+            });
+            this.addTaskPopupOpen = false;
+            this.selectedTasksToAdd = [];
+            this.selectAllTasks = false;
+            this.$nextTick(() => this.updateTaskProgress());
+        },
+        addTaskToModule(module, section, taskId) {
+            const task = JSON.parse(JSON.stringify(this.sidebarTasks.find(t => t.id === taskId)));
+            if (!task) return;
+            this.workflow[module][section].push(task);
+        },
+        getTaskIconColor(taskId) {
+            return {
+                'bg-purple-200 text-purple-700': true,
+            };
+        },
+        aggregationPeriod: 'Daily',
+        aggregateData(dates, currentData, aggregationType) {
+            if (aggregationType === 'Daily') {
+                return { labels: dates, current: currentData };
+            }
+            const aggregated = [];
+            const newLabels = [];
+            const periodDays = aggregationType === 'Weekly' ? 7 : 30;
+            let currentSum = 0;
+            let count = 0;
+            let startIndex = 0;
+            for (let i = 0; i < currentData.length; i++) {
+                currentSum += currentData[i];
+                count++;
+                if (count === periodDays || i === currentData.length - 1) {
+                    const average = Math.round(currentSum / count);
+                    aggregated.push(average);
+                    const startLabel = dates[startIndex];
+                    const endLabel = dates[i];
+                    newLabels.push(`${startLabel.split('/')[0]}/${startLabel.split('/')[1]} - ${endLabel.split('/')[0]}/${endLabel.split('/')[1]}`);
+                    currentSum = 0;
+                    count = 0;
+                    startIndex = i + 1;
+                }
+            }
+            return { labels: newLabels, current: aggregated };
+        },
+
+
+        predefinedTasks: [
+            // Base IDs for sidebar tasks. Mandatory property added.
+            { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up', mandatory: true },
+            { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart', mandatory: false },
+            { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet', mandatory: true },
+            { id: 'ordering', name: 'Ordering', icon: 'shopping-cart', mandatory: true },
+            { id: 'receiving', name: 'Receiving', icon: 'truck', mandatory: false },
+            { id: 'transfer', name: 'Transfer', icon: 'refresh-cw', mandatory: false }, // Used for Transfer In/Out
+            { id: 'waste', name: 'Waste', icon: 'trash-2', mandatory: false },
+            { id: 'schedule', name: 'Schedule', icon: 'calendar', mandatory: true },
+            { id: 'pending-employees', name: 'Pending Employees', icon: 'users', mandatory: false },
+            { id: 'violation', name: 'Violation', icon: 'alert-triangle', mandatory: true },
+            { id: 'time-loss', name: 'Time Loss Summary', icon: 'clock', mandatory: false },
+            { id: 'tor', name: 'Time Off Request', icon: 'user-x', mandatory: false },
+            { id: 'availability-request', name: 'Availability Request', icon: 'user-check', mandatory: false },
+            { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat', mandatory: false },
+            { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint', mandatory: true },
+            { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check', mandatory: false }, // Using this for 'Approval'
+            { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet', mandatory: true },
+            { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon', mandatory: false },
+            { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text', mandatory: true },
+            { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide', mandatory: false },
+            { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle', mandatory: false }
+        ],
+
+
+        dragEnterModule(evt, app, category) {
+            if (!this.draggedTaskId) return;
+            this.dropTarget = { app, category, hoverTaskId: null };
+            evt.preventDefault();
+        },
+
+        allowDrag() {
+            return this.editMode === true;
+        },
+        editMode: false,
+
+        draggedTaskId: null,
+        dropTarget: { app: null, category: null, hoverTaskId: null },
+
+        getModuleTasks(app, category) {
+            return this.tasks.filter(
+                t => t.app === app && t.category === category && t.enabled
+            );
+        },
+
+        dragStart(evt, id, type) {
+            this.dragSourceType = type;
+            this.draggedTaskId = id;
+
+            if (type === 'task') {
+                evt.dataTransfer.setData("text/task-id", id);
+            }
+            if (type === 'sidebarTask') {
+                evt.dataTransfer.setData("text/sidebar-task-id", id);
+            }
+
+            evt.dataTransfer.effectAllowed = "move";
+            evt.currentTarget.classList.add('task-dragging');
+        },
+
+
+        dragEnd(evt) {
+            this.draggedTaskId = null;
+            this.dragSourceType = null;
+            this.dropTarget = { app: null, category: null, hoverTaskId: null };
+
+            document.querySelectorAll('.task-dragging').forEach(el => el.classList.remove('task-dragging'));
+            document.querySelectorAll('.kpi-dragging').forEach(el => el.classList.remove('kpi-dragging'));
+            document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
+        },
+
+        dragOverModule(evt, app, category) {
+            if (!this.draggedTaskId) return;
+
+            evt.preventDefault();
+
+            this.dropTarget = {
+                app: app,
+                category: category,
+                hoverTaskId: null
+            };
+        },
+
+        dragLeaveModule(evt) {
+            if (!evt.currentTarget.contains(evt.relatedTarget)) {
+                if (this.dropTarget &&
+                    this.dropTarget.app === null ||
+                    this.dropTarget.category === null) return;
+
+                this.dropTarget = { app: null, category: null, hoverTaskId: null };
+            }
+        },
+
+        dragOverTask(evt, taskId) {
+            if (!this.draggedTaskId) return;
+
+            const task = this.tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            const app = task.app;
+            const category = task.category;
+
+            if (this.dropTarget.hoverTaskId !== taskId) {
+                this.dropTarget = { app, category, hoverTaskId: taskId };
+
+                document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
+                evt.currentTarget.classList.add('task-drop-hover');
+            }
+
+            evt.preventDefault();
+            evt.dataTransfer.dropEffect = "move";
+        },
+
+        dragLeaveTask(evt, taskId) {
+            if (this.dropTarget.hoverTaskId === taskId) {
+                evt.currentTarget.classList.remove('task-drop-hover');
+
+                const isLeavingToModule = evt.relatedTarget && evt.relatedTarget.closest('.module-drop-target');
+
+                if (isLeavingToModule) {
                     const task = this.tasks.find(t => t.id === taskId);
-                    if (!task) return;
-
-                    const app = task.app;
-                    const category = task.category;
-
-                    if (this.dropTarget.hoverTaskId !== taskId) {
-                        this.dropTarget = { app, category, hoverTaskId: taskId };
-                        
-                        document.querySelectorAll('.task-drop-hover').forEach(el => el.classList.remove('task-drop-hover'));
-                        evt.currentTarget.classList.add('task-drop-hover');
+                    if (task) {
+                        this.dropTarget = { app: task.app, category: task.category, hoverTaskId: null };
                     }
-                    
-                    evt.preventDefault();
-                    evt.dataTransfer.dropEffect = "move";
-                },
-                
-                dragLeaveTask(evt, taskId) {
-                    if (this.dropTarget.hoverTaskId === taskId) {
-                        evt.currentTarget.classList.remove('task-drop-hover');
-                        
-                        const isLeavingToModule = evt.relatedTarget && evt.relatedTarget.closest('.module-drop-target');
-                        
-                        if (isLeavingToModule) {
-                            const task = this.tasks.find(t => t.id === taskId);
-                            if (task) {
-                                this.dropTarget = { app: task.app, category: task.category, hoverTaskId: null };
-                            }
-                        } else {
-                            this.dropTarget = { app: null, category: null, hoverTaskId: null };
-                        }
-                    }
-                },
+                } else {
+                    this.dropTarget = { app: null, category: null, hoverTaskId: null };
+                }
+            }
+        },
 
-                dropToModule(evt, app, category) {
-                    evt.preventDefault();
+        dropToModule(evt, app, category) {
+            evt.preventDefault();
 
-                    const draggedId = this.draggedTaskId;
-                    if (!draggedId) return;
+            const draggedId = this.draggedTaskId;
+            if (!draggedId) return;
 
-                    if (this.dragSourceType === 'sidebarTask') {
-                        const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
-                        if (!sidebarTask) return;
+            if (this.dragSourceType === 'sidebarTask') {
+                const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
+                if (!sidebarTask) return;
 
-                        const newTask = {
-                            id: sidebarTask.id + '-' + Date.now(), 
-                            name: sidebarTask.name,
-                            icon: sidebarTask.icon,
-                            app: app,
-                            category: category,
-                            enabled: true,
-                            hidden: false,
-                            complete: false,
-                            badge: Math.floor(Math.random() * 5),
-                            mandatory: sidebarTask.mandatory,
-                        };
+                const newTask = {
+                    id: sidebarTask.id + '-' + Date.now(),
+                    name: sidebarTask.name,
+                    icon: sidebarTask.icon,
+                    app: app,
+                    category: category,
+                    enabled: true,
+                    hidden: false,
+                    complete: false,
+                    badge: Math.floor(Math.random() * 5),
+                    mandatory: sidebarTask.mandatory,
+                };
 
-                        this.tasks.push(newTask);
+                this.tasks.push(newTask);
 
-                        this.dragEnd();
-                        this.$nextTick(() => this.updateTaskProgress());
-                        return;
-                    }
+                this.dragEnd();
+                this.$nextTick(() => this.updateTaskProgress());
+                return;
+            }
 
-                    const index = this.tasks.findIndex(t => t.id === draggedId);
-                    if (index === -1) return;
+            const index = this.tasks.findIndex(t => t.id === draggedId);
+            if (index === -1) return;
 
-                    const [moved] = this.tasks.splice(index, 1);
+            const [moved] = this.tasks.splice(index, 1);
 
-                    moved.app = app;
-                    moved.category = category;
+            moved.app = app;
+            moved.category = category;
 
-                    if (moved.customGroup && this.getModuleTasks(moved.app, moved.category).length === 0) {
-                        this.customModules = this.customModules.filter(m => !(m.name === moved.app && m.category === moved.category));
-                    }
+            if (moved.customGroup && this.getModuleTasks(moved.app, moved.category).length === 0) {
+                this.customModules = this.customModules.filter(m => !(m.name === moved.app && m.category === moved.category));
+            }
 
 
-                    this.tasks.push(moved);
+            this.tasks.push(moved);
 
-                    this.dragEnd();
-                    this.$nextTick(() => this.updateTaskProgress());
-                },
+            this.dragEnd();
+            this.$nextTick(() => this.updateTaskProgress());
+        },
 
-                dropOnTask(evt, targetTaskId) {
-                    evt.preventDefault();
+        dropOnTask(evt, targetTaskId) {
+            evt.preventDefault();
 
-                    const draggedId = this.draggedTaskId;
-                    if (!draggedId || draggedId === targetTaskId) return;
+            const draggedId = this.draggedTaskId;
+            if (!draggedId || draggedId === targetTaskId) return;
 
-                    const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
-                    const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
+            const draggedIndex = this.tasks.findIndex(t => t.id === draggedId);
+            const targetIndex = this.tasks.findIndex(t => t.id === targetTaskId);
 
-                    const targetTask = this.tasks[targetIndex];
-                    if (!targetTask) return;
+            const targetTask = this.tasks[targetIndex];
+            if (!targetTask) return;
 
-                    if (this.dragSourceType === 'sidebarTask') {
-                        const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
-                        if (!sidebarTask) return;
+            if (this.dragSourceType === 'sidebarTask') {
+                const sidebarTask = this.predefinedTasks.find(t => t.id === draggedId);
+                if (!sidebarTask) return;
 
-                        const newTask = {
-                            id: sidebarTask.id + '-' + Date.now(),
-                            name: sidebarTask.name,
-                            icon: sidebarTask.icon,
-                            app: targetTask.app,
-                            category: targetTask.category,
-                            enabled: true,
-                            hidden: false,
-                            complete: false,
-                            badge: Math.floor(Math.random() * 5),
-                            mandatory: sidebarTask.mandatory,
-                        };
+                const newTask = {
+                    id: sidebarTask.id + '-' + Date.now(),
+                    name: sidebarTask.name,
+                    icon: sidebarTask.icon,
+                    app: targetTask.app,
+                    category: targetTask.category,
+                    enabled: true,
+                    hidden: false,
+                    complete: false,
+                    badge: Math.floor(Math.random() * 5),
+                    mandatory: sidebarTask.mandatory,
+                };
 
-                        this.tasks.splice(targetIndex, 0, newTask);
+                this.tasks.splice(targetIndex, 0, newTask);
 
-                        this.dragEnd();
-                        this.$nextTick(() => this.updateTaskProgress());
-                        return;
-                    }
+                this.dragEnd();
+                this.$nextTick(() => this.updateTaskProgress());
+                return;
+            }
 
-                    if (draggedIndex === -1 || targetIndex === -1) return;
+            if (draggedIndex === -1 || targetIndex === -1) return;
 
-                    const draggedTask = this.tasks[draggedIndex];
-                    
-                    const originalApp = draggedTask.app;
-                    const originalCategory = draggedTask.category;
+            const draggedTask = this.tasks[draggedIndex];
 
-                    draggedTask.app = targetTask.app;
-                    draggedTask.category = targetTask.category;
+            const originalApp = draggedTask.app;
+            const originalCategory = draggedTask.category;
 
-                    const [moved] = this.tasks.splice(draggedIndex, 1);
+            draggedTask.app = targetTask.app;
+            draggedTask.category = targetTask.category;
 
-                    let insertIndex = targetIndex;
-                    if (draggedIndex < targetIndex) insertIndex = targetIndex - 1;
+            const [moved] = this.tasks.splice(draggedIndex, 1);
 
-                    this.tasks.splice(insertIndex, 0, moved);
+            let insertIndex = targetIndex;
+            if (draggedIndex < targetIndex) insertIndex = targetIndex - 1;
 
-                    const isCustom = this.customModules.some(m => m.name === originalApp && m.category === originalCategory);
-                    if (isCustom && this.getModuleTasks(originalApp, originalCategory).length === 0) {
-                         this.customModules = this.customModules.filter(m => !(m.name === originalApp && m.category === originalCategory));
-                    }
+            this.tasks.splice(insertIndex, 0, moved);
 
-
-                    this.dragEnd();
-                    this.$nextTick(() => this.updateTaskProgress());
-                },
-
-                isDropTarget(app, category) {
-                    return (
-                        this.draggedTaskId &&
-                        this.dropTarget.app === app &&
-                        this.dropTarget.category === category &&
-                        this.dropTarget.hoverTaskId === null
-                    );
-                },
-
-                getTaskCardClass(task, activeTaskId, draggedTaskId) {
-                    return {
-                        'task-tile': true,
-                        'pending': !task.complete,
-                        'complete': !!task.complete,
-                        'task-dragging': draggedTaskId === task.id,
-                        'active-card': activeTaskId === task.id,
-                        'mandatory-card': !!task.mandatory
-                    };
-                },
-
-                selectRange(opt) {
-                    this.selectedRange = opt;
-                    this.selectedRangeLabel = "";
-
-                    if (this.datePicker) {
-                        this.datePicker.hide();
-                    }
-
-                    if (opt === "Default") {
-                        this.loadDefaultData();
-                    } 
-                    else if (opt === "7D") {
-                        this.generateRandomDays(7);
-                    }
-                    else if (opt === "1M") {
-                        this.generateRandomDays(30);
-                    }
-                    else if (opt === "3M") {
-                        this.generateRandomDays(90);
-                    }
-                    else if (opt === "6M") {
-                        this.generateRandomDays(180);
-                    }
-                    else if (opt === "1Y") {
-                        this.generateRandomDays(365);
-                    }
-
-                    this.$nextTick(() => this.renderChart());
-                },
-
-                generateRandomDays(n) {
-                    const days = [];
-                    const current = [];
-                    const lastWeek = [];
-                    const lastYear = [];
-
-                    const today = new Date();
-                    for (let i = 0; i < n; i++) {
-                        const d = new Date(today);
-                        d.setDate(today.getDate() - (n - 1 - i));
-
-                        const label = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
-                        days.push(label);
-
-                        current.push(Math.floor(Math.random() * 8000) + 2000);
-                        lastWeek.push(Math.floor(Math.random() * 8000) + 2000);
-                        lastYear.push(Math.floor(Math.random() * 8000) + 2000);
-                    }
-
-                    this.popupTableData = days.map((d, i) => ({
-                        date: d,
-                        current: current[i],
-                        lastWeek: lastWeek[i],
-                        lastYear: lastYear[i]
-                    }));
-
-                    this.currentWeekData = current;
-                    this.lastWeekData = lastWeek;
-                    this.lastYearData = lastYear;
-                },
+            const isCustom = this.customModules.some(m => m.name === originalApp && m.category === originalCategory);
+            if (isCustom && this.getModuleTasks(originalApp, originalCategory).length === 0) {
+                this.customModules = this.customModules.filter(m => !(m.name === originalApp && m.category === originalCategory));
+            }
 
 
-                // --- UPDATED openTaskPopup to use the new dynamic renderer ---
-                // Function in your Alpine data object
-// --- UPDATED openTaskPopup to use x-html (more robust) ---
+            this.dragEnd();
+            this.$nextTick(() => this.updateTaskProgress());
+        },
+
+        isDropTarget(app, category) {
+            return (
+                this.draggedTaskId &&
+                this.dropTarget.app === app &&
+                this.dropTarget.category === category &&
+                this.dropTarget.hoverTaskId === null
+            );
+        },
+
+        getTaskCardClass(task, activeTaskId, draggedTaskId) {
+            return {
+                'task-tile': true,
+                'pending': !task.complete,
+                'complete': !!task.complete,
+                'task-dragging': draggedTaskId === task.id,
+                'active-card': activeTaskId === task.id,
+                'mandatory-card': !!task.mandatory
+            };
+        },
+
+        selectRange(opt) {
+            this.selectedRange = opt;
+            this.selectedRangeLabel = "";
+
+            if (this.datePicker) {
+                this.datePicker.hide();
+            }
+
+            if (opt === "Default") {
+                this.loadDefaultData();
+            }
+            else if (opt === "7D") {
+                this.generateRandomDays(7);
+            }
+            else if (opt === "1M") {
+                this.generateRandomDays(30);
+            }
+            else if (opt === "3M") {
+                this.generateRandomDays(90);
+            }
+            else if (opt === "6M") {
+                this.generateRandomDays(180);
+            }
+            else if (opt === "1Y") {
+                this.generateRandomDays(365);
+            }
+
+            this.$nextTick(() => this.renderChart());
+        },
+
+        generateRandomDays(n) {
+            const days = [];
+            const current = [];
+            const lastWeek = [];
+            const lastYear = [];
+
+            const today = new Date();
+            for (let i = 0; i < n; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() - (n - 1 - i));
+
+                const label = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+                days.push(label);
+
+                current.push(Math.floor(Math.random() * 8000) + 2000);
+                lastWeek.push(Math.floor(Math.random() * 8000) + 2000);
+                lastYear.push(Math.floor(Math.random() * 8000) + 2000);
+            }
+
+            this.popupTableData = days.map((d, i) => ({
+                date: d,
+                current: current[i],
+                lastWeek: lastWeek[i],
+                lastYear: lastYear[i]
+            }));
+
+            this.currentWeekData = current;
+            this.lastWeekData = lastWeek;
+            this.lastYearData = lastYear;
+        },
+
+
 openTaskPopup(task) {
-    this.activeTaskId = task.id; 
-    this.taskPopupTitle = task.name;
+    if (!task || typeof task !== "object") {
+        console.error("openTaskPopup ERROR: task is NULL or invalid:", task);
+        return;
+    }
 
-    // 1. Store the generated HTML content string in a reactive property
-    this.taskTableHTML = this.generateTaskTable(task); 
-    
+    // Basic safe fallback values to prevent "reading 'cols'" error
+    if (!task.cols) task.cols = [];
+    if (!task.rows) task.rows = [];
+
+    this.activeTaskId = task.id ?? null;
+    this.taskPopupTitle = task.name ?? "Task Details";
+
+    // Generate table safely
+    try {
+        this.taskTableHTML = this.generateTaskTable(task);
+    } catch (err) {
+        console.error("TABLE GENERATION ERROR:", err);
+        this.taskTableHTML = `
+            <div class="text-red-600 p-4 text-sm">
+                Failed to load table data.<br>
+                Error: ${err.message}
+            </div>`;
+    }
+
+    // Open popup
     this.taskPopupOpen = true;
 
-    // 2. Only re-initialize Lucide icons, Alpine handles the rendering via x-html
+    // Re-render icons
     this.$nextTick(() => {
-        // Alpine.initTree(this.$refs.taskPopupContainer); // NO LONGER NEEDED
-        lucide.createIcons();
+        try {
+            lucide.createIcons();
+        } catch (err) {
+            console.warn("Lucide render error:", err);
+        }
     });
 },
 
-                // --- NEW: Dynamic Table Generator for all task details ---
-                // --- NEW: Dynamic Table Generator for all task details ---
-// --- NEW: Dynamic Table Generator for all task details ---
-                // --- NEW: Dynamic Table Generator for all task details ---
-   // --- NEW: Dynamic Table Generator for all task details ---
-    // --- CORRECTED & ENHANCED Dynamic Table Generator for all task details ---
-   // --- CORRECTED & ENHANCED Dynamic Table Generator for all task details ---
-   // --- DEFINITIVE Dynamic Table Generator for all task details ---
- // --- DEFINITIVE Dynamic Table Generator for all task details ---
-// --- DEFINITIVE Dynamic Table Generator for all task details with editState FIX ---
-// --- FINAL DEFINITIVE Dynamic Table Generator for all task details with x-show FIX ---
-     // --- DEFINITIVE Dynamic Table Generator for all task details with Actual Sales FIX ---
-    // --- DEFINITIVE Dynamic Table Generator for all task details ---
- // --- FINAL DEFINITIVE Dynamic Table Generator for all task details ---
-// --- FINAL DEFINITIVE Dynamic Table Generator: Guaranteed Button Rendering ---
-  // --- FINAL DEFINITIVE Dynamic Table Generator: Icon Actions in Array ---
-// --- FINAL DEFINITIVE Dynamic Table Generator: GUARANTEED BUTTON RENDERING ---
-// --- FULL REPLACEMENT FOR generateTaskTable(task) ---
-generateTaskTable(task) { 
-    const fullId = task.id; 
 
-    // 1. Determine the base task key
-    let key = '';
-    
-    if (fullId.startsWith('task-sod-')) {
-        key = fullId.substring('task-sod-'.length);
-    } else if (fullId.startsWith('task-cod-')) {
-        key = fullId.substring('task-cod-'.length);
-    } else if (fullId.startsWith('task-')) {
-        key = fullId.substring('task-'.length);
-    } else {
-        key = fullId.split('-')[0];
-    }
-
-    // 2. Normalize keys
-    let baseKey = key;
-    if (key === 'forecast') baseKey = 'review-forecast'; 
-    if (key === 'actual-sales') baseKey = 'actual-sales'; 
-    if (key === 'hr') baseKey = 'pending-employees';
-    if (key === 'tor') baseKey = 'tor';
-    if (key === 'availability') baseKey = 'availability-request';
-    if (key === 'ssa') baseKey = 'ssa';
-    if (key === 'punches-ex') baseKey = 'punch-exception';
-    if (key === 'punches-rev' || key === 'punches-app') baseKey = 'review-punches'; 
-    if (key === 'misc-pay') baseKey = 'misc-pay';
-    if (key === 'ot') baseKey = 'approaching-ot';
-    if (key === 'payroll-sum') baseKey = 'payroll-summary';
-    if (key === 'unbalanced') baseKey = 'unbalanced-punches';
-    if (key === 'mismatch') baseKey = 'mismatch-punch';
-    key = baseKey;
-
-
-    // 3. Look up data
-    let data = this.taskDetailData[key];
-
-    // 4. Special Case: Inject dynamic headers
-    if (key === 'review-forecast') {
-        const futureDates = this.getFutureDates(7);
-        data.headers = ['TYPE', ...futureDates, 'ACTION']; 
-    } else if (key === 'actual-sales') {
-        const pastDates = this.getPastDates(7);
-        data.headers = ['SALES TYPE', ...pastDates, 'ACTION']; 
-    }
-
-    // 5. Special case for Transfer In/Out
-    if (key === 'transfer' && fullId.includes('cod')) {
-        data = { ...this.taskDetailData['transfer-out'] };
-    } else if (key === 'transfer' && fullId.includes('sod')) {
-        data = { ...this.taskDetailData['transfer'] };
-    } else if (!data) {
-        return `<div class="p-4 text-center text-gray-500">No specific task details configured for <strong>${task.name}</strong>. (Key: ${key})</div>`;
-    }
-
-    // FIX: Ensure editState is initialized
-    const isEditableForecast = (key === 'review-forecast' || key === 'actual-sales');
-    if (isEditableForecast && data.rows) {
-        if (!data.editState) {
-            data.editState = {};
-        }
-        data.rows.forEach(row => {
-            if (data.editState[row.id] === undefined) {
-                data.editState[row.id] = false; 
+        applyCustomDateRange() {
+            if (!this.customStart || !this.customEnd) {
+                console.error("Please select both start and end date.");
+                return;
             }
-        });
-    }
 
-    // --- HTML String Construction ---
-    let tableHTML = `
-        <div class="p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-        
-        <table class="min-w-full divide-y divide-gray-200 task-details-table" data-task-detail="task-${key}">
-            <thead>
-                <tr>
-                    ${data.headers.map(h => `<th class="whitespace-nowrap">${h}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>
-                <template x-for="row in $data.taskDetailData['${key}'].rows" :key="row.id">
-                    <tr class="hover:bg-gray-50 transition-colors">
-                        ${data.headers.map((h, colIndex) => {
-                            
-                            const isEditableForecast = (key === 'review-forecast' || key === 'actual-sales');
-                            
-                            // 1. Editable Columns (Review Forecast, Actual Sales)
-                            if (isEditableForecast && h !== 'TYPE' && h !== 'SALES TYPE' && h !== 'ACTION') {
-                                return `
-                                    <td class="text-center">
-                                        <input x-show="$data.taskDetailData['${key}'].editState[row.id]"
-                                               type="text"
-                                               x-model.number="row.cols[${colIndex}]"
-                                               class="w-full text-center"
-                                               placeholder="Value">
-                                        <span x-show="!$data.taskDetailData['${key}'].editState[row.id]" x-text="row.cols[${colIndex}]"></span>
-                                    </td>
-                                `;
-                            }
-                            
-                            // 2. Standard Data Cell (Non-Action)
-                            if (h !== 'ACTION') {
-                                return `<td class="${colIndex === 0 ? 'font-medium text-gray-800' : 'text-gray-600'} whitespace-nowrap" x-text="row.cols[${colIndex}]"></td>`;
-                            }
-                            
-                            // 3. Action Cell (Start Rendering Block)
-                            
-                            if (isEditableForecast) {
-                                // Case 3.1: Editable Forecast/Sales (Icon Toggle)
-                                return `
-                                    <td class="text-center">
-                                        <button @click="$event.stopPropagation(); $data.taskDetailData['${key}'].editState[row.id] = !$data.taskDetailData['${key}'].editState[row.id]; $nextTick(() => lucide.createIcons())"
-                                                class="p-1.5 rounded-full hover:bg-gray-100 text-blue-600 active:scale-95 transition-all">
-                                            <i :data-lucide="$data.taskDetailData['${key}'].editState[row.id] ? 'thumbs-up' : 'edit-3'" class="w-4 h-4"></i>
-                                        </button>
-                                    </td>
-                                `;
-                            } 
-                            
-                            // Case 3.2: General Action Rendering (Finalize, Array, or Plain Text)
-                            return `
-                                <td class="text-center">
-                                <template x-data="{ action: row.cols[${colIndex}] }">
-                                    
-                                    <template x-if="Array.isArray(action)">
-                                        <div class="flex flex-wrap justify-center gap-1">
-                                            <template x-for="singleAction in action" :key="singleAction">
-                                                
-                                                <template x-if="singleAction === 'Approve' || singleAction === 'Disapprove' || singleAction === 'Disapprove All'">
-                                                    <button @click="$event.stopPropagation(); alert(singleAction + ' for ' + row.id)" 
-                                                            :class="singleAction.includes('Approve') ? 'text-green-600 hover:bg-green-100' : 'text-red-600 hover:bg-red-100'"
-                                                            class="p-1.5 rounded-full active:scale-95 transition-all">
-                                                        <i :data-lucide="singleAction.includes('Approve') ? 'thumbs-up' : 'x'" class="w-4 h-4"></i>
-                                                    </button>
-                                                </template>
+            this.selectedRange = "Custom";
 
-                                                <template x-if="singleAction !== 'Approve' && singleAction !== 'Disapprove' && singleAction !== 'Disapprove All'">
-                                                    <button @click="$event.stopPropagation(); alert(singleAction + ' for ' + row.id)" 
-                                                            class="bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition whitespace-nowrap shadow-sm">
-                                                        <span x-text="singleAction"></span>
-                                                    </button>
-                                                </template>
+            const start = new Date(this.customStart);
+            const end = new Date(this.customEnd);
 
-                                            </template>
-                                        </div>
-                                    </template>
-                                    
-                                    <template x-if="typeof action === 'string' && (action.includes('Approve') && action.includes('Disap'))">
-                                        <div class="flex flex-wrap justify-center gap-1">
-                                            <button @click="$event.stopPropagation(); alert('Approve for ' + row.id)" 
-                                                    class="p-1.5 rounded-full active:scale-95 transition-all text-green-600 hover:bg-green-100">
-                                                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
-                                            </button>
-                                            <button @click="$event.stopPropagation(); alert('Disapprove for ' + row.id)" 
-                                                    class="p-1.5 rounded-full active:scale-95 transition-all text-red-600 hover:bg-red-100">
-                                                <i data-lucide="x" class="w-4 h-4"></i>
-                                            </button>
-                                        </div>
-                                    </template>
-                                    <template x-if="typeof action === 'string' && ['Finalize', 'Publish', 'View', 'Edit'].includes(action)">
-                                        <button @click="$event.stopPropagation(); alert(action + ' for ' + row.id)" 
-                                                class="bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition whitespace-nowrap shadow-sm">
-                                            <span x-text="action"></span>
-                                        </button>
-                                    </template>
+            const days = [];
+            const valuesCurrent = [];
+            const valuesLastWeek = [];
+            const valuesLastYear = [];
 
-                                    <template x-if="typeof action === 'string' && !['Finalize', 'Publish', 'View', 'Edit'].includes(action) && !(action.includes('Approve') && action.includes('Disap'))">
-                                        <span x-text="action"></span>
-                                    </template>
-                                    
-                                </template>
-                                </td>`;
-                        }).join('')}
-                    </tr>
-                </template>
-            </tbody>
-        </table>
-        
-        </div>
-    `;
+            let curr = new Date(start);
 
-    return tableHTML;
-},
-                // --- END NEW DYNAMIC Table Generator ---
+            while (curr <= end) {
+                const label = `${curr.getMonth() + 1}/${curr.getDate()}/${curr.getFullYear()}`;
+                days.push(label);
 
-                applyCustomDateRange() {
-                    if (!this.customStart || !this.customEnd) {
-                        console.error("Please select both start and end date.");
-                        return;
-                    }
+                valuesCurrent.push(Math.floor(Math.random() * 8000) + 2000);
+                valuesLastWeek.push(Math.floor(Math.random() * 8000) + 2000);
+                valuesLastYear.push(Math.floor(Math.random() * 8000) + 2000);
 
-                    this.selectedRange = "Custom";
+                curr.setDate(curr.getDate() + 1);
+            }
 
-                    const start = new Date(this.customStart);
-                    const end = new Date(this.customEnd);
+            this.popupTableData = days.map((d, i) => ({
+                date: d,
+                current: valuesCurrent[i],
+                lastWeek: valuesLastWeek[i],
+                lastYear: valuesLastYear[i]
+            }));
 
-                    const days = [];
-                    const valuesCurrent = [];
-                    const valuesLastWeek = [];
-                    const valuesLastYear = [];
+            this.currentWeekData = valuesCurrent;
+            this.lastWeekData = valuesLastWeek;
+            this.lastYearData = valuesLastYear;
 
-                    let curr = new Date(start);
+            this.selectedRangeLabel =
+                `${new Date(this.customStart).toLocaleDateString()} - ${new Date(this.customEnd).toLocaleDateString()}`;
 
-                    while (curr <= end) {
-                        const label = `${curr.getMonth() + 1}/${curr.getDate()}/${curr.getFullYear()}`;
-                        days.push(label);
+            this.$nextTick(() => this.renderChart());
+        },
 
-                        valuesCurrent.push(Math.floor(Math.random() * 8000) + 2000);
-                        valuesLastWeek.push(Math.floor(Math.random() * 8000) + 2000);
-                        valuesLastYear.push(Math.floor(Math.random() * 8000) + 2000);
+        rangeData: {
+            Default: {
+                dates: ["12/08", "12/09", "12/10", "12/11", "12/12", "12/13", "12/14"],
+                current: [6582, 6898, 7040, 7213, 8129, 7661, 6497],
+                lastWeek: [6400, 6701, 6955, 7100, 7988, 7600, 6430],
+                lastYear: [6300, 6588, 6700, 6901, 7200, 7100, 6350]
+            },
+            "7D": {
+                dates: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                current: [5200, 5300, 5400, 5500, 5600, 5700, 5800],
+                lastWeek: [5000, 5100, 5200, 5300, 5400, 5500, 5600],
+                lastYear: [4800, 4950, 5050, 5200, 5250, 5400, 5450]
+            },
+            "1M": {
+                dates: ["Week 1", "Week 2", "Week 3", "Week 4"],
+                current: [21000, 22000, 23000, 21500],
+                lastWeek: [20000, 21000, 22000, 20500],
+                lastYear: [19000, 20000, 21000, 19500]
+            },
+            "3M": {
+                dates: ["Jan", "Feb", "Mar"],
+                current: [65000, 68000, 70000],
+                lastWeek: [60000, 62000, 64000],
+                lastYear: [58000, 60000, 61000]
+            },
+            "6M": {
+                dates: ["Q1", "Q2"],
+                current: [130000, 140000],
+                lastWeek: [120000, 128000],
+                lastYear: [115000, 122000]
+            },
+            "1Y": {
+                dates: ["2024"],
+                current: [820000],
+                lastWeek: [790000],
+                lastYear: [760000]
+            }
+        },
 
-                        curr.setDate(curr.getDate() + 1);
-                    }
+        applyDateFilter() {
+            const r = this.rangeData[this.selectedRange];
 
-                    this.popupTableData = days.map((d, i) => ({
-                        date: d,
-                        current: valuesCurrent[i],
-                        lastWeek: valuesLastWeek[i],
-                        lastYear: valuesLastYear[i]
-                    }));
+            this.popupTableData = r.dates.map((d, i) => ({
+                date: d,
+                current: r.current[i],
+                lastWeek: r.lastWeek[i],
+                lastYear: r.lastYear[i]
+            }));
 
-                    this.currentWeekData = valuesCurrent;
-                    this.lastWeekData = valuesLastWeek;
-                    this.lastYearData = valuesLastYear;
+            this.currentWeekData = r.current;
+            this.lastWeekData = r.lastWeek;
+            this.lastYearData = r.lastYear;
 
-                    this.selectedRangeLabel =
-                        `${new Date(this.customStart).toLocaleDateString()} - ${new Date(this.customEnd).toLocaleDateString()}`;
+            this.$nextTick(() => this.renderChart());
+        },
 
-                    this.$nextTick(() => this.renderChart());
-                },
+        dragOver(i) {
+        },
 
-                rangeData: {
-                    Default: {
-                        dates: ["12/08","12/09","12/10","12/11","12/12","12/13","12/14"],
-                        current: [6582,6898,7040,7213,8129,7661,6497],
-                        lastWeek: [6400,6701,6955,7100,7988,7600,6430],
-                        lastYear: [6300,6588,6700,6901,7200,7100,6350]
-                    },
-                    "7D": {
-                        dates: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                        current: [5200,5300,5400,5500,5600,5700,5800],
-                        lastWeek: [5000,5100,5200,5300,5400,5500,5600],
-                        lastYear: [4800,4950,5050,5200,5250,5400,5450]
-                    },
-                    "1M": {
-                        dates: ["Week 1","Week 2","Week 3","Week 4"],
-                        current: [21000,22000,23000,21500],
-                        lastWeek: [20000,21000,22000,20500],
-                        lastYear: [19000,20000,21000,19500]
-                    },
-                    "3M": {
-                        dates: ["Jan","Feb","Mar"],
-                        current: [65000,68000,70000],
-                        lastWeek: [60000,62000,64000],
-                        lastYear: [58000,60000,61000]
-                    },
-                    "6M": {
-                        dates: ["Q1","Q2"],
-                        current: [130000,140000],
-                        lastWeek: [120000,128000],
-                        lastYear: [115000,122000]
-                    },
-                    "1Y": {
-                        dates: ["2024"],
-                        current: [820000],
-                        lastWeek: [790000],
-                        lastYear: [760000]
-                    }
-                },
+        dropTile(i) {
+            if (this.dragIndex === null) return;
 
-                applyDateFilter() {
-                    const r = this.rangeData[this.selectedRange];
+            const temp = this.kpis[this.dragIndex];
+            this.kpis.splice(this.dragIndex, 1);
+            this.kpis.splice(i, 0, temp);
 
-                    this.popupTableData = r.dates.map((d, i) => ({
-                        date: d,
-                        current: r.current[i],
-                        lastWeek: r.lastWeek[i],
-                        lastYear: r.lastYear[i]
-                    }));
+            this.dragIndex = null;
+        },
 
-                    this.currentWeekData = r.current;
-                    this.lastWeekData = r.lastWeek;
-                    this.lastYearData = r.lastYear;
+        aiInsightsOpen: false,
 
-                    this.$nextTick(() => this.renderChart());
-                },
+        openAiInsights() {
+            this.aiInsightsOpen = true;
+            this.$nextTick(() => lucide.createIcons());
+        },
 
-                dragOver(i) {
-                },
+        period: 'Daily',
 
-                dropTile(i) {
-                    if (this.dragIndex === null) return;
+        setPeriod(p) {
+            this.period = p;
+            this.updateByPeriod();
+        },
 
-                    const temp = this.kpis[this.dragIndex];
-                    this.kpis.splice(this.dragIndex, 1);
-                    this.kpis.splice(i, 0, temp);
+        updateByPeriod() {
+            if (this.period === 'Daily') {
+                this.kpis.forEach(k => k.value = k.daily);
+            }
+            if (this.period === 'WTD') {
+                this.kpis.forEach(k => k.value = k.wtd);
+            }
+            if (this.period === 'MTD') {
+                this.kpis.forEach(k => k.value = k.mtd);
+            }
 
-                    this.dragIndex = null;
-                },
+            setTimeout(() => lucide.createIcons(), 10);
+        },
 
-                aiInsightsOpen: false,
+        updateTaskDisplay() {
+            this.$nextTick(() => lucide.createIcons());
 
-                openAiInsights() {
-                    this.aiInsightsOpen = true;
-                    this.$nextTick(() => lucide.createIcons());
-                },
-
-                period: 'Daily',
-
-                setPeriod(p) {
-                    this.period = p;
-                    this.updateByPeriod();
-                },
-
-                updateByPeriod() {
-                    if (this.period === 'Daily') {
-                        this.kpis.forEach(k => k.value = k.daily);
-                    }
-                    if (this.period === 'WTD') {
-                        this.kpis.forEach(k => k.value = k.wtd);
-                    }
-                    if (this.period === 'MTD') {
-                        this.kpis.forEach(k => k.value = k.mtd);
-                    }
-
-                    setTimeout(() => lucide.createIcons(), 10);
-                },
-
-                updateTaskDisplay() {
-                    this.$nextTick(() => lucide.createIcons());
-
-                    console.log("Task visibility updated");
-                },
+            console.log("Task visibility updated");
+        },
 
 
-                taskFilter: 'All',
+        taskFilter: 'All',
 
-                filterTasks() {
-                    this.tasks.forEach(task => {
-                        if (this.taskFilter === 'All') {
-                            task.hidden = false;
-                        } 
-                        else if (this.taskFilter === 'Completed Tasks') {
-                            task.hidden = !task.complete;
+        filterTasks() {
+            this.tasks.forEach(task => {
+                if (this.taskFilter === 'All') {
+                    task.hidden = false;
+                }
+                else if (this.taskFilter === 'Completed Tasks') {
+                    task.hidden = !task.complete;
+                }
+                else if (this.taskFilter === 'Pending Tasks') {
+                    task.hidden = task.complete;
+                }
+            });
+        },
+
+        generateDateOptions() {
+            return [
+                "Today",
+                "Yesterday",
+                "Monday, Dec 01, 2025",
+                "Sunday, Nov 30, 2025",
+                "Saturday, Nov 29, 2025",
+                "Friday, Nov 28, 2025",
+                "Thursday, Nov 27, 2025",
+            ];
+        },
+
+        openKpiPopup(kpiId) {
+            this.popupOpen = true;
+            this.popupMode = "graph";
+            this.selectedRange = 'Default';
+            this.applyDateFilter();
+
+            this.popupTitle = this.kpis.find(k => k.id === kpiId)?.name || "KPI Details";
+
+            const dates = [
+                "12/08/2025", "12/09/2025", "12/10/2025",
+                "12/11/2025", "12/12/2025", "12/13/2025", "12/14/2025"
+            ];
+
+            this.currentWeekData = [6582.21, 6898.79, 7040.93, 7213.69, 8129.51, 7661.88, 6497.03];
+            this.lastWeekData = [6400.11, 6701.52, 6955.33, 7100.49, 7988.22, 7600.12, 6430.55];
+            this.lastYearData = [6300.75, 6588.90, 6700.32, 6901.11, 7200.44, 7100.75, 6350.99];
+
+            this.popupTableData = dates.map((d, i) => ({
+                date: d,
+                current: this.currentWeekData[i],
+                lastWeek: this.lastWeekData[i],
+                lastYear: this.lastYearData[i]
+            }));
+
+            this.$nextTick(() => this.renderChart());
+        },
+
+
+        renderChart() {
+            const ctx = document.getElementById("kpiChart");
+            if (!ctx) return;
+
+            if (window.kpiChartInstance) {
+                window.kpiChartInstance.destroy();
+            }
+
+            const dates = this.popupTableData.map(r => r.date);
+            const currentData = this.currentWeekData;
+
+            let aggregatedLabels = dates;
+            let aggregatedData = currentData;
+
+            if (this.aggregationPeriod !== 'Daily') {
+                const aggregated = this.aggregateData(dates, currentData, this.aggregationPeriod);
+                aggregatedLabels = aggregated.labels;
+                aggregatedData = aggregated.current;
+            }
+
+            const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 300);
+            gradient.addColorStop(0, "rgba(108, 99, 255, 0.55)");
+            gradient.addColorStop(0.6, "rgba(108, 99, 255, 0.20)");
+            gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)");
+
+
+            window.kpiChartInstance = new Chart(ctx, {
+                type: "line",
+
+                data: {
+                    labels: aggregatedLabels,
+                    datasets: [
+                        {
+                            label: "Sales",
+                            data: aggregatedData,
+                            borderColor: "#6C63FF",
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: "#6C63FF",
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            tension: 0.45,
+                            fill: true
                         }
-                        else if (this.taskFilter === 'Pending Tasks') {
-                            task.hidden = task.complete;
-                        }
-                    });
+                    ]
                 },
 
-                generateDateOptions() {
-                    return [
-                        "Today",
-                        "Yesterday",
-                        "Monday, Dec 01, 2025",
-                        "Sunday, Nov 30, 2025",
-                        "Saturday, Nov 29, 2025",
-                        "Friday, Nov 28, 2025",
-                        "Thursday, Nov 27, 2025",
-                    ];
-                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
 
-                openKpiPopup(kpiId) {
-                    this.popupOpen = true;
-                    this.popupMode = "graph";
-                    this.selectedRange = 'Default';
-                    this.applyDateFilter();
+                    animation: {
+                        duration: 700,
+                        easing: "easeOutQuart"
+                    },
 
-                    this.popupTitle = this.kpis.find(k => k.id === kpiId)?.name || "KPI Details";
+                    layout: {
+                        padding: { top: 10, right: 18, bottom: 0, left: 10 }
+                    },
 
-                    const dates = [
-                        "12/08/2025","12/09/2025","12/10/2025",
-                        "12/11/2025","12/12/2025","12/13/2025","12/14/2025"
-                    ];
-
-                    this.currentWeekData = [6582.21, 6898.79, 7040.93, 7213.69, 8129.51, 7661.88, 6497.03];
-                    this.lastWeekData    = [6400.11, 6701.52, 6955.33, 7100.49, 7988.22, 7600.12, 6430.55];
-                    this.lastYearData    = [6300.75, 6588.90, 6700.32, 6901.11, 7200.44, 7100.75, 6350.99];
-
-                    this.popupTableData = dates.map((d, i) => ({
-                        date: d,
-                        current: this.currentWeekData[i],
-                        lastWeek: this.lastWeekData[i],
-                        lastYear: this.lastYearData[i]
-                    }));
-
-                    this.$nextTick(() => this.renderChart());
-                },
-
-
-                renderChart() {
-                    const ctx = document.getElementById("kpiChart");
-                    if (!ctx) return;
-
-                    if (window.kpiChartInstance) {
-                        window.kpiChartInstance.destroy();
-                    }
-
-                    const dates = this.popupTableData.map(r => r.date);
-                    const currentData = this.currentWeekData;
-
-                    let aggregatedLabels = dates;
-                    let aggregatedData = currentData;
-
-                    if (this.aggregationPeriod !== 'Daily') {
-                        const aggregated = this.aggregateData(dates, currentData, this.aggregationPeriod);
-                        aggregatedLabels = aggregated.labels;
-                        aggregatedData = aggregated.current;
-                    }
-
-                    const gradient = ctx.getContext("2d").createLinearGradient(0, 0, 0, 300);
-                    gradient.addColorStop(0, "rgba(108, 99, 255, 0.55)");
-                    gradient.addColorStop(0.6, "rgba(108, 99, 255, 0.20)"); 
-                    gradient.addColorStop(1, "rgba(108, 99, 255, 0.08)"); 
-
-
-                    window.kpiChartInstance = new Chart(ctx, {
-                        type: "line",
-
-                        data: {
-                            labels: aggregatedLabels,
-                            datasets: [
-                                {
-                                    label: "Sales",
-                                    data: aggregatedData,
-                                    borderColor: "#6C63FF",
-                                    backgroundColor: gradient,
-                                    borderWidth: 3,
-                                    pointRadius: 4,
-                                    pointBackgroundColor: "#6C63FF",
-                                    pointBorderWidth: 2,
-                                    pointHoverRadius: 6,
-                                    tension: 0.45,
-                                    fill: true
-                                }
-                            ]
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                color: "#475569",
+                                font: { size: 12, weight: 600 },
+                                padding: 8
+                            }
                         },
 
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-
-                            animation: {
-                                duration: 700,
-                                easing: "easeOutQuart"
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: "rgba(0,0,0,0.06)",
+                                lineWidth: 1,
+                                drawBorder: false
                             },
-
-                            layout: {
-                                padding: { top: 10, right: 18, bottom: 0, left: 10 }
-                            },
-
-                            scales: {
-                                x: {
-                                    grid: { display: false },
-                                    ticks: {
-                                        color: "#475569",
-                                        font: { size: 12, weight: 600 },
-                                        padding: 8
-                                    }
-                                },
-
-                                y: {
-                                    beginAtZero: false,
-                                    grid: {
-                                        color: "rgba(0,0,0,0.06)",
-                                        lineWidth: 1,
-                                        drawBorder: false
-                                    },
-                                    ticks: {
-                                        color: "#64748b",
-                                        font: { size: 12 },
-                                        callback: (v) => "$" + v.toLocaleString(),
-                                        padding: 8
-                                    }
-                                }
-                            },
-
-                            plugins: {
-                                legend: { display: false },
-
-                                tooltip: {
-                                    backgroundColor: "rgba(30,30,45,0.92)",
-                                    cornerRadius: 8,
-                                    padding: 12,
-                                    displayColors: false,
-                                    titleFont: { size: 13, weight: 600 },
-                                    bodyFont: { size: 12 },
-                                    callbacks: {
-                                        title: (items) => {
-                                            const label = items[0].label;
-                                            if (label.includes('-')) {
-                                                return label;
-                                            }
-                                            return label;
-                                        },
-                                        label: (ctx) => "Sales : $" + ctx.raw.toLocaleString()
-                                    }
-                                }
-                            },
-
-                            hover: {
-                                mode: "nearest",
-                                intersect: false
+                            ticks: {
+                                color: "#64748b",
+                                font: { size: 12 },
+                                callback: (v) => "$" + v.toLocaleString(),
+                                padding: 8
                             }
                         }
-                    });
-                },
-                
-                kpis: [
-                    { id: 'kpi-forecast', name: 'Forecasted Sales', enabled: true, value: '$5,054.97', daily: "$5,054.97", wtd: "$32,450.00", mtd: "$142,890.00", yesterdayValue: '$4,980.50', trend: 'up', trendVal: '1.5%', percent: +2.1, comparison: 'vs. Last Month' },
-                    { id: 'kpi-sales', name: 'Actual Sales', enabled: true, value: '$5,210.30', daily: "$5,210.30", wtd: "$34,980.00", mtd: "$152,340.00", yesterdayValue: '$5,100.25', trend: 'up', trendVal: '2.1%', percent: +3.4, comparison: 'vs. Last Month' },
-                    { id: 'kpi-variance', name: 'Var (Act vs Ideal)', enabled: true, value: '+155.33', daily: "+22.10", wtd: "+143.89", mtd: "+612.45", yesterdayValue: '+50.10', trend: 'neutral', trendVal: '-', percent: +1.8, comparison: 'vs. Last Month' },
-                    { id: 'kpi-labor', name: 'Labor %', enabled: true, value: '22.4%', daily: "22.4%", wtd: "23.1%", mtd: "22.7%", yesterdayValue: '21.8%', trend: 'up', trendVal: '0.6%', percent: +0.6, comparison: 'vs. Last Month' },
-                    { id: 'kpi-ot', name: 'OT Hours', enabled: true, value: '3.5', daily: "3.5", wtd: "21.2", mtd: "82.4", yesterdayValue: '2.0', trend: 'up', trendVal: '1.5', trendClass: 'trend-up-bad', percent: -12.5, comparison: 'vs. Last Month' },
-                    { id: 'kpi-icos', name: 'Act ICOS %', enabled: true, value: '28.5%', daily: "28.5%", wtd: "29.1%", mtd: "27.9%", yesterdayValue: '28.0%', trend: 'up', trendVal: '0.5%', percent: +0.5, comparison: 'vs. Last Month' },
-                    { id: 'labor_dollars', name: 'Labor $', enabled: true, value: '$1,245.60', daily: "$1,245.60", wtd: "$7,820.00", mtd: "$32,540.00", percent: -1.2, comparison: 'vs. Last Month', graphData: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values: [210, 180, 200, 240, 260, 310, 145] }, tableData: [{ date: '02/12', current: '$210', lastWeek: '$190', lastYear: '$175' }, { date: '02/13', current: '$180', lastWeek: '$160', lastYear: '$158' }, { date: '02/14', current: '$200', lastWeek: '$180', lastYear: '$165' }] },
-                    { id: 'ideal_hours', name: 'Ideal Hours', enabled: true, value: '128 hrs', daily: "128 hrs", wtd: "760 hrs", mtd: "3,220 hrs", percent: +2.4, comparison: 'vs. Last Month', graphData: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values: [18, 19, 17, 20, 22, 25, 15] }, tableData: [{ date: '02/12', current: '18', lastWeek: '17', lastYear: '18' }, { date: '02/13', current: '19', lastWeek: '18', lastYear: '19' }, { date: '02/14', current: '17', lastWeek: '16', lastYear: '17' }] },
-                    { id: 'misc_pay', name: 'Misc Pay $', enabled: true, value: '$245.00', daily: "$245.00", wtd: "$1,120.00", mtd: "$4,380.00", percent: +3.9, comparison: 'vs. Last Month', graphData: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values: [20, 25, 30, 40, 50, 60, 20] }, tableData: [{ date: '02/12', current: '$20', lastWeek: '$15', lastYear: '$12' }, { date: '02/13', current: '$25', lastWeek: '$18', lastYear: '$14' }, { date: '02/14', current: '$30', lastWeek: '$22', lastYear: '$18' }] },
-                    { id: 'time_loss', name: 'Time Loss $', enabled: true, value: '$87.30', daily: "$87.30", wtd: "$420.00", mtd: "$1,650.00", percent: -3.3, comparison: 'vs. Last Month', graphData: { labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], values: [10, 12, 9, 14, 18, 16, 8] }, tableData: [{ date: '02/12', current: '$10', lastWeek: '$12', lastYear: '$9' }, { date: '02/13', current: '$12', lastWeek: '$14', lastYear: '$11' }, { date: '02/14', current: '$9', lastWeek: '$10', lastYear: '$8' }] }
-                ],
+                    },
 
-                tasks: [
-                    // START OF DAY — FORECAST (Mandatory added)
-                    { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: true },
-                    { id: 'task-actual-sales', name: 'Actual Sales', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: false },
+                    plugins: {
+                        legend: { display: false },
 
-                    // START OF DAY — LABOR MANAGEMENT
-                    { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0, mandatory: true },
-                    { id: 'task-sod-hr', name: 'Pending Employees', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4, mandatory: false },
-                    { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1, mandatory: true },
-                    { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4, mandatory: false },
-                    { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2, mandatory: false },
-                    { id: 'task-sod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-check', badge: 2, mandatory: false },
-                    { id: 'task-sod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'repeat', badge: 2, mandatory: false },
-
-                    // START OF DAY — PAYROLL MANAGEMENT
-                    { id: 'task-sod-punches-ex', name: 'Punch Exceptions', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 8, mandatory: true },
-                    { id: 'task-sod-punches-rev', name: 'Punch Review', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'edit', badge: 2, mandatory: false },
-                    { id: 'task-sod-punches-app', name: 'Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22, mandatory: false },
-                    { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2, mandatory: false },
-                    { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1, mandatory: false },
-
-                    // START OF DAY — FOOD MANAGEMENT
-                    { id: 'task-sod-ordering', name: 'Ordering', app: 'Food Management', category: 'Start of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2, mandatory: true },
-                    { id: 'task-sod-receiving', name: 'Receiving', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'truck', badge: 0, mandatory: false },
-                    { id: 'task-sod-transfer', name: 'Transfer', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0, mandatory: false },
-                    { id: 'task-sod-waste', name: 'Waste', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0, mandatory: false },
-
-                    // CLOSE OF DAY — FOOD MANAGEMENT
-                    { id: 'task-cod-ordering', name: 'Ordering', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2, mandatory: true },
-                    { id: 'task-cod-receiving', name: 'Receiving', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'truck', badge: 0, mandatory: false },
-                    { id: 'task-cod-transfer', name: 'Transfer', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0, mandatory: false },
-                    { id: 'task-cod-waste', name: 'Waste', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0, mandatory: true },
-                    { id: 'task-cod-inventory', name: 'Inventory', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clipboard-list', badge: 0, mandatory: true },
-
-                    // CLOSE OF DAY — LABOR MANAGEMENT
-                    { id: 'task-cod-violation', name: 'Labor Violations', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1, mandatory: true },
-                    { id: 'task-cod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'percent', badge: 4, mandatory: false },
-                    { id: 'task-cod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-x', badge: 2, mandatory: false },
-                    { id: 'task-cod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-check', badge: 2, mandatory: false },
-                    { id: 'task-cod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'repeat', badge: 2, mandatory: false },
-
-                    // CLOSE OF DAY — PAYROLL MANAGEMENT
-                    { id: 'task-cod-punches-ex', name: 'Punch Exception', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 15, mandatory: true },
-                    { id: 'task-cod-punches-rev', name: 'Review Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'edit', badge: 2, mandatory: false },
-                    { id: 'task-cod-misc-pay', name: 'Misc Pay', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'gift', badge: 0, mandatory: true },
-                    { id: 'task-cod-ot', name: 'Approaching OT', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clock-3', badge: 0, mandatory: false },
-                    { id: 'task-cod-payroll-sum', name: 'Payroll Summary', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'file-check', badge: 1, mandatory: true },
-                    { id: 'task-cod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 3, mandatory: false },
-                    { id: 'task-cod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1, mandatory: false }
-                ],
-
-                // --- NEW CONTEXT MENU FUNCTIONS ---
-
-                openContextMenu(event, task) {
-                    if (!this.editMode) return; 
-
-                    event.preventDefault(); 
-                    
-                    this.contextMenuTargetTask = task;
-                    
-                    this.contextMenuX = event.clientX;
-                    this.contextMenuY = event.clientY;
-                    
-                    this.contextMenuOpen = true;
-                    
-                    this.$nextTick(() => lucide.createIcons());
-                },
-
-                closeContextMenu() {
-                    this.contextMenuOpen = false;
-                    this.contextMenuTargetTask = null;
-                },
-
-                toggleMandatory(taskId) {
-                    const task = this.tasks.find(t => t.id === taskId);
-                    if (task) {
-                        task.mandatory = !task.mandatory;
-                        this.updateTaskProgress(); 
-                    }
-                    this.closeContextMenu();
-                },
-
-                removeTask(taskId) {
-                    if (!confirm("Are you sure you want to remove this task?")) {
-                        this.closeContextMenu();
-                        return;
-                    }
-
-                    this.tasks = this.tasks.filter(t => t.id !== taskId);
-
-                    const taskApp = this.contextMenuTargetTask.app;
-                    const taskCategory = this.contextMenuTargetTask.category;
-                    
-                    const isCustom = this.customModules.some(m => m.name === taskApp && m.category === taskCategory);
-                    
-                    if (isCustom && this.getModuleTasks(taskApp, taskCategory).length === 0) {
-                         this.customModules = this.customModules.filter(m => !(m.name === taskApp && m.category === taskCategory));
-                    }
-
-
-                    this.closeContextMenu();
-                    this.$nextTick(() => this.updateTaskProgress());
-                },
-                // --- END NEW CONTEXT MENU FUNCTIONS ---
-
-                // --- NEW HELPER FUNCTION TO GENERATE DATES ---
-                // --- CORRECTED HELPER FUNCTION TO GENERATE DATES ---
-                getFutureDates(days) {
-                    const dateHeaders = [];
-                    const today = new Date();
-                    for (let i = 0; i < days; i++) {
-                        const futureDate = new Date(today);
-                        futureDate.setDate(today.getDate() + i);
-                        
-                        // New format: only MM/DD
-                        const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
-                        const day = futureDate.getDate().toString().padStart(2, '0');
-                        
-                        // Pushing only the date string, removing 'Day X' prefix.
-                        dateHeaders.push(`${month}/${day}`); 
-                    }
-                    return dateHeaders;
-                },
-
-                // --- NEW HELPER FUNCTION TO GENERATE PAST DATES ---
-                getPastDates(days) {
-                    const dateHeaders = [];
-                    const today = new Date();
-                    for (let i = 1; i <= days; i++) { // Start from Day -1 (i=1)
-                        const pastDate = new Date(today);
-                        pastDate.setDate(today.getDate() - i); // Subtract 'i' days
-                        
-                        // Format: MM/DD
-                        const month = (pastDate.getMonth() + 1).toString().padStart(2, '0');
-                        const day = pastDate.getDate().toString().padStart(2, '0');
-                        
-                        dateHeaders.unshift(`${month}/${day}`); // unshift adds to the beginning, so the array is ordered -7 to -1
-                    }
-                    return dateHeaders;
-                },
-                
-                // ... rest of the functions ...
-                
-
-
-                init() {
-                    this.sidebarTasks = this.predefinedTasks.map(t => ({...t}));
-                    this.updateTaskProgress();
-                    
-                    // Close context menu if clicked anywhere else
-                    document.addEventListener('click', (e) => {
-                        if (this.contextMenuOpen && !e.target.closest('.custom-context-menu')) {
-                            this.closeContextMenu();
+                        tooltip: {
+                            backgroundColor: "rgba(30,30,45,0.92)",
+                            cornerRadius: 8,
+                            padding: 12,
+                            displayColors: false,
+                            titleFont: { size: 13, weight: 600 },
+                            bodyFont: { size: 12 },
+                            callbacks: {
+                                title: (items) => {
+                                    const label = items[0].label;
+                                    if (label.includes('-')) {
+                                        return label;
+                                    }
+                                    return label;
+                                },
+                                label: (ctx) => "Sales : $" + ctx.raw.toLocaleString()
+                            }
                         }
-                    });
+                    },
 
-                    this.$nextTick(() => {
-                        this.datePicker = new Litepicker({
-                            element: document.getElementById('kpiDatePicker'),
-                            parentEl: document.getElementById('kpiCalendarContainer'), 
-                            singleMode: false,
-                            numberOfMonths: 2,
-                            numberOfColumns: 2,
-                            autoApply: true,
-                            allowRepick: true,
-                            format: "YYYY-MM-DD",
-
-                            setup: (picker) => {
-                                picker.on('selected', (start, end) => {
-                                    this.customStart = start.format("YYYY-MM-DD");
-                                    this.customEnd   = end.format("YYYY-MM-DD");
-
-                                    this.applyCustomDateRange();
-                                    picker.hide();
-                                    });
-                                }
-                            });
-                        });
-                },
-
-                matchesSearch(text) {
-                    return text.toLowerCase().includes(this.searchTerm.toLowerCase());
-                },
-
-                get groupedTasks() {
-                    const groups = {};
-                    this.tasks.forEach(t => {
-                        if (!groups[t.category]) groups[t.category] = {};
-                        if (!groups[t.category][t.app]) groups[t.category][t.app] = [];
-                        groups[t.category][t.app].push(t);
-                    });
-                    return groups;
-                },
-
-                hasVisibleTasks(appName, category) {
-                    return this.getModuleTasks(appName, category).length > 0;
-                },
-
-                toggleDetail(taskId) {
-                    if (this.activeTaskId === taskId) {
-                        this.activeTaskId = null;
-                    } else {
-                        this.activeTaskId = taskId;
+                    hover: {
+                        mode: "nearest",
+                        intersect: false
                     }
-                },
-
-                completeTask(taskId) {
-                    const task = this.tasks.find(t => t.id === taskId);
-                    if (task) {
-                        task.complete = !task.complete;
-                        this.updateTaskProgress();
-                    }
-                },
-
-                updateTaskProgress() {
-                    const calc = (cat, barId, txtId) => {
-                        const relevant = this.tasks.filter(t => t.category === cat && t.enabled);
-                        const total = relevant.length;
-                        const done = relevant.filter(t => t.complete).length;
-                        const pct = total === 0 ? 0 : (done / total) * 100;
-
-                        const bar = document.getElementById(barId);
-                        const txt = document.getElementById(txtId);
-                        if (bar) bar.style.width = `${pct}%`;
-                        if (txt) txt.innerText = `${done}/${total}`;
-                    };
-
-                    calc('Start of Day', 'sod-progress', 'sod-count');
-                    calc('Close of Day', 'cod-progress', 'cod-count');
-                },
-
-                getTaskCardClass(task, activeId) {
-                    let classes = '';
-                    if (activeId === task.id) classes += ' active-card';
-                    
-                    if (task.complete) {
-                        classes += ' complete';
-                    } else if (task.badge > 0) {
-                        classes += ' pending';
-                    }
-                    return classes;
                 }
+            });
+        },
+
+        kpis: [
+            { id: 'kpi-forecast', name: 'Forecasted Sales', enabled: true, value: '$5,054.97', daily: "$5,054.97", wtd: "$32,450.00", mtd: "$142,890.00", yesterdayValue: '$4,980.50', trend: 'up', trendVal: '1.5%', percent: +2.1, comparison: 'vs. Last Month' },
+            { id: 'kpi-sales', name: 'Actual Sales', enabled: true, value: '$5,210.30', daily: "$5,210.30", wtd: "$34,980.00", mtd: "$152,340.00", yesterdayValue: '$5,100.25', trend: 'up', trendVal: '2.1%', percent: +3.4, comparison: 'vs. Last Month' },
+            { id: 'kpi-variance', name: 'Var (Act vs Ideal)', enabled: true, value: '+155.33', daily: "+22.10", wtd: "+143.89", mtd: "+612.45", yesterdayValue: '+50.10', trend: 'neutral', trendVal: '-', percent: +1.8, comparison: 'vs. Last Month' },
+            { id: 'kpi-labor', name: 'Labor %', enabled: true, value: '22.4%', daily: "22.4%", wtd: "23.1%", mtd: "22.7%", yesterdayValue: '21.8%', trend: 'up', trendVal: '0.6%', percent: +0.6, comparison: 'vs. Last Month' },
+            { id: 'kpi-ot', name: 'OT Hours', enabled: true, value: '3.5', daily: "3.5", wtd: "21.2", mtd: "82.4", yesterdayValue: '2.0', trend: 'up', trendVal: '1.5', trendClass: 'trend-up-bad', percent: -12.5, comparison: 'vs. Last Month' },
+            { id: 'kpi-icos', name: 'Act ICOS %', enabled: true, value: '28.5%', daily: "28.5%", wtd: "29.1%", mtd: "27.9%", yesterdayValue: '28.0%', trend: 'up', trendVal: '0.5%', percent: +0.5, comparison: 'vs. Last Month' },
+            { id: 'labor_dollars', name: 'Labor $', enabled: true, value: '$1,245.60', daily: "$1,245.60", wtd: "$7,820.00", mtd: "$32,540.00", percent: -1.2, comparison: 'vs. Last Month', graphData: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], values: [210, 180, 200, 240, 260, 310, 145] }, tableData: [{ date: '02/12', current: '$210', lastWeek: '$190', lastYear: '$175' }, { date: '02/13', current: '$180', lastWeek: '$160', lastYear: '$158' }, { date: '02/14', current: '$200', lastWeek: '$180', lastYear: '$165' }] },
+            { id: 'ideal_hours', name: 'Ideal Hours', enabled: true, value: '128 hrs', daily: "128 hrs", wtd: "760 hrs", mtd: "3,220 hrs", percent: +2.4, comparison: 'vs. Last Month', graphData: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], values: [18, 19, 17, 20, 22, 25, 15] }, tableData: [{ date: '02/12', current: '18', lastWeek: '17', lastYear: '18' }, { date: '02/13', current: '19', lastWeek: '18', lastYear: '19' }, { date: '02/14', current: '17', lastWeek: '16', lastYear: '17' }] },
+            { id: 'misc_pay', name: 'Misc Pay $', enabled: true, value: '$245.00', daily: "$245.00", wtd: "$1,120.00", mtd: "$4,380.00", percent: +3.9, comparison: 'vs. Last Month', graphData: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], values: [20, 25, 30, 40, 50, 60, 20] }, tableData: [{ date: '02/12', current: '$20', lastWeek: '$15', lastYear: '$12' }, { date: '02/13', current: '$25', lastWeek: '$18', lastYear: '$14' }, { date: '02/14', current: '$30', lastWeek: '$22', lastYear: '$18' }] },
+            { id: 'time_loss', name: 'Time Loss $', enabled: true, value: '$87.30', daily: "$87.30", wtd: "$420.00", mtd: "$1,650.00", percent: -3.3, comparison: 'vs. Last Month', graphData: { labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'], values: [10, 12, 9, 14, 18, 16, 8] }, tableData: [{ date: '02/12', current: '$10', lastWeek: '$12', lastYear: '$9' }, { date: '02/13', current: '$12', lastWeek: '$14', lastYear: '$11' }, { date: '02/14', current: '$9', lastWeek: '$10', lastYear: '$8' }] }
+        ],
+
+        tasks: [
+            // START OF DAY — FORECAST (Mandatory added)
+            { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: true },
+            { id: 'task-actual-sales', name: 'Actual Sales', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: false },
+
+            // START OF DAY — LABOR MANAGEMENT
+            { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0, mandatory: true },
+            { id: 'task-sod-hr', name: 'Pending Employees', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'file-text', badge: 4, mandatory: false },
+            { id: 'task-sod-violation', name: 'Violation', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1, mandatory: true },
+            { id: 'task-sod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'percent', badge: 4, mandatory: false },
+            { id: 'task-sod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-x', badge: 2, mandatory: false },
+            { id: 'task-sod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'user-check', badge: 2, mandatory: false },
+            { id: 'task-sod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: false, icon: 'repeat', badge: 2, mandatory: false },
+
+            // START OF DAY — PAYROLL MANAGEMENT
+            { id: 'task-sod-punches-ex', name: 'Punch Exceptions', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 8, mandatory: true },
+            { id: 'task-sod-punches-rev', name: 'Punch Review', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'edit', badge: 2, mandatory: false },
+            { id: 'task-sod-punches-app', name: 'Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22, mandatory: false },
+            { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2, mandatory: false },
+            { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1, mandatory: false },
+
+            // START OF DAY — FOOD MANAGEMENT
+            { id: 'task-sod-ordering', name: 'Ordering', app: 'Food Management', category: 'Start of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2, mandatory: true },
+            { id: 'task-sod-receiving', name: 'Receiving', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'truck', badge: 0, mandatory: false },
+            { id: 'task-sod-transfer', name: 'Transfer', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0, mandatory: false },
+            { id: 'task-sod-waste', name: 'Waste', app: 'Food Management', category: 'Start of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0, mandatory: false },
+
+            // CLOSE OF DAY — FOOD MANAGEMENT
+            { id: 'task-cod-ordering', name: 'Ordering', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2, mandatory: true },
+            { id: 'task-cod-receiving', name: 'Receiving', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'truck', badge: 0, mandatory: false },
+            { id: 'task-cod-transfer', name: 'Transfer', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'arrow-right-left', badge: 0, mandatory: false },
+            { id: 'task-cod-waste', name: 'Waste', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'trash-2', badge: 0, mandatory: true },
+            { id: 'task-cod-inventory', name: 'Inventory', app: 'Food Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clipboard-list', badge: 0, mandatory: true },
+
+            // CLOSE OF DAY — LABOR MANAGEMENT
+            { id: 'task-cod-violation', name: 'Labor Violations', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-triangle', badge: 1, mandatory: true },
+            { id: 'task-cod-time-loss', name: 'Time Loss Summary', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'percent', badge: 4, mandatory: false },
+            { id: 'task-cod-timeoff', name: 'Time Off Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-x', badge: 2, mandatory: false },
+            { id: 'task-cod-availability', name: 'Availability Request', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'user-check', badge: 2, mandatory: false },
+            { id: 'task-cod-swapshift', name: 'Swap Shift Approval', app: 'Labor Management', category: 'Close of Day', enabled: true, complete: false, icon: 'repeat', badge: 2, mandatory: false },
+
+            // CLOSE OF DAY — PAYROLL MANAGEMENT
+            { id: 'task-cod-punches-ex', name: 'Punch Exception', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'fingerprint', badge: 15, mandatory: true },
+            { id: 'task-cod-punches-rev', name: 'Review Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'edit', badge: 2, mandatory: false },
+            { id: 'task-cod-misc-pay', name: 'Misc Pay', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'gift', badge: 0, mandatory: true },
+            { id: 'task-cod-ot', name: 'Approaching OT', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: true, icon: 'clock-3', badge: 0, mandatory: false },
+            { id: 'task-cod-payroll-sum', name: 'Payroll Summary', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'file-check', badge: 1, mandatory: true },
+            { id: 'task-cod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 3, mandatory: false },
+            { id: 'task-cod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Close of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1, mandatory: false }
+        ],
+
+        // --- NEW CONTEXT MENU FUNCTIONS ---
+
+        openContextMenu(event, task) {
+            if (!this.editMode) return;
+
+            event.preventDefault();
+
+            this.contextMenuTargetTask = task;
+
+            this.contextMenuX = event.clientX;
+            this.contextMenuY = event.clientY;
+
+            this.contextMenuOpen = true;
+
+            this.$nextTick(() => lucide.createIcons());
+        },
+
+        closeContextMenu() {
+            this.contextMenuOpen = false;
+            this.contextMenuTargetTask = null;
+        },
+
+        toggleMandatory(taskId) {
+            const task = this.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.mandatory = !task.mandatory;
+                this.updateTaskProgress();
             }
+            this.closeContextMenu();
+        },
+
+        removeTask(taskId) {
+            if (!confirm("Are you sure you want to remove this task?")) {
+                this.closeContextMenu();
+                return;
+            }
+
+            this.tasks = this.tasks.filter(t => t.id !== taskId);
+
+            const taskApp = this.contextMenuTargetTask.app;
+            const taskCategory = this.contextMenuTargetTask.category;
+
+            const isCustom = this.customModules.some(m => m.name === taskApp && m.category === taskCategory);
+
+            if (isCustom && this.getModuleTasks(taskApp, taskCategory).length === 0) {
+                this.customModules = this.customModules.filter(m => !(m.name === taskApp && m.category === taskCategory));
+            }
+
+
+            this.closeContextMenu();
+            this.$nextTick(() => this.updateTaskProgress());
+        },
+        // --- END NEW CONTEXT MENU FUNCTIONS ---
+
+        // --- NEW HELPER FUNCTION TO GENERATE DATES ---
+        getFutureDates(days) {
+            const dateHeaders = [];
+            const today = new Date();
+            for (let i = 0; i < days; i++) {
+                const futureDate = new Date(today);
+                futureDate.setDate(today.getDate() + i);
+                const month = (futureDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = futureDate.getDate().toString().padStart(2, '0');
+                dateHeaders.push(`${month}/${day}`);
+            }
+            return dateHeaders;
+        },
+
+        // --- NEW HELPER FUNCTION TO GENERATE PAST DATES ---
+        getPastDates(days) {
+            const dateHeaders = [];
+            const today = new Date();
+            for (let i = 1; i <= days; i++) {
+                const pastDate = new Date(today);
+                pastDate.setDate(today.getDate() - i);
+                const month = (pastDate.getMonth() + 1).toString().padStart(2, '0');
+                const day = pastDate.getDate().toString().padStart(2, '0');
+                dateHeaders.unshift(`${month}/${day}`);
+            }
+            return dateHeaders;
+        },
+
+
+        init() {
+            this.sidebarTasks = this.predefinedTasks.map(t => ({ ...t }));
+            this.updateTaskProgress();
+
+            // Close context menu if clicked anywhere else
+            document.addEventListener('click', (e) => {
+                if (this.contextMenuOpen && !e.target.closest('.custom-context-menu')) {
+                    this.closeContextMenu();
+                }
+            });
+
+            this.$nextTick(() => {
+                this.datePicker = new Litepicker({
+                    element: document.getElementById('kpiDatePicker'),
+                    parentEl: document.getElementById('kpiCalendarContainer'),
+                    singleMode: false,
+                    numberOfMonths: 2,
+                    numberOfColumns: 2,
+                    autoApply: true,
+                    allowRepick: true,
+                    format: "YYYY-MM-DD",
+
+                    setup: (picker) => {
+                        picker.on('selected', (start, end) => {
+                            this.customStart = start.format("YYYY-MM-DD");
+                            this.customEnd = end.format("YYYY-MM-DD");
+
+                            this.applyCustomDateRange();
+                            picker.hide();
+                        });
+                    }
+                });
+            });
+        },
+
+        matchesSearch(text) {
+            return text.toLowerCase().includes(this.searchTerm.toLowerCase());
+        },
+
+        get groupedTasks() {
+            const groups = {};
+            this.tasks.forEach(t => {
+                if (!groups[t.category]) groups[t.category] = {};
+                if (!groups[t.category][t.app]) groups[t.category][t.app] = [];
+                groups[t.category][t.app].push(t);
+            });
+            return groups;
+        },
+
+        hasVisibleTasks(appName, category) {
+            return this.getModuleTasks(appName, category).length > 0;
+        },
+
+        toggleDetail(taskId) {
+            if (this.activeTaskId === taskId) {
+                this.activeTaskId = null;
+            } else {
+                this.activeTaskId = taskId;
+            }
+        },
+
+        completeTask(taskId) {
+            const task = this.tasks.find(t => t.id === taskId);
+            if (task) {
+                task.complete = !task.complete;
+                this.updateTaskProgress();
+            }
+        },
+
+        updateTaskProgress() {
+            const calc = (cat, barId, txtId) => {
+                const relevant = this.tasks.filter(t => t.category === cat && t.enabled);
+                const total = relevant.length;
+                const done = relevant.filter(t => t.complete).length;
+                const pct = total === 0 ? 0 : (done / total) * 100;
+
+                const bar = document.getElementById(barId);
+                const txt = document.getElementById(txtId);
+                if (bar) bar.style.width = `${pct}%`;
+                if (txt) txt.innerText = `${done}/${total}`;
+            };
+
+            calc('Start of Day', 'sod-progress', 'sod-count');
+            calc('Close of Day', 'cod-progress', 'cod-count');
+        },
+
+        getTaskCardClass(task, activeId) {
+            let classes = '';
+            if (activeId === task.id) classes += ' active-card';
+
+            if (task.complete) {
+                classes += ' complete';
+            } else if (task.badge > 0) {
+                classes += ' pending';
+            }
+            return classes;
         }
-        
-        document.addEventListener('DOMContentLoaded', () => {
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
         });
 
