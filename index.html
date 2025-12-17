@@ -1535,7 +1535,14 @@
     
     /* Ensure action buttons wrap if needed */
     vertical-align: top;
+    position: relative;
+    overflow: visible !important;
 }
+
+.task-popup {
+    overflow: visible !important;
+}
+
 
 .task-details-table td:last-child,
 .task-details-table th:last-child {
@@ -1599,6 +1606,18 @@
 .task-details-table input:focus {
     outline: none;
     border-color: #3b82f6;
+}
+
+/* Ensure tooltip always appears above table and popup */
+.redirect-link::after,
+.redirect-link::before {
+    z-index: 99999 !important;    
+}
+
+/* Enable tooltip to break out of table cell */
+.task-popup table td {
+    position: relative;
+    overflow: visible !important;
 }
 
 
@@ -3271,12 +3290,29 @@ function appState() {
             const escapedRowId = rowId.replace(/'/g, "\\'"); 
 
             if (actionType === 'PendingEmpActions') {
-                return `
-                    <div class="flex flex-wrap justify-center gap-1">
-                        <button @click="$event.stopPropagation(); $data.openPendingEmployeeModal()" class="bg-blue-600 text-white px-3 py-1 rounded-md text-xs font-medium hover:bg-blue-700 transition whitespace-nowrap shadow-sm">Take Action</button>
-                        <button @click="$event.stopPropagation(); alert('Ignore for ${escapedRowId}')" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-md text-xs font-medium hover:bg-gray-300 transition whitespace-nowrap shadow-sm">Ignore</button>
-                    </div>`;
-            }
+    return `
+        <div class="flex flex-wrap justify-center gap-2">
+
+            <!-- Thumbs Up (Take Action) -->
+            <button 
+                @click="$event.stopPropagation(); $data.openPendingEmployeeModal()" 
+                class="p-2 rounded-full bg-green-50 text-green-600 hover:bg-green-100 transition shadow-sm redirect-link"
+                data-tooltip="Take Action"
+            >
+                <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            </button>
+
+            <!-- Red Cross (Ignore) -->
+            <button 
+                @click="$event.stopPropagation(); alert('Ignore for ${escapedRowId}')" 
+                class="p-2 rounded-full bg-red-50 text-red-600 hover:bg-red-100 transition shadow-sm redirect-link"
+                data-tooltip="Ignore"
+            >
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+            </button>
+
+        </div>`;
+}
             if (actionType === 'TorActions') {
                 return `
                     <div class="flex flex-wrap justify-center gap-1">
@@ -3351,7 +3387,6 @@ generateTaskTable(task) {
                 </div>`;
         }
 
-        // Handle transfer special case
         if (key === "transfer" && fullId.includes("cod")) data = { ...this.taskDetailData["transfer-out"] };
         if (key === "transfer" && fullId.includes("sod")) data = { ...this.taskDetailData["transfer"] };
 
@@ -3361,14 +3396,13 @@ generateTaskTable(task) {
         data.headers = Array.isArray(data.headers) ? data.headers : [];
         data.rows = Array.isArray(data.rows) ? data.rows : [];
 
-        // Force every row to contain a "cols" array
         data.rows = data.rows.map(row => ({
             ...row,
             cols: Array.isArray(row.cols) ? row.cols : []
         }));
 
         // ------------------------------
-        // 4) Special Forecast/Sales date header logic
+        // 4) Forecast/Sales special date logic
         // ------------------------------
         const isForecast = key === "review-forecast";
         const isSales = key === "actual-sales";
@@ -3385,7 +3419,6 @@ generateTaskTable(task) {
 
         const isEditableForecast = (isForecast || isSales);
 
-        // Initialize edit state safely
         if (isEditableForecast) {
             if (!data.editState) data.editState = {};
             data.rows.forEach(r => {
@@ -3396,7 +3429,7 @@ generateTaskTable(task) {
         }
 
         // ------------------------------
-        // 5) If no headers => no table
+        // 5) No headers = nothing to show
         // ------------------------------
         if (data.headers.length === 0) {
             return `
@@ -3423,7 +3456,7 @@ generateTaskTable(task) {
                             ${data.headers.map((h, colIndex) => {
                                 const value = row.cols[colIndex] ?? "";
 
-                                // Editable (Forecast/Sales)
+                                // Editable Forecast/Sales cells
                                 if (isEditableForecast && h !== "TYPE" && h !== "SALES TYPE" && h !== "ACTION") {
                                     return `
                                         <td class="text-center">
@@ -3439,7 +3472,7 @@ generateTaskTable(task) {
                                         </td>`;
                                 }
 
-                                // Action cell for Forecast/Sales
+                                // Forecast/Sales Action (edit → thumbs-up)
                                 if (isEditableForecast && h === "ACTION") {
                                     return `
                                         <td class="text-center">
@@ -3452,7 +3485,22 @@ generateTaskTable(task) {
                                         </td>`;
                                 }
 
-                                // Special Action Handlers
+                                // NEW — Schedule TABLE "Publish" → Thumbs Up
+                                if (value === "Publish" && h === "ACTION") {
+                                    return `
+                                        <td class="text-center">
+                                            <button 
+                                                @click="$event.stopPropagation(); publishSchedule(row)"
+                                                class="p-2 rounded-full bg-green-50 text-green-600 
+                                                       hover:bg-green-100 transition shadow-sm redirect-link"
+                                                data-tooltip="Publish"
+                                            >
+                                                <i data-lucide="thumbs-up" class="w-5 h-5"></i>
+                                            </button>
+                                        </td>`;
+                                }
+
+                                // Action handlers (Pending Employees, TOR, SSA, Punch Review)
                                 if (["PendingEmpActions", "TorActions", "SsaActions", "PunchReviewActions"].includes(value)) {
                                     return `
                                         <td class="text-center">
@@ -3460,7 +3508,7 @@ generateTaskTable(task) {
                                         </td>`;
                                 }
 
-                                // Standard cell
+                                // Default cell
                                 return `
                                     <td class="${colIndex === 0 ? 'font-medium text-gray-800' : 'text-gray-600'} whitespace-nowrap">
                                         ${value}
@@ -4077,6 +4125,7 @@ openTaskPopup(task) {
     // Generate table safely
     try {
         this.taskTableHTML = this.generateTaskTable(task);
+        this.$nextTick(() => lucide.createIcons());
     } catch (err) {
         console.error("TABLE GENERATION ERROR:", err);
         this.taskTableHTML = `
