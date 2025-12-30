@@ -2665,7 +2665,7 @@
                               @blur="if(editMode) module.name = $event.target.textContent.trim()"
                               x-text="module.name"></h4>
                            <button x-show="editMode" 
-                              @click.stop="removeGroup(module.name, 'Start of Day')" 
+                              @click.stop="removeGroup(module.name, dayPart.name)" 
                               class="p-1.5 rounded-md transition-colors group-delete-btn"
                               style="color: #637df7;"
                               title="Delete Group">
@@ -2768,7 +2768,7 @@
                            @blur="if(editMode) module.name = $event.target.textContent.trim()"
                            x-text="module.name"></h4>
                         <button x-show="editMode" 
-                           @click.stop="removeGroup(module.name, 'Start of Day')" 
+                           @click.stop="removeGroup(module.name, 'Close of Day')" 
                            class="p-1.5 rounded-md transition-colors group-delete-btn"
                            style="color: #637df7;"
                            title="Delete Group">
