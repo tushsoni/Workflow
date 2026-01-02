@@ -1454,17 +1454,14 @@
          color: #4f66d6 !important; /* Slightly darker shade for hover */
          background-color: rgba(99, 125, 247, 0.1);
          }
-
          .task-popup .border-gray-200.bg-gray-50 {
-    overflow-x: auto;
-    white-space: nowrap;
-    scrollbar-width: none; /* Hide scrollbar for Chrome/Safari */
-}
-.task-popup .border-gray-200.bg-gray-50::-webkit-scrollbar {
-    display: none;
-}
-
-         
+         overflow-x: auto;
+         white-space: nowrap;
+         scrollbar-width: none; /* Hide scrollbar for Chrome/Safari */
+         }
+         .task-popup .border-gray-200.bg-gray-50::-webkit-scrollbar {
+         display: none;
+         }
       </style>
    </head>
    <body class="bg-gray-50">
@@ -1927,7 +1924,7 @@
                               <div class="space-y-4">
                                  <div class="flex flex-col">
                                     <label class="text-sm font-medium text-gray-700 mb-1">First Name</label>
-                                    <input type="text" value="abc" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                                    <input type="text" value="David L" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
                                  </div>
                                  <div class="flex flex-col">
                                     <label class="text-sm font-medium text-gray-700 mb-1">Last Name</label>
@@ -1939,7 +1936,7 @@
                                  </div>
                                  <div class="flex flex-col">
                                     <label class="text-sm font-medium text-gray-700 mb-1">Email ID</label>
-                                    <input type="text" value="abc@gmail.com" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
+                                    <input type="text" value="davidl@gmail.com" class="px-3 py-2 border border-gray-300 rounded-lg shadow-sm" />
                                  </div>
                                  <div class="flex flex-col">
                                     <label class="text-sm font-medium text-gray-700 mb-1">Contact Number</label>
@@ -1961,21 +1958,20 @@
                               </div>
                               <div class="flex-1 overflow-y-auto space-y-3">
                                  <div class="p-3 bg-gray-100 rounded-lg border border-blue-400 shadow-md cursor-pointer">
-                                    <h4 class="font-bold text-gray-900">Abc</h4>
-                                    <p class="text-xs text-gray-600">Bag21</p>
-                                    <p class="text-xs text-gray-600">crew12@gmail.com</p>
+                                    <h4 class="font-bold text-gray-900">David</h4>
+                                    <p class="text-xs text-gray-600">davidl@gmail.com</p>
                                     <p class="text-xs text-gray-600">2028596589</p>
                                  </div>
                                  <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
-                                    <h4 class="font-bold text-gray-900">Emp25</h4>
-                                    <p class="text-xs text-gray-600">emp25@gmail.com</p>
+                                    <h4 class="font-bold text-gray-900">Watson</h4>
+                                    <p class="text-xs text-gray-600">watson@gmail.com</p>
                                  </div>
                                  <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
                                     <h4 class="font-bold text-gray-900">G Jee</h4>
                                     <p class="text-xs text-gray-600">2028596578</p>
                                  </div>
                                  <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
-                                    <h4 class="font-bold text-gray-900">Happy</h4>
+                                    <h4 class="font-bold text-gray-900">Nathy</h4>
                                  </div>
                                  <div class="p-3 bg-white rounded-lg border border-gray-200 shadow-sm hover:bg-gray-50 cursor-pointer">
                                     <h4 class="font-bold text-gray-900">Max Steel</h4>
@@ -3090,7 +3086,7 @@
                      "mismatch": "mismatch-punch",
                      "punches-ex": "punch-exception",
             "punch-exception": "punch-exception",
-
+         
                  };
          
                  key = mapKeys[key] ?? key;
@@ -3099,16 +3095,16 @@
                  // 2) Get raw data safely
                  // ------------------------------
                  let data = this.taskDetailData[key];
-
+         
             // Replace the section handling inside generateTaskTable(task)
-if (data.sections) {
-    // Logic: Find the first tab with actual exceptions, otherwise default to the first tab (idx 0)
-    const initialIdx = data.sections.findIndex(s => s.count > 0) !== -1 
+         if (data.sections) {
+         // Logic: Find the first tab with actual exceptions, otherwise default to the first tab (idx 0)
+         const initialIdx = data.sections.findIndex(s => s.count > 0) !== -1 
                        ? data.sections.findIndex(s => s.count > 0) 
                        : 0;
-
-    return `
-        <div x-data="{ activeTab: ${initialIdx} }" class="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
+         
+         return `
+         <div x-data="{ activeTab: ${initialIdx} }" class="flex flex-col h-full bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm">
             <div class="flex items-center gap-1 border-b border-gray-200 bg-gray-50 px-3 pt-3 overflow-x-auto no-scrollbar">
                 ${data.sections.map((section, idx) => `
                     <button 
@@ -3128,7 +3124,7 @@ if (data.sections) {
                     </button>
                 `).join('')}
             </div>
-
+         
             <div class="p-5 overflow-y-auto max-h-[500px]">
                 ${data.sections.map((section, idx) => `
                     <div x-show="activeTab === ${idx}" 
@@ -3180,8 +3176,8 @@ if (data.sections) {
                     </div>
                 `).join('')}
             </div>
-        </div>`;
-}
+         </div>`;
+         }
          
                  if (!data) {
                      return `
@@ -3392,8 +3388,8 @@ if (data.sections) {
          }
          
          // Inside generateTaskTable(task)
-        // Replace the section handling inside generateTaskTable(task)
-
+         // Replace the section handling inside generateTaskTable(task)
+         
          
              // Inside generateTaskTable loop, add logic for violation indicators:
          
@@ -3497,8 +3493,8 @@ if (data.sections) {
          // Inside appState() -> taskDetailData:
          // Inside appState() -> taskDetailData:
          'punch-exception': {
-    sections: [
-        {
+         sections: [
+         {
             title: 'Open Punches',
             count: 2,
             headers: ['Date', 'Timecard #', 'Employee Name', 'Job Title', 'Clock In', 'Clock Out', 'Actual Hours', 'Status'],
@@ -3506,24 +3502,24 @@ if (data.sections) {
                 { id: 'op-1', cols: ['12/28/2025', '102', 'MARIA G.', 'Shift Lead', '08:00 AM', 'Missing', '8.00', 'Open'] },
                 { id: 'op-2', cols: ['12/28/2025', '105', 'STEVEN T.', 'Crew', '11:30 AM', 'Missing', '4.50', 'Open'] }
             ]
-        },
-        {
+         },
+         {
             title: 'Mismatch Punches',
             count: 1,
             headers: ['Date', 'Timecard #', 'Job Code', 'Clock In', 'Clock Out', 'Mismatch Reason', 'Status'],
             rows: [
                 { id: 'mp-1', cols: ['12/27/2025', '088', 'Service', '04:00 PM', '09:00 PM', 'Early Clock In', 'Review Required'] }
             ]
-        },
-        {
+         },
+         {
             title: 'Overlap Punches',
             count: 1,
             headers: ['Date', 'Timecard #', 'Employee Name', 'Actual Clock In', 'Actual Clock Out', 'New Clock In', 'New Clock Out'],
             rows: [
                 { id: 'ov-1', cols: ['12/26/2025', '012', 'DAVID L.', '07:00 AM', '03:00 PM', '02:45 PM', '10:00 PM'] }
             ]
-        },
-        {
+         },
+         {
             title: 'Long Hour Shift',
             count: 4,
             headers: ['Date', 'Timecard #', 'Employee Name', 'Total Hours', 'Normal Hours', 'OT Hours', 'DT Hours', 'Action'],
@@ -3531,10 +3527,10 @@ if (data.sections) {
                 { id: 'pe-1', cols: ['12/21/2025', '029', 'ALBERTO V', '10:40', '10:40', '0:00', '0:00', 'ValidateAction'] },
                 { id: 'pe-2', cols: ['12/22/2025', '046', 'Alexander Q', '10:19', '10:19', '0:00', '0:00', 'ValidateAction'] }
             ]
-        }
-    ]
-},
-
+         }
+         ]
+         },
+         
                  },
          
          
