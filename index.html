@@ -2368,15 +2368,7 @@
                      <div class="tab-pill bg-gray-50/50 p-1 rounded-lg flex items-center">
 
                      <div class="flex items-center gap-2">
-                     <div @click="openAiInsights()" 
-                        class="ai-button flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm bg-[#eef2ff] cursor-pointer hover:bg-[#e0e7ff] transition">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
-                        <span class="text-indigo-700 font-medium text-sm">AI Insights</span>
-                     </div>
-                     <div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm">
-                        <i data-lucide="medal" class="rank-medal-icon w-4 h-4"></i>
-                        <span x-text="'Rank: #' + storeRank"></span>
-                     </div>
+
                   <!-- </div> -->
 
                      <div class="relative ml-4" x-data="{ openFilter:false }">
@@ -2405,7 +2397,7 @@
                      </div>
                   </div>
 
-                                    <div class="flex items-center gap-2 pr-1">
+                     <div class="flex items-center gap-2 pr-1">
                      <div class="relative" x-data="{ open: false, selected: 'Today' }">
                         <button @click="open = !open" @click.outside="open = false"
                            class="flex items-center gap-2 bg-white border border-gray-200 px-3 py-1.5 rounded-lg shadow-sm
@@ -2430,6 +2422,13 @@
                            </template>
                         </div>
                      </div>
+                     <a href="workflow-audit-report.html" target="_blank"
+                           class="redirect-link"
+                           data-tooltip="Workflow Audit Report">
+                           <div class="w-7 h-7 rounded-md bg-red-600 flex items-center justify-center hover:bg-red-700 transition">
+                              <i data-lucide="file-text" class="w-3.5 h-3.5 text-white"></i>
+                           </div>
+                        </a>
                      <div class="redirect-link" :data-tooltip="editMode ? 'Exit Edit Mode' : 'Edit Mode'">
                         <button @click="editMode = !editMode; closeContextMenu()"
                            :class="editMode ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'"
@@ -2445,13 +2444,7 @@
                         <i data-lucide="list-checks" class="w-4 h-4"></i>
                         </button>
                      </div>
-                        <a href="workflow-audit-report.html" target="_blank"
-                           class="redirect-link"
-                           data-tooltip="Workflow Audit Report">
-                           <div class="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center hover:bg-blue-700 transition">
-                              <i data-lucide="file-text" class="w-3.5 h-3.5 text-white"></i>
-                           </div>
-                        </a>
+
 
                       <!-- QUICK TIPS ICON -->
                      <div class="relative quick-tips-wrapper">
@@ -2503,6 +2496,15 @@
                               </li>
                            </ul>
                         </div>
+                     </div>
+                     <div @click="openAiInsights()" 
+                        class="ai-button flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm bg-[#eef2ff] cursor-pointer hover:bg-[#e0e7ff] transition">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-600"></i>
+                        <span class="text-indigo-700 font-medium text-sm">AI Insights</span>
+                     </div>
+                     <div class="store-rank-badge flex items-center gap-2 px-3 py-1 rounded-lg shadow-sm">
+                        <i data-lucide="medal" class="rank-medal-icon w-4 h-4"></i>
+                        <span x-text="'Rank: #' + storeRank"></span>
                      </div>
                   </div>
                   </div>
