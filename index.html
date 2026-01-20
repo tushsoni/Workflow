@@ -4604,7 +4604,7 @@
          
          if (this.showLastWeek) {
          // Mode: Current Week vs Last Week (Exact Dates)
-         labels = [`Last Week (${lastWeekStr})`, `Current Week (${currentStr})` ];
+         labels = [`${lastWeekStr}`, `${currentStr}` ];
          datasets = [{
             label: 'Performance Comparison',
             data: [lastWeekVal, currentVal],
@@ -4619,7 +4619,7 @@
          }];
          } else if (this.showLastYear) {
          // Mode: Current Year vs Last Year (Exact Dates)
-         labels = [`Last Year (${lastYearStr})`, `Current Year (${currentStr})` ];
+         labels = [`${lastYearStr}`, `${currentStr}` ];
          datasets = [{
             label: 'Performance Comparison',
             data: [lastYearVal, currentVal],
