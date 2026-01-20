@@ -2408,69 +2408,69 @@
                            </button>
                         </div>
                         <div x-show="modulePickerOpen" 
-                           class="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-[300]"
+                           class="fixed inset-0 bg-slate-900/40 backdrop-blur-[4px] flex items-center justify-center z-[300]"
                            x-transition:enter="transition ease-out duration-300"
                            x-transition:enter-start="opacity-0 scale-95"
                            x-transition:enter-end="opacity-100 scale-100"
                            x-transition:leave="transition ease-in duration-200"
                            style="display: none;"
                            @keydown.escape.window="modulePickerOpen = false">
-                           <div class="relative w-[750px] bg-white rounded-[2.5rem] shadow-2xl border border-white/20 overflow-hidden flex flex-col" @click.outside="modulePickerOpen = false">
-                              <div class="px-10 py-6 bg-[#3B5BDB] flex items-center justify-between text-white">
+                           <div class="relative w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl border border-slate-200/50 overflow-hidden flex flex-col" @click.outside="modulePickerOpen = false">
+                              <div class="px-8 py-5 bg-[#3B5BDB] flex items-center justify-between text-white">
                                  <div class="flex items-center gap-4">
-                                    <span class="text-xs font-black opacity-60 tracking-[0.2em] uppercase">Jan 20, 2026</span>
-                                    <div class="w-px h-4 bg-white/20"></div>
+                                    <span class="text-[10px] font-black opacity-70 tracking-[0.2em] uppercase">Jan 20, 2026</span>
+                                    <div class="w-px h-3 bg-white/20"></div>
                                     <div class="flex items-center gap-2">
-                                       <i data-lucide="store" class="w-4 h-4 text-green-400"></i>
-                                       <span class="text-sm font-bold tracking-tight">99999, Franchise- Test Store</span>
+                                       <i data-lucide="store" class="w-3.5 h-3.5 text-green-400"></i>
+                                       <span class="text-xs font-bold tracking-tight">99999, Franchise- Test Store</span>
                                     </div>
                                  </div>
-                                 <button @click="modulePickerOpen = false" class="hover:bg-white/10 rounded-full p-2 transition-all">
-                                 <i data-lucide="x" class="w-6 h-6"></i>
+                                 <button @click="modulePickerOpen = false" class="hover:bg-white/10 rounded-full p-1.5 transition-all">
+                                 <i data-lucide="x" class="w-5 h-5"></i>
                                  </button>
                               </div>
-                              <div class="p-10 grid grid-cols-3 gap-8 bg-slate-50/50">
+                              <div class="p-8 grid grid-cols-3 gap-6 bg-slate-50/30">
                                  <button @click="alert('Adding Suggested Order...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-indigo-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="shopping-cart" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="shopping-cart" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-indigo-600">Suggested Order</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-indigo-600">Suggested Order</span>
                                  </button>
                                  <button @click="alert('Adding Receiving...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="truck" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-blue-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="truck" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-blue-600">Receiving</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-blue-600">Receiving</span>
                                  </button>
                                  <button @click="alert('Adding Transfer...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-cyan-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-cyan-50 flex items-center justify-center text-cyan-500 group-hover:bg-cyan-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="arrow-left-right" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-cyan-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-500 group-hover:bg-cyan-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="arrow-left-right" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-cyan-600">Transfer In/Out</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-cyan-600">Transfer In/Out</span>
                                  </button>
                                  <button @click="alert('Adding Waste...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-rose-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="trash-2" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-rose-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-500 group-hover:bg-rose-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="trash-2" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-rose-600">Waste</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-rose-600">Waste</span>
                                  </button>
                                  <button @click="alert('Adding Inventory...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-emerald-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="clipboard-check" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-emerald-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="clipboard-check" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-emerald-600">Inventory</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-emerald-600">Inventory</span>
                                  </button>
                                  <button @click="alert('Opening HR Tasks...'); modulePickerOpen = false" 
-                                    class="group flex flex-col items-center gap-4 p-6 rounded-[2rem] bg-white border border-slate-100 shadow-sm hover:shadow-xl hover:border-amber-300 hover:-translate-y-1 transition-all">
-                                    <div class="w-20 h-20 rounded-3xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300 shadow-inner">
-                                       <i data-lucide="users-round" class="w-10 h-10"></i>
+                                    class="group flex flex-col items-center gap-3 p-5 rounded-[1.5rem] bg-white border border-slate-100 shadow-sm hover:shadow-lg hover:border-amber-200 hover:-translate-y-1 transition-all">
+                                    <div class="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 group-hover:bg-amber-600 group-hover:text-white transition-all duration-300">
+                                       <i data-lucide="users-round" class="w-8 h-8"></i>
                                     </div>
-                                    <span class="text-[11px] font-black uppercase tracking-widest text-slate-500 group-hover:text-amber-600">Human Resources</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-amber-600">Human Resources</span>
                                  </button>
                               </div>
                            </div>
