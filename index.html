@@ -2145,7 +2145,7 @@
                      <div>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Food Management</h3>
                         <div class="grid grid-cols-3 gap-3">
-                           <template x-for="task in sidebarTasks.filter(t => ['unposted-credits', 'ordering', 'Invoices', 'transfer', 'waste', 'ordering-alerts', 'inventory-alerts'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                           <template x-for="task in sidebarTasks.filter(t => ['unposted-credits', 'ordering', 'Invoices', 'transfer', 'waste', 'ordering-alerts', 'inventory-alerts', 'prep-sheet'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
                               <div 
                                  class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                                  :draggable="editMode"
@@ -2183,7 +2183,7 @@
                      <div>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pt-4">Payroll Management</h3>
                         <div class="grid grid-cols-3 gap-3">
-                           <template x-for="task in sidebarTasks.filter(t => ['review-punches', 'misc-pay', 'approaching-ot', 'payroll-summary', 'open-punches', 'mismatch-punches', 'overlap-punches', 'long-hour-shift'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                           <template x-for="task in sidebarTasks.filter(t => ['review-punches', 'misc-pay', 'approaching-ot', 'payroll-summary', 'open-punches', 'mismatch-punches', 'overlap-punches', 'long-hour-shift', 'non-posted-payroll', 'current-day-punches'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
                               <div 
                                  class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                                  :draggable="editMode"
@@ -3390,7 +3390,9 @@
             "open-punches": "open-punches",
          "mismatch-punches": "mismatch-punches",
          "overlap-punches": "overlap-punches",
-         "long-hour-shift": "long-hour-shift"
+         "long-hour-shift": "long-hour-shift",
+         "non-posted-payroll": "non-posted-payroll",
+         "current-day-punches": "current-day-punches",
          
                  };
          
@@ -4031,14 +4033,40 @@ return `
          rows: [
          { 
             id: 'pay-1', 
-            cols: ['12/16/2025', 'DES PLAINES-DES,00032', '1,751.12', '$27,851.60', '1,745.13', '5.98', '0.00', '0.00', 'RedirectAction'] 
-         },
-         { 
-            id: 'pay-2', 
-            cols: ['12/15/2025', 'DES PLAINES-DES,00032', '1,680.45', '$25,420.10', '1,675.00', '5.45', '0.00', '0.00', 'RedirectAction'] 
+            cols: ['12/16/2025 - 12/22/2025', 'DES PLAINES-DES,00032', '1,751.12', '$27,851.60', '1,745.13', '5.98', '0.00', '0.00', 'RedirectAction'] 
          }
          ]
          },
+
+         'non-posted-payroll': {
+    headers: ['DATE', 'STORE', 'TOTAL HOURS', 'TOTAL PAY', 'NORMAL HOURS', 'OT HOURS', 'DT HOURS', 'EXTRA PAY HOURS', 'ACTION'],
+    rows: [
+        { 
+            id: 'npp-1', 
+            cols: ['01/10/2026 - 01/16/2026', 'DES PLAINES-DES,00032', '1,642.10', '$25,120.45', '1,635.00', '7.10', '0.00', '0.00', 'RedirectAction'] 
+        },
+        { 
+            id: 'npp-2', 
+            cols: ['01/17/2026 - 01/23/2026', 'DES PLAINES-DES,00032', '1,751.12', '$27,851.60', '1,745.13', '5.98', '0.00', '0.00', 'RedirectAction'] 
+        }
+    ]
+},
+
+'current-day-punches': {
+    headers: ['DATE', 'EMPLOYEE', 'START TIME', 'BREAKS', 'ACTION'],
+    rows: [
+        { id: 'cdp-1', cols: ['01/24/2026', 'Wade Wilson', '08:00 AM', 'Rest: 10:00-10:15 | Meal: 12:30-01:00', 'RedirectAction'] },
+        { id: 'cdp-2', cols: ['01/24/2026', 'Logan Howlett', '07:30 AM', 'Rest: 09:30-09:45 | Meal: 11:45-12:15', 'RedirectAction'] },
+        { id: 'cdp-3', cols: ['01/24/2026', 'Peter Parker', '09:00 AM', 'Rest: 11:15-11:30 | Meal: 01:30-02:00', 'RedirectAction'] },
+        { id: 'cdp-4', cols: ['01/24/2026', 'Tony Stark', '10:00 AM', 'Rest: 12:00-12:15 | Meal: 02:30-03:00', 'RedirectAction'] },
+        { id: 'cdp-5', cols: ['01/24/2026', 'Steve Rogers', '06:00 AM', 'Rest: 08:00-08:15 | Meal: 11:00-11:30', 'RedirectAction'] },
+        { id: 'cdp-6', cols: ['01/24/2026', 'Natasha Romanoff', '08:30 AM', 'Rest: 10:45-11:00 | Meal: 01:00-01:30', 'RedirectAction'] },
+        { id: 'cdp-7', cols: ['01/24/2026', 'Bruce Banner', '11:00 AM', 'Rest: 01:00-01:15 | Meal: 03:30-04:00', 'RedirectAction'] },
+        { id: 'cdp-8', cols: ['01/24/2026', 'Wanda Maximoff', '07:00 AM', 'Rest: 09:00-09:15 | Meal: 12:00-12:30', 'RedirectAction'] },
+        { id: 'cdp-9', cols: ['01/24/2026', 'Scott Lang', '08:15 AM', 'Rest: 10:15-10:30 | Meal: 12:45-01:15', 'RedirectAction'] },
+        { id: 'cdp-10', cols: ['01/24/2026', 'Carol Danvers', '05:30 AM', 'Rest: 07:45-08:00 | Meal: 10:30-11:00', 'RedirectAction'] }
+    ]
+},
          
          // Add these to your taskDetailData object
          'open-punches': {
@@ -4083,6 +4111,15 @@ return `
          }
          ]
          },
+
+         'prep-sheet': {
+    headers: ['FCT SALES', 'PREP NAME', 'PREP UNIT', 'PREP QTY. ON HAND', 'PREP QTY', 'ACTION'],
+    rows: [
+        { id: 'prep-1', cols: ['$5,200', 'Sliced Tomatoes', 'Bins', '2.0', '8.0', 'RedirectAction'] },
+        { id: 'prep-2', cols: ['$5,200', 'Chopped Lettuce', 'Bags', '5.0', '15.0', 'RedirectAction'] },
+        { id: 'prep-3', cols: ['$5,200', 'Onion Rings', 'Trays', '1.5', '6.0', 'RedirectAction'] }
+    ]
+},
          
          // Inside appState() -> taskDetailData:
          // Inside appState() -> taskDetailData:
@@ -4370,6 +4407,9 @@ return `
                      { id: 'overlap-punches', name: 'Overlap Punches', icon: 'layers', mandatory: false },
                      { id: 'long-hour-shift', name: 'Long Hour Shift', icon: 'timer', mandatory: false },
                      { id: 'unposted-credits', name: 'Unposted Credits', icon: 'file-text', mandatory: false },
+                     { id: 'prep-sheet', name: 'Prep Sheet', icon: 'clipboard-list', mandatory: false },
+                     { id: 'non-posted-payroll', name: 'Non Posted Payroll', icon: 'file-text', mandatory: true },
+                     { id: 'current-day-punches', name: 'Current Day Punches', icon: 'clock-arrow-up', mandatory: false },
                  ],
          
          
@@ -5112,6 +5152,31 @@ return `
                      { id: 'task-sod-punches-app', name: 'Punch Approvals', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'check-square', badge: 22, mandatory: false },
                      // { id: 'task-sod-unbalanced', name: 'Unbalanced Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alert-circle', badge: 2, mandatory: false },
                      // { id: 'task-sod-mismatch', name: 'Mismatch Punch', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'alarm-minus', badge: 1, mandatory: false },
+
+                     { 
+    id: 'task-sod-non-posted-payroll', 
+    name: 'Non Posted Payroll', 
+    app: 'Payroll Management', 
+    category: 'Start of Day', 
+    enabled: true, 
+    complete: false, 
+    icon: 'file-text', 
+    badge: 2, 
+    mandatory: true 
+},
+
+{ 
+    id: 'task-sod-current-day-punches', 
+    name: 'Current Day Punches', 
+    app: 'Payroll Management', 
+    category: 'Start of Day', 
+    enabled: true, 
+    complete: false, 
+    icon: 'clock-arrow-up', 
+    badge: 10, 
+    mandatory: false 
+},
+
                      // Add these to your tasks: [...] array
                      { id: 'task-sod-open-punches', name: 'Open Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'lock-open', badge: 2, mandatory: true },
                      { id: 'task-sod-mismatch-punches', name: 'Mismatch Punches', app: 'Payroll Management', category: 'Start of Day', enabled: true, complete: false, icon: 'clock-alert', badge: 1, mandatory: true },
@@ -5159,6 +5224,18 @@ return `
          badge: 1, 
          mandatory: false 
          },
+
+         { 
+    id: 'task-sod-prep-sheet', 
+    name: 'Prep Sheet', 
+    app: 'Food Management', 
+    category: 'Start of Day', 
+    enabled: true, 
+    complete: false, 
+    icon: 'clipboard-list', 
+    badge: 3, 
+    mandatory: false 
+},
          
                      // CLOSE OF DAY — FOOD MANAGEMENT
                      { id: 'task-cod-ordering', name: 'Ordering', app: 'Food Management', category: 'Close of Day', enabled: true, complete: false, icon: 'shopping-cart', badge: 2, mandatory: true },
