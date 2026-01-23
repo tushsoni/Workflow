@@ -2145,7 +2145,7 @@
                      <div>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Food Management</h3>
                         <div class="grid grid-cols-3 gap-3">
-                           <template x-for="task in sidebarTasks.filter(t => ['unposted-credits', 'ordering', 'Invoices', 'transfer', 'waste', 'ordering-alerts', 'inventory-alerts', 'prep-sheet'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                           <template x-for="task in sidebarTasks.filter(t => ['unposted-credits', 'ordering', 'Invoices', 'transfer', 'waste', 'ordering-alerts', 'inventory-alerts', 'prep-sheet', 'submit-order'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
                               <div 
                                  class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                                  :draggable="editMode"
@@ -2183,7 +2183,7 @@
                      <div>
                         <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 pt-4">Payroll Management</h3>
                         <div class="grid grid-cols-3 gap-3">
-                           <template x-for="task in sidebarTasks.filter(t => ['review-punches', 'misc-pay', 'approaching-ot', 'payroll-summary', 'open-punches', 'mismatch-punches', 'overlap-punches', 'long-hour-shift', 'non-posted-payroll', 'current-day-punches'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
+                           <template x-for="task in sidebarTasks.filter(t => ['review-punches', 'misc-pay', 'approaching-ot', 'payroll-summary', 'open-punches', 'mismatch-punches', 'overlap-punches', 'long-hour-shift', 'non-posted-payroll', 'current-day-punches', 'prev-day-punches'].includes(t.id) && t.name.toLowerCase().includes(taskSearchTerm.toLowerCase()))" :key="task.id">
                               <div 
                                  class="task-tile task-tile-sidebar cursor-move p-2 border border-gray-200 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
                                  :draggable="editMode"
@@ -3393,6 +3393,10 @@
          "long-hour-shift": "long-hour-shift",
          "non-posted-payroll": "non-posted-payroll",
          "current-day-punches": "current-day-punches",
+         "prev-day-punches": "prev-day-punches",
+         'submit-order': 'submit-order',
+         'prep-sheet': 'prep-sheet',
+         
          
                  };
          
@@ -3637,6 +3641,20 @@
             </a>
          </td>`;
          }
+
+         // Inside the data.headers.map loop in generateTaskTable(task)
+if (value === 'SubmitOrderAction') {
+    return `
+        <td class="text-center py-3 px-4">
+            <button 
+                @click.stop="alert('Submitting Order for ${row.id}...')" 
+                class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all active:scale-95 shadow-sm"
+            >
+                Take Order
+            </button>
+        </td>`;
+}
+
          
                                          // Add this condition for the Validate button
          if (value === 'ValidateAction') {
@@ -4067,6 +4085,22 @@ return `
         { id: 'cdp-10', cols: ['01/24/2026', 'Carol Danvers', '05:30 AM', 'Rest: 07:45-08:00 | Meal: 10:30-11:00', 'RedirectAction'] }
     ]
 },
+
+'prev-day-punches': {
+    headers: ['DATE', 'EMPLOYEE', 'START TIME', 'BREAKS', 'ACTION'],
+    rows: [
+        { id: 'pdp-1', cols: ['01/23/2026', 'Arthur Curry', '08:00 AM', 'Rest: 10:00-10:15 | Meal: 12:30-01:00', 'RedirectAction'] },
+        { id: 'pdp-2', cols: ['01/23/2026', 'Diana Prince', '07:30 AM', 'Rest: 09:30-09:45 | Meal: 11:45-12:15', 'RedirectAction'] },
+        { id: 'pdp-3', cols: ['01/23/2026', 'Barry Allen', '09:00 AM', 'Rest: 11:15-11:30 | Meal: 01:30-02:00', 'RedirectAction'] },
+        { id: 'pdp-4', cols: ['01/23/2026', 'Clark Kent', '10:00 AM', 'Rest: 12:00-12:15 | Meal: 02:30-03:00', 'RedirectAction'] },
+        { id: 'pdp-5', cols: ['01/23/2026', 'Bruce Wayne', '06:00 AM', 'Rest: 08:00-08:15 | Meal: 11:00-11:30', 'RedirectAction'] },
+        { id: 'pdp-6', cols: ['01/23/2026', 'Victor Stone', '08:30 AM', 'Rest: 10:45-11:00 | Meal: 01:00-01:30', 'RedirectAction'] },
+        { id: 'pdp-7', cols: ['01/23/2026', 'Hal Jordan', '11:00 AM', 'Rest: 01:00-01:15 | Meal: 03:30-04:00', 'RedirectAction'] },
+        { id: 'pdp-8', cols: ['01/23/2026', 'Oliver Queen', '07:00 AM', 'Rest: 09:00-09:15 | Meal: 12:00-12:30', 'RedirectAction'] },
+        { id: 'pdp-9', cols: ['01/23/2026', 'Dinah Lance', '08:15 AM', 'Rest: 10:15-10:30 | Meal: 12:45-01:15', 'RedirectAction'] },
+        { id: 'pdp-10', cols: ['01/23/2026', 'Shiera Sanders', '05:30 AM', 'Rest: 07:45-08:00 | Meal: 10:30-11:00', 'RedirectAction'] }
+    ]
+},
          
          // Add these to your taskDetailData object
          'open-punches': {
@@ -4118,6 +4152,16 @@ return `
         { id: 'prep-1', cols: ['$5,200', 'Sliced Tomatoes', 'Bins', '2.0', '8.0', 'RedirectAction'] },
         { id: 'prep-2', cols: ['$5,200', 'Chopped Lettuce', 'Bags', '5.0', '15.0', 'RedirectAction'] },
         { id: 'prep-3', cols: ['$5,200', 'Onion Rings', 'Trays', '1.5', '6.0', 'RedirectAction'] }
+    ]
+},
+
+'submit-order': {
+    headers: ['VENDOR', 'DELIVERY SCHEDULE', 'ORDER DATE', 'ORDER STATUS', 'AMOUNT', 'ACTION'],
+    rows: [
+        { 
+            id: 'so-1', 
+            cols: ['BLUE LINE_ANAHEIM', '01/25/2026: Submit Order by 01/23/2026 | 13:00', '01/23/2026', '', '', 'SubmitOrderAction'] 
+        },
     ]
 },
          
@@ -4410,6 +4454,8 @@ return `
                      { id: 'prep-sheet', name: 'Prep Sheet', icon: 'clipboard-list', mandatory: false },
                      { id: 'non-posted-payroll', name: 'Non Posted Payroll', icon: 'file-text', mandatory: true },
                      { id: 'current-day-punches', name: 'Current Day Punches', icon: 'clock-arrow-up', mandatory: false },
+                     { id: 'prev-day-punches', name: 'Previous Day Punches', icon: 'history', mandatory: false },
+                     { id: 'submit-order', name: 'Take Order', icon: 'send', mandatory: true },
                  ],
          
          
@@ -5136,6 +5182,18 @@ return `
                      // START OF DAY — FORECAST (Mandatory added)
                      { id: 'task-forecast', name: 'Review Forecast', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: true },
                      { id: 'task-actual-sales', name: 'Actual Sales', app: 'Forecast', category: 'Start of Day', enabled: true, complete: false, icon: 'trending-up', badge: 1, mandatory: false },
+
+                     { 
+    id: 'task-sod-submit-order', 
+    name: 'Take Order', 
+    app: 'Food Management', 
+    category: 'Start of Day', 
+    enabled: true, 
+    complete: false, 
+    icon: 'send', 
+    badge: 2, 
+    mandatory: true 
+},
          
                      // START OF DAY — LABOR MANAGEMENT
                      { id: 'task-sod-schedule', name: 'Schedule', app: 'Labor Management', category: 'Start of Day', enabled: true, complete: true, icon: 'calendar-days', badge: 0, mandatory: true },
@@ -5173,6 +5231,18 @@ return `
     enabled: true, 
     complete: false, 
     icon: 'clock-arrow-up', 
+    badge: 10, 
+    mandatory: false 
+},
+
+{ 
+    id: 'task-sod-prev-day-punches', 
+    name: 'Previous Day Punches', 
+    app: 'Payroll Management', 
+    category: 'Start of Day', 
+    enabled: true, 
+    complete: false, 
+    icon: 'history', 
     badge: 10, 
     mandatory: false 
 },
