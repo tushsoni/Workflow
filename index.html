@@ -2209,11 +2209,15 @@
                   <div class="flex justify-between items-center mb-4">
                      <h2 class="text-lg font-bold text-gray-900" x-text="taskPopupTitle"></h2>
                      <div class="flex items-center gap-3">
-                        <button @click="completeTask(activeTaskId); taskPopupOpen = false" 
-                           class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all active:scale-95 shadow-sm flex items-center gap-2">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i>
-                        Mark as Review
-                        </button>
+<button @click="completeTask(activeTaskId); taskPopupOpen = false" 
+        class="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded-lg transition-all active:scale-95 shadow-sm flex items-center gap-2">
+    <i data-lucide="check-circle" class="w-4 h-4"></i>
+    <span x-text="(() => {
+        const baseId = activeTaskId ? activeTaskId.replace('task-sod-', '').replace('task-cod-', '').replace('task-', '') : '';
+        const taskDef = predefinedTasks.find(t => t.id === baseId);
+        return taskDef?.buttonLabel || 'Mark as Completed';
+    })()"></span>
+</button>
                         <button @click="taskPopupOpen = false"
                            class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors">
                         <i data-lucide="x" class="w-5 h-5 text-gray-600"></i>
@@ -2665,7 +2669,7 @@
                                  <div class="task-icon-bg shadow-inner" :class="task.app === 'Forecast' ? 'bg-blue-100 text-blue-600' : task.app === 'Food Management' ? 'bg-purple-100 text-purple-600' : task.app === 'Labor Management' ? 'bg-amber-100 text-amber-600' : task.app === 'Payroll Management' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'">
                                     <i x-show="!task.complete" :data-lucide="task.icon" class="w-6 h-6"></i>
                                     <i x-show="task.complete" data-lucide="check" class="w-6 h-6 text-green-600"></i>
-                                    <i x-show="task.mandatory" data-lucide="flag" class="w-3.5 h-3.5 absolute -bottom-1 -right-1 text-red-600 fill-red-600 bg-white rounded-full border border-red-200 p-0.5 shadow-sm"></i>
+                                    <!-- <i x-show="task.mandatory" data-lucide="flag" class="w-3.5 h-3.5 absolute -bottom-1 -right-1 text-red-600 fill-red-600 bg-white rounded-full border border-red-200 p-0.5 shadow-sm"></i>   -->
                                  </div>
                                  <span class="task-name"
                                     :contenteditable="editMode"
@@ -3035,7 +3039,7 @@
                            <div class="task-icon-bg shadow-inner" :class="task.app === 'Zip Inventory' ? 'bg-green-100 text-green-600' : task.app === 'Food Management' ? 'bg-purple-100 text-purple-600' : task.app === 'Labor Management' ? 'bg-amber-100 text-amber-600' : task.app === 'Payroll Management' ? 'bg-indigo-100 text-indigo-600' : 'bg-gray-100 text-gray-600'">
                               <i x-show="!task.complete" :data-lucide="task.icon" class="w-5 h-5"></i>
                               <i x-show="task.complete" data-lucide="check" class="w-5 h-5 text-green-600"></i>
-                              <i x-show="task.mandatory" data-lucide="flag" class="w-3.5 h-3.5 absolute -bottom-1 -right-1 text-red-600 fill-red-600 bg-white rounded-full border border-red-200 p-0.5 shadow-sm"></i>                                        
+                              <!-- <i x-show="task.mandatory" data-lucide="flag" class="w-3.5 h-3.5 absolute -bottom-1 -right-1 text-red-600 fill-red-600 bg-white rounded-full border border-red-200 p-0.5 shadow-sm"></i>     -->                                   
                            </div>
                            <span class="task-name"
                               :contenteditable="editMode"
@@ -4421,42 +4425,46 @@ return `
          
          
                  predefinedTasks: [
-                     // Base IDs for sidebar tasks. Mandatory property added.
-                     { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up', mandatory: true },
-                     { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart', mandatory: false },
-                     { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet', mandatory: true },
-                     { id: 'ordering', name: 'Ordering', icon: 'shopping-cart', mandatory: true },
-                     { id: 'Invoices', name: 'Unposted Invoices', icon: 'truck', mandatory: false },
-                     { id: 'transfer', name: 'Unposted Transfer', icon: 'refresh-cw', mandatory: false }, // Used for Transfer In/Out
-                     { id: 'waste', name: 'Unposted Waste', icon: 'trash-2', mandatory: false },
-                     { id: 'schedule', name: 'Schedule', icon: 'calendar', mandatory: true },
-                     { id: 'pending-employees', name: 'Pending Employees', icon: 'users', mandatory: false },
-                     { id: 'violation', name: 'Violation', icon: 'alert-triangle', mandatory: true },
-                     { id: 'time-loss', name: 'Previous Day Time Loss Summary', icon: 'clock', mandatory: false },
-                     { id: 'tor', name: 'Time Off Request', icon: 'user-x', mandatory: false },
-                     { id: 'availability-request', name: 'Availability Request', icon: 'user-check', mandatory: false },
-                     { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat', mandatory: false },
-                     // { id: 'punch-exception', name: 'Punch Exception', icon: 'fingerprint', mandatory: true },
-                     { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check', mandatory: false }, // Using this for 'Approval'
-                     { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet', mandatory: true },
-                     { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon', mandatory: false },
-                     { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text', mandatory: true },
-                     { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide', mandatory: false },
-                     { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle', mandatory: false },
-                     { id: 'ordering-alerts', name: 'Ordering Alerts', icon: 'bell-ring', mandatory: true },
-                     { id: 'inventory-alerts', name: 'Inventory Alerts', icon: 'bell-ring', mandatory: true },
-                     // Add these to your predefinedTasks: [...] array
-                     { id: 'open-punches', name: 'Open Punches', icon: 'lock-open', mandatory: true },
-                     { id: 'mismatch-punches', name: 'Mismatch Punches', icon: 'clock-alert', mandatory: true },
-                     { id: 'overlap-punches', name: 'Overlap Punches', icon: 'layers', mandatory: false },
-                     { id: 'long-hour-shift', name: 'Long Hour Shift', icon: 'timer', mandatory: false },
-                     { id: 'unposted-credits', name: 'Unposted Credits', icon: 'file-text', mandatory: false },
-                     { id: 'prep-sheet', name: 'Prep Sheet', icon: 'clipboard-list', mandatory: false },
-                     { id: 'non-posted-payroll', name: 'Non Posted Payroll', icon: 'file-text', mandatory: true },
-                     { id: 'current-day-punches', name: 'Current Day Punches', icon: 'clock-arrow-up', mandatory: false },
-                     { id: 'prev-day-punches', name: 'Previous Day Punches', icon: 'history', mandatory: false },
-                     { id: 'submit-order', name: 'Take Order', icon: 'send', mandatory: true },
-                 ],
+    // --- Forecast ---
+    { id: 'review-forecast', name: 'Review Forecast', icon: 'trending-up', mandatory: true, buttonLabel: 'Mark as Review' },
+    { id: 'actual-sales', name: 'Actual Sales', icon: 'line-chart', mandatory: false, buttonLabel: 'Mark as Completed' },
+
+    // --- Food Management ---
+    { id: 'ordering', name: 'Ordering', icon: 'shopping-cart', mandatory: true, buttonLabel: 'Mark as Review' },
+    { id: 'Invoices', name: 'Unposted Invoices', icon: 'truck', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'unposted-credits', name: 'Unposted Credits', icon: 'file-text', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'inventory', name: 'Inventory Count', icon: 'file-spreadsheet', mandatory: true, buttonLabel: 'Mark as Review' },
+    { id: 'transfer', name: 'Unposted Transfer', icon: 'refresh-cw', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'waste', name: 'Unposted Waste', icon: 'trash-2', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'ordering-alerts', name: 'Ordering Alerts', icon: 'bell-ring', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'inventory-alerts', name: 'Inventory Alerts', icon: 'bell-ring', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'prep-sheet', name: 'Prep Sheet', icon: 'clipboard-list', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'submit-order', name: 'Take Order', icon: 'send', mandatory: true, buttonLabel: 'Mark as Completed' },
+
+    // --- Labor Management ---
+    { id: 'schedule', name: 'Schedule', icon: 'calendar', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'pending-employees', name: 'Pending Employees', icon: 'users', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'violation', name: 'Violation', icon: 'alert-triangle', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'time-loss', name: 'Previous Day Time Loss Summary', icon: 'clock', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'tor', name: 'Time Off Request', icon: 'user-x', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'availability-request', name: 'Availability Request', icon: 'user-check', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'ssa', name: 'Swap Shift Approval', icon: 'repeat', mandatory: false, buttonLabel: 'Mark as Review' },
+
+    // --- Payroll Management ---
+    { id: 'review-punches', name: 'Review Punches', icon: 'clipboard-check', mandatory: false, buttonLabel: 'Mark as Review' },
+    { id: 'misc-pay', name: 'Misc Pay', icon: 'wallet', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'approaching-ot', name: 'Approaching OT', icon: 'alert-octagon', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'payroll-summary', name: 'Payroll Summary', icon: 'file-text', mandatory: true, buttonLabel: 'Mark as Review' },
+    { id: 'unbalanced-punches', name: 'Unbalanced Punches', icon: 'divide', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'mismatch-punch', name: 'Mismatch Punch', icon: 'x-circle', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'open-punches', name: 'Open Punches', icon: 'lock-open', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'mismatch-punches', name: 'Mismatch Punches', icon: 'clock-alert', mandatory: true, buttonLabel: 'Mark as Completed' },
+    { id: 'overlap-punches', name: 'Overlap Punches', icon: 'layers', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'long-hour-shift', name: 'Long Hour Shift', icon: 'timer', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'non-posted-payroll', name: 'Non Posted Payroll', icon: 'file-text', mandatory: true, buttonLabel: 'Mark as Review' },
+    { id: 'current-day-punches', name: 'Current Day Punches', icon: 'clock-arrow-up', mandatory: false, buttonLabel: 'Mark as Completed' },
+    { id: 'prev-day-punches', name: 'Previous Day Punches', icon: 'history', mandatory: false, buttonLabel: 'Mark as Completed' }
+],
          
          
                  dragEnterModule(evt, app, category) {
